@@ -1,0 +1,19 @@
+To run this example:
+
+1 - Download and install fpvectorial.
+
+2 - Open the example fpvectorial/examples/fpvtextwritetest.pas
+
+3 - At the end, replace the line:
+
+    Vec.WriteToFile(....
+
+    
+with:      
+    
+    with TvOdtXmlWriter.Create do
+    begin
+         WriteToFile('/tmp/text_output.odt', Vec);
+         Free;
+    end;
+                
