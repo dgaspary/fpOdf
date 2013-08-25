@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <Package Version="4">
+    <Name Value="fpOdf"/>
+    <Author Value="Daniel F. Gaspary"/>
+    <CompilerOptions>
+      <Version Value="11"/>
+      <SearchPaths>
+        <OtherUnitFiles Value=".."/>
+        <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+      </SearchPaths>
+      <Linking>
+        <Debugging>
+          <UseExternalDbgSyms Value="True"/>
+        </Debugging>
+      </Linking>
+      <Other>
+        <CompilerMessages>
+          <MsgFileName Value=""/>
+        </CompilerMessages>
+        <CompilerPath Value="$(CompPath)"/>
+      </Other>
+    </CompilerOptions>
+    <Description Value="Library to help to generate and to modify ODF files.
+
+http://en.wikipedia.org/wiki/OpenDocument"/>
+    <License Value="Modified LGPL.
+
+Read the file COPYING.modifiedLGPL.txt for more informations."/>
+    <Version Release="1"/>
+    <Files Count="2">
+      <Item1>
+        <Filename Value="../odf_types.pas"/>
+        <UnitName Value="odf_types"/>
+      </Item1>
+      <Item2>
+        <Filename Value="../odf_mimetypes.pas"/>
+        <UnitName Value="odf_mimetypes"/>
+      </Item2>
+    </Files>
+    <Type Value="RunAndDesignTime"/>
+    <RequiredPkgs Count="2">
+      <Item1>
+        <PackageName Value="LazUtils"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="FCL"/>
+      </Item2>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>
