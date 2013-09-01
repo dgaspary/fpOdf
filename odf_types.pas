@@ -454,10 +454,26 @@ type
           property ManifestRdf: TDOMElement read FManifestRdf write FManifestRdf;
     end;
 
-    TOdfParagraph = class(TOdfElement)
+    { TOdfContent }
+
+    TOdfContent = class(TOdfElement)
+
+    private
+           function AddTextNode(const AValue: DOMString): TDOMText;
+           procedure OdfSetTextContent(const AValue: DOMString);
 
     public
+          //p1-6.1.1
+          function GetCharacterContent: string;
+          property TextContent read GetTextContent write OdfSetTextContent;
+    end;
 
+
+    { TOdfParagraph }
+
+    TOdfParagraph = class(TOdfContent)
+
+    public
           //property Style: TOdfStyle
 
           //property OdfElementType: TElementType index oetTextP;
@@ -618,6 +634,53 @@ begin
           AppendChild(MasterStyles);
           AppendChild(Body);
      end;
+end;
+
+{ TOdfContent }
+
+function TOdfContent.AddTextNode(const AValue: DOMString): TDOMText;
+begin
+     result:=self.OwnerDocument.CreateTextNode(AValue);
+     self.AppendChild(result);
+end;
+
+procedure TOdfContent.OdfSetTextContent(const AValue: DOMString);
+var
+   et: TElementType;
+   s, s1, s2: UTF8String;
+   vSpaces: word;
+
+   vChild: TOdfElement;
+begin
+     inherited SetTextContent('');
+
+     s:=AValue;
+     repeat
+           et:=OdfPrepareString(s, s1, s2, vSpaces);
+
+           if s1 <> ''
+           then
+               AddTextNode(s1);
+
+           if et <> oetNone
+           then
+           begin
+                vChild:=AppendOdfElement(et);
+
+                //No attribute = single space  ( p1-19.763 )
+                if (et = oetTextS) and (vSpaces>1)
+                then
+                    vChild.SetAttribute(oatTextC, IntToStr(vSpaces));
+           end;
+
+           s:=s2;
+
+     until (et = oetNone) and (s='');
+end;
+
+function TOdfContent.GetCharacterContent: string;
+begin
+     NotYetImplemented('TOdfContent.GetCharacterContent');
 end;
 
 { TConfigConfigItemSet }
