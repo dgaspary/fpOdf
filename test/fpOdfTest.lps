@@ -1,0 +1,189 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <ProjectSession>
+    <Version Value="9"/>
+    <BuildModes Active="Default"/>
+    <Units Count="9">
+      <Unit0>
+        <Filename Value="fpOdfTest.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="fpOdfTest"/>
+        <UsageCount Value="20"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="TestStringPrep.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TestStringPrep"/>
+        <EditorIndex Value="0"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="60" Y="123"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="../odf_types.pas"/>
+        <UnitName Value="odf_types"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="67" Y="6"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="../../../../../../sdb6/projetos/odf/public_git/fpOdf/test/textprep.pas"/>
+        <UnitName Value="TextPrep"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="43"/>
+        <CursorPos X="5" Y="69"/>
+        <UsageCount Value="10"/>
+        <Bookmarks Count="1">
+          <Item0 X="24" Y="64" ID="1"/>
+        </Bookmarks>
+      </Unit3>
+      <Unit4>
+        <Filename Value="../../../../../../sdb6/projetos/odf/public_git/fpOdf/odf_types.pas"/>
+        <UnitName Value="odf_types"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="571"/>
+        <CursorPos X="53" Y="573"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="/usr/share/lazarus/1.1-qt/components/lazutils/lazutf8.pas"/>
+        <UnitName Value="LazUTF8"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="22"/>
+        <CursorPos X="10" Y="42"/>
+        <UsageCount Value="10"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="/usr/share/fpcsrc/2.7.1/rtl/unix/sysutils.pp"/>
+        <UnitName Value="sysutils"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="40"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="/usr/share/fpcsrc/2.7.1/rtl/objpas/sysutils/sysutilh.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="325"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="../../../../../../sdb6/projetos/odf/public_git/fpOdf/test/TestStringPrep.pas"/>
+        <UnitName Value="TestStringPrep"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="120"/>
+        <CursorPos X="31" Y="121"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit8>
+    </Units>
+    <General>
+      <ActiveWindowIndexAtStart Value="0"/>
+    </General>
+    <JumpHistory Count="16" HistoryIndex="15">
+      <Position1>
+        <Filename Value="TestStringPrep.pas"/>
+        <Caret Line="30" Column="1" TopLine="31"/>
+      </Position1>
+      <Position2>
+        <Filename Value="TestStringPrep.pas"/>
+        <Caret Line="1" Column="17" TopLine="115"/>
+      </Position2>
+      <Position3>
+        <Filename Value="TestStringPrep.pas"/>
+        <Caret Line="82" Column="36" TopLine="75"/>
+      </Position3>
+      <Position4>
+        <Filename Value="TestStringPrep.pas"/>
+        <Caret Line="123" Column="28" TopLine="120"/>
+      </Position4>
+      <Position5>
+        <Filename Value="../../../../../../sdb6/projetos/odf/public_git/fpOdf/test/TestStringPrep.pas"/>
+        <Caret Line="123" Column="1" TopLine="117"/>
+      </Position5>
+      <Position6>
+        <Filename Value="../../../../../../sdb6/projetos/odf/public_git/fpOdf/test/TestStringPrep.pas"/>
+        <Caret Line="91" Column="1" TopLine="89"/>
+      </Position6>
+      <Position7>
+        <Filename Value="../../../../../../sdb6/projetos/odf/public_git/fpOdf/test/TestStringPrep.pas"/>
+        <Caret Line="92" Column="1" TopLine="89"/>
+      </Position7>
+      <Position8>
+        <Filename Value="../../../../../../sdb6/projetos/odf/public_git/fpOdf/odf_types.pas"/>
+        <Caret Line="549" Column="1" TopLine="544"/>
+      </Position8>
+      <Position9>
+        <Filename Value="../../../../../../sdb6/projetos/odf/public_git/fpOdf/odf_types.pas"/>
+        <Caret Line="550" Column="1" TopLine="544"/>
+      </Position9>
+      <Position10>
+        <Filename Value="../../../../../../sdb6/projetos/odf/public_git/fpOdf/odf_types.pas"/>
+        <Caret Line="551" Column="1" TopLine="544"/>
+      </Position10>
+      <Position11>
+        <Filename Value="../../../../../../sdb6/projetos/odf/public_git/fpOdf/odf_types.pas"/>
+        <Caret Line="552" Column="1" TopLine="544"/>
+      </Position11>
+      <Position12>
+        <Filename Value="../../../../../../sdb6/projetos/odf/public_git/fpOdf/odf_types.pas"/>
+        <Caret Line="553" Column="1" TopLine="544"/>
+      </Position12>
+      <Position13>
+        <Filename Value="../../../../../../sdb6/projetos/odf/public_git/fpOdf/odf_types.pas"/>
+        <Caret Line="555" Column="1" TopLine="553"/>
+      </Position13>
+      <Position14>
+        <Filename Value="../../../../../../sdb6/projetos/odf/public_git/fpOdf/odf_types.pas"/>
+        <Caret Line="557" Column="1" TopLine="553"/>
+      </Position14>
+      <Position15>
+        <Filename Value="../../../../../../sdb6/projetos/odf/public_git/fpOdf/test/TestStringPrep.pas"/>
+        <Caret Line="96" Column="42" TopLine="89"/>
+      </Position15>
+      <Position16>
+        <Filename Value="../../../../../../sdb6/projetos/odf/public_git/fpOdf/odf_types.pas"/>
+        <Caret Line="573" Column="53" TopLine="571"/>
+      </Position16>
+    </JumpHistory>
+  </ProjectSession>
+  <Debugging>
+    <BreakPoints Count="1">
+      <Item1>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="TestStringPrep.pas"/>
+        <Line Value="123"/>
+      </Item1>
+    </BreakPoints>
+    <Watches Count="5">
+      <Item1>
+        <Expression Value="segment1"/>
+      </Item1>
+      <Item2>
+        <Expression Value="segment2"/>
+      </Item2>
+      <Item3>
+        <Expression Value="result"/>
+      </Item3>
+      <Item4>
+        <Expression Value="nospaces"/>
+      </Item4>
+      <Item5>
+        <Expression Value="s"/>
+      </Item5>
+    </Watches>
+  </Debugging>
+  <EditorMacros Count="0"/>
+</CONFIG>
