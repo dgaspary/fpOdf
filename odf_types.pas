@@ -545,6 +545,11 @@ begin
      end;
 end;
 
+{If result is not oetNone, breaks AText in two text segments.
+ Segment1 have no special characters and can be add as a Text Node.
+ Segment2 is the remaing text after the special character found(identified in result).
+ Segment2 CAN have additional special characters.
+ NoSpaces contains the number of spaces when result is oetTextS.}
 function OdfPrepareString(AText: UTF8String; out Segment1: UTF8String;
                           out Segment2: UTF8String;
                           out NoSpaces: word): TElementType;
