@@ -41,18 +41,18 @@ unit odf_types;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, zipper, zstream,
+  Classes, SysUtils, FileUtil, zipper, zstream, LazUTF8,
 
   {$ifdef patched_dom}
    DOM_patched, XMLRead_patched, XMLWrite_patched
   {$else}
    laz2_DOM, laz2_XMLRead, Laz2_XMLWrite
-//   DOM, XMLRead, XMLWrite
   {$endif},
 
   xmlutils, odf_mimetypes;
 
 const
+     cCharSpace = #32;
      cNone = '<NONE>';
      cFileContent = 'content.xml';
      cFileStyles = 'styles.xml';
@@ -147,6 +147,7 @@ type
 
          function GetURI(ns: TOdfNamespace): string;
 
+
 //Elements
 //////////
 
@@ -170,6 +171,7 @@ type
 
     procedure OdfElementSetNamespaceAtt(DestElement: TDOMElement; ns: TOdfNamespace); overload;
     procedure OdfElementSetNamespaceAtt(DestElement: TDOMElement; nsSet: TOdfNamespaces); overload;
+
 
 //Attributes
 ////////////
@@ -204,6 +206,7 @@ type
                                             out Atts: TAttributeTypeArray);
     function OdfElementGetChildren(et: TElementType): TElementTypeArray;
     function OdfElementGetAtts(et: TElementType): TAttributeTypeArray;
+
 
 //Package Files
 ///////////////
@@ -490,6 +493,10 @@ type
 procedure WriteStringToFile(str, AFileName: string);
 procedure OdfXmlSetDefaultAtts(doc: TXMLDocument);
 
+function OdfPrepareString(AText: UTF8String; out Segment1: UTF8String;
+                          out Segment2: UTF8String;
+                          out NoSpaces: word): TElementType;
+
 {$INCLUDE incs/styles-decl.inc}
 
 
@@ -498,6 +505,10 @@ implementation
 {$INCLUDE incs/proc.inc}
 {$INCLUDE incs/Atts-Proc-Implemetation.inc}
 
+procedure NotYetImplemented(FunctionName: string);
+begin
+     raise Exception.Create(FunctionName + ' not yet implemented');
+end;
 
 procedure OdfXmlSetDefaultAtts(doc: TXMLDocument);
 begin
@@ -516,6 +527,76 @@ begin
      finally
             CloseFile(f);
      end;
+end;
+
+function OdfPrepareString(AText: UTF8String; out Segment1: UTF8String;
+                          out Segment2: UTF8String;
+                          out NoSpaces: word): TElementType;
+var
+   s: UTF8String;
+   SpaceFound: boolean;
+   i, index, vTextLength: PtrInt;
+
+   function GetSegment2: string;
+   begin
+        if NoSpaces>0
+        then
+            result:=UTF8Copy(AText, i, vTextLength)
+        else
+            result:=UTF8Copy(AText, i + 1, vTextLength - i);
+   end;
+
+begin
+     result:=oetNone;
+     SpaceFound:=false;
+     Segment1:='';
+     Segment2:='';
+
+     NoSpaces:=0;
+
+     vTextLength:=UTF8Length(AText);
+
+     for i:=1 to vTextLength do
+     begin
+          s:=UTF8Copy(AText, i, 1);
+
+          if (s<>cCharSpace) and (NoSpaces>0)
+          then
+          begin
+               Segment2:=GetSegment2;
+               result:=oetTextS;
+               break;
+          end;
+
+          case s of
+               #9         : result:=oetTextTab;
+               #11{?}, #13: result:=oetTextLineBreak; //????
+               cCharSpace : begin
+                                 if SpaceFound
+                                 then
+                                     Inc(NoSpaces)
+                                 else
+                                     SpaceFound:=true;
+                            end;
+          end;
+
+          if result = oetNone
+          then
+          begin
+               if NoSpaces=0
+               then
+                   Segment1+=s;
+          end
+          else
+          begin
+               Segment2:=GetSegment2;
+               break;
+          end;
+     end;
+
+     if NoSpaces > 0
+     then
+         result:=oetTextS;
 end;
 
 procedure ReorderElements(AOdf: TOdfDocument);
@@ -1569,7 +1650,7 @@ end;
 
 procedure TOdfDocument.SaveToZipFile(AFilename: string);
 begin
-     raise Exception.Create('TOdfDocument.SaveToZipFile not yet implemented');
+     NotYetImplemented('TOdfDocument.SaveToZipFile');
 end;
 
 
