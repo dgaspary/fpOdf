@@ -45,10 +45,6 @@ begin
           AppendOdfElement(oetStyleTextProperties, oatFoFontSize, '12.00pt');
      end;
 
-     //Font Face Decls
-     TFontFaceDecls(doc.FontFaceDecls).AddFontFace('Liberation Serif',
-         '''Liberation Serif''', 'roman', 'variable');
-
      //Automatic Styles (Not automatic yet :)
      with TOdfElement(doc.AutomaticStyles).AppendOdfElement(oetStyleStyle) do
      begin

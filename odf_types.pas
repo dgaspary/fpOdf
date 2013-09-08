@@ -395,6 +395,7 @@ type
            FManifestRdf: TDOMElement;
 
            function GetRootChild(et: TElementType): TDOMElement;
+           procedure InitFonts; virtual;
 
            procedure InitXmlDocument; virtual;
 
@@ -1549,6 +1550,17 @@ begin
      result:=OdfGetElement(et, FXmlDocument.DocumentElement);
 end;
 
+procedure TOdfDocument.InitFonts;
+begin
+     with TFontFaceDecls(FFontFaceDecls) do
+     begin
+          AddFontFace('Liberation Mono','''Liberation Mono''', 'modern', 'fixed');
+          AddFontFace('Liberation Sans','''Liberation Sans''', 'swiss', 'variable');
+          AddFontFace('Liberation Sans Narrow','''Liberation Sans Narrow''', 'swiss', 'variable');
+          AddFontFace('Liberation Serif','''Liberation Serif''', 'roman', 'variable');
+     end;
+end;
+
 procedure TOdfDocument.InitXmlDocument;
 var
    e: TOdfElement;
@@ -1568,6 +1580,7 @@ begin
           FSettings:=AppendOdfElement(oetOfficeSettings);
           FScripts:=AppendOdfElement(oetOfficeScripts);
           FFontFaceDecls:=AppendOdfElement(oetOfficeFontFaceDecls);
+          InitFonts;
           FStyles:=AppendOdfElement(oetOfficeStyles);
           FAutomaticStyles:=AppendOdfElement(oetOfficeAutomaticStyles);
           FMasterStyles:=AppendOdfElement(oetOfficeMasterStyles);
