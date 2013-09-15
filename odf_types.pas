@@ -41,12 +41,12 @@ unit odf_types;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, zipper, zstream, LazUTF8,
+  Classes, SysUtils, FileUtil, zipper, zstream, fgl, LazUTF8, Graphics,
 
   {$ifdef patched_dom}
    DOM_patched, XMLRead_patched, XMLWrite_patched
   {$else}
-   laz2_DOM, laz2_XMLRead, Laz2_XMLWrite
+   Laz2_DOM, laz2_XMLRead, laz2_XMLWrite
   {$endif},
 
   xmlutils, odf_mimetypes;
@@ -159,15 +159,26 @@ type
 
     TElementTypeArray = array of TElementType; //Max Length: oetTextSenderEmail
 
+    TOdfDomElementList = specialize TFPGList<TDOMElement>;
+
     function OdfGetElementLocalName(et: TElementType): string;
     function OdfGetElementQName(et: TElementType; out uri: string): string; overload;
     function OdfGetElementQName(et: TElementType): string; overload;
     procedure OdfElementGetNsAndName(et: TElementType; out prefix: string;
-                                      out localname: string;
-                                      out uri: string);
+                                     out localname: string;
+                                     out uri: string);
 
     function OdfGetElementTypeByName(ALocalName, ANsUri: string): TElementType;
-    function OdfGetElement(et: TElementType; AParent: TDOMElement): TDOMElement;
+    function OdfGetElement(et: TElementType; AParent: TDOMElement;
+                           Recursive: boolean = false): TDOMElement;
+
+    function OdfGetChildByName(ANsURI, ALocalName: String; AParent: TDOMElement;
+                               Recursive: boolean = false): TDOMElement;
+
+    function OdfGetElementList(AUri, ALocalName: string; AParent: TDOMElement;
+                           Recursive: boolean = false): TOdfDomElementList;
+    function OdfGetElementList(et: TElementType; AParent: TDOMElement;
+                           Recursive: boolean = false): TOdfDomElementList;
 
     procedure OdfElementSetNamespaceAtt(DestElement: TDOMElement; ns: TOdfNamespace); overload;
     procedure OdfElementSetNamespaceAtt(DestElement: TDOMElement; nsSet: TOdfNamespaces); overload;
@@ -204,8 +215,8 @@ type
     procedure OdfElementGetChildrenAndAtts(et: TElementType;
                                             out Children: TElementTypeArray;
                                             out Atts: TAttributeTypeArray);
-    function OdfElementGetChildren(et: TElementType): TElementTypeArray;
-    function OdfElementGetAtts(et: TElementType): TAttributeTypeArray;
+    function OdfElementGetChildrenTypes(et: TElementType): TElementTypeArray;
+    function OdfElementGetAttsTypes(et: TElementType): TAttributeTypeArray;
 
 
 //Package Files
@@ -250,19 +261,6 @@ type
 
 type
 
-    { TDomNodeEnumerator }
-
-    TDomNodeEnumerator = class
-    private
-           FCurrent: TDOMNode;
-           FParent: TDOMNode;
-    public
-          constructor Create(AParent: TDOMNode);
-          function MoveNext: Boolean;
-          property Current: TDOMNode read FCurrent;
-    end;
-
-
     { TElementEnumerator }
 
     TElementEnumerator = class
@@ -277,6 +275,7 @@ type
 
 
     TOdfElement = class;
+    TSpan = class;
     TOdfElementClass = class of TOdfElement;
     TOdfDocument = class;
 
@@ -359,20 +358,9 @@ type
                     read GetAttributeString write SetAttribute;
     end;
 
-    { TStyleStyle }
+{$INCLUDE incs/styles-decl.inc}
 
-    TStyleStyle = class(TOdfElement)
-    public
-         property StyleName: string index oatStyleName
-                    read GetAttributeString write SetAttribute;
-         property StyleFamily: string index oatStyleFamily
-                    read GetAttributeString write SetAttribute;
-         property ParentStyleName: string index oatStyleParentStyleName
-                    read GetAttributeString write SetAttribute;
-    end;
-
-
-
+type
     { TOdfDocument }
 
     TOdfDocument = class
@@ -428,12 +416,21 @@ type
           function CreateOdfElement(et: TElementType; at: TAttributeType;
                                           AttValue: String): TOdfElement; overload;
 
+          function CreateStyle(AStyleName, AFamily: string): TOdfStyleStyle;
+          function CreateStyle(AStyleName: string;
+                               AFamily: TStyleFamilyValue): TOdfStyleStyle;
+          function CreateStyle(AStyleName: string;
+                               AParentStyle: TOdfStyleStyle): TOdfStyleStyle;
+
+
+          function CreateSpan(AText: string; FontStyles: TFontStyles): TSpan;
+
           procedure SaveToSingleXml(AFilename: string); overload;
 
           class procedure SaveToZipFile(AOdf: TOdfDocument;
-            AFilename: string; ATempDir: string=''); unimplemented;
+            AFilename: string; ATempDir: string='');
 
-          procedure SaveToZipFile(AFilename: string); overload; unimplemented;
+          procedure SaveToZipFile(AFilename: string); overload;
 
           property XmlDocument: TXMLDocument read FXmlDocument write FXmlDocument;
 
@@ -475,9 +472,18 @@ type
     TOdfParagraph = class(TOdfContent)
 
     public
-          //property Style: TOdfStyle
+          function AddSpan(AText: string; FontStyles: TFontStyles): TSpan;
+    end;
 
-          //property OdfElementType: TElementType index oetTextP;
+
+    { TSpan }
+
+    TSpan = class(TOdfContent)
+    private
+
+    public
+          class function CreateSpan(doc: TXMLDocument; AText: string): TSpan;
+          procedure SetStyle(fs: TFontStyles);
     end;
 
 
@@ -514,13 +520,11 @@ function OdfPrepareString(AText: UTF8String; out Segment1: UTF8String;
                           out Segment2: UTF8String;
                           out NoSpaces: word): TElementType;
 
-{$INCLUDE incs/styles-decl.inc}
-
-
 implementation
 
 {$INCLUDE incs/proc.inc}
 {$INCLUDE incs/Atts-Proc-Implemetation.inc}
+{$INCLUDE incs/styles-impl.inc}
 
 procedure NotYetImplemented(FunctionName: string);
 begin
@@ -642,6 +646,28 @@ begin
      end;
 end;
 
+{ TOdfParagraph }
+
+function TOdfParagraph.AddSpan(AText: string; FontStyles: TFontStyles): TSpan;
+begin
+     result:=tspan.CreateSpan(self.OwnerDocument as TXMLDocument, AText);
+     result.SetStyle(FontStyles);
+end;
+
+{ TSpan }
+
+procedure TSpan.SetStyle(fs: TFontStyles);
+begin
+     { TODO : Search or create a style with FontStyles }
+end;
+
+
+class function TSpan.CreateSpan(doc: TXMLDocument; AText: string): TSpan;
+begin
+     result:=TSpan(CreateOdfElement(oetTextSpan, TSpan, doc));
+     result.TextContent:=AText;
+end;
+
 { TOdfContent }
 
 function TOdfContent.AddTextNode(const AValue: DOMString): TDOMText;
@@ -754,25 +780,6 @@ begin
      result:=TOdfParagraph(CreateOdfElement(oetTextP));
      result.SetAttribute(oatTextStyleName, ATextStyleName);
      FText.AppendChild(result);
-end;
-
-{ TDomNodeEnumerator }
-
-constructor TDomNodeEnumerator.Create(AParent: TDOMNode);
-begin
-     FCurrent:=nil;
-     FParent:=AParent;
-end;
-
-function TDomNodeEnumerator.MoveNext: Boolean;
-begin
-     if Assigned(FCurrent)
-     then
-         FCurrent := FCurrent.NextSibling
-     else
-         FCurrent:=FParent.FirstChild;
-
-     Result := Assigned(FCurrent);
 end;
 
 { TOdfElement }
@@ -1021,20 +1028,17 @@ begin
 
 end;
 
-function GetChildElementByName(ANsURI, ALocalName: String; AParent: TDOMElement): TDOMElement;
+function OdfGetChildByName(ANsURI, ALocalName: String; AParent: TDOMElement;
+                           Recursive: boolean = false): TDOMElement;
 begin
      result:=nil;
-     with AParent.GetElementsByTagNameNS(ANsURI, ALocalName) do
+
+     with OdfGetElementList(ANsURI, ALocalName, AParent, Recursive) do
      begin
-          try
-             if Count >= 1
-             then
-             begin
-                  result:=TDomElement(Item[0]);
-             end;
-          finally
-                 free;
-          end;
+          if Count > 0
+          then
+              result:=First;
+          Free;
      end;
 end;
 
@@ -1043,7 +1047,7 @@ function MoveElement(ANsUri, ALocalName: string; OldParent, NewParent: TDOMEleme
 var
    e: TDOMElement;
 begin
-     e:=GetChildElementByName(ANsUri, ALocalName, OldParent);
+     e:=OdfGetChildByName(ANsUri, ALocalName, OldParent);
 
      result:=(e.CloneNode(true, NewParent.OwnerDocument) as TDOMElement);
 
@@ -1482,7 +1486,7 @@ begin
      WriteStringToFile(s, ATempDir + cFileMimetype);
 
      zfe:=z.Entries.AddFileEntry(ATempDir + cFileMimetype, cFileMimetype);
-     (zfe as TZipFileEntry).CompressionLevel:=clnone;
+     (zfe as TZipFileEntry).CompressionLevel:=Tcompressionlevel.clnone;
 
      for f in TOdfXmlFiles do
      begin
@@ -1605,7 +1609,7 @@ begin
           oetOfficeFontFaceDecls: result:=TFontFaceDecls;
           oetTextSequenceDecls: result:=TTextSequenceDecls;
           oetConfigConfigItemSet: result:=TConfigConfigItemSet;
-          oetStyleStyle: result:=TStyleStyle;
+          oetStyleStyle: result:=TOdfStyleStyle;
      end;
 end;
 
@@ -1629,9 +1633,9 @@ begin
      else if AClass = TConfigConfigItemSet
           then
               result:=TConfigConfigItemSet(e)
-     else if AClass = TStyleStyle
+     else if AClass = TOdfStyleStyle
                then
-                   result:=TStyleStyle(e);
+                   result:=TOdfStyleStyle(e);
 end;
 
 
@@ -1718,6 +1722,35 @@ begin
      OdfSetAttributeValue(at, result, AttValue);
 end;
 
+function TOdfDocument.CreateStyle(AStyleName, AFamily: string): TOdfStyleStyle;
+begin
+     result:=TOdfStyleStyle(CreateOdfElement(oetStyleStyle));
+     with result do
+     begin
+          OdfStyleName:=AStyleName;
+          OdfStyleFamily:=AFamily;
+     end;
+end;
+
+function TOdfDocument.CreateStyle(AStyleName: string;
+            AFamily: TStyleFamilyValue): TOdfStyleStyle;
+begin
+     result:=CreateStyle(AStyleName, OdfGetStyleFamilyValue(AFamily));
+end;
+
+function TOdfDocument.CreateStyle(AStyleName: string;
+                                  AParentStyle: TOdfStyleStyle): TOdfStyleStyle;
+begin
+     result:=CreateStyle(AStyleName, AParentStyle.OdfStyleFamily);
+     result.OdfStyleParentStyleName:=AParentStyle.OdfStyleName;
+end;
+
+function TOdfDocument.CreateSpan(AText: string; FontStyles: TFontStyles): TSpan;
+begin
+     result:=TSpan.CreateSpan(self.XmlDocument, AText);
+     result.SetStyle(FontStyles);
+end;
+
 procedure TOdfDocument.SaveToSingleXml(AFilename: string);
 begin
      SaveToSingleXml(self, AFilename);
@@ -1731,7 +1764,7 @@ end;
 
 procedure TOdfDocument.SaveToZipFile(AFilename: string);
 begin
-     NotYetImplemented('TOdfDocument.SaveToZipFile');
+     TOdfDocument.SaveToZipFile(self, AFilename);
 end;
 
 
@@ -1782,14 +1815,14 @@ begin
      OdfElementGetDetails(et, ns, s, children, Atts);
 end;
 
-function OdfElementGetChildren(et: TElementType): TElementTypeArray;
+function OdfElementGetChildrenTypes(et: TElementType): TElementTypeArray;
 var
    atts: TAttributeTypeArray;
 begin
      OdfElementGetChildrenAndAtts(et, result, atts);
 end;
 
-function OdfElementGetAtts(et: TElementType): TAttributeTypeArray;
+function OdfElementGetAttsTypes(et: TElementType): TAttributeTypeArray;
 var
    children: TElementTypeArray;
 begin
@@ -1814,13 +1847,63 @@ begin
      end;
 end;
 
-function OdfGetElement(et: TElementType; AParent: TDOMElement): TDOMElement;
+function OdfGetElement(et: TElementType; AParent: TDOMElement; Recursive: boolean): TDOMElement;
 var
    vUri, vLocalName: string;
    s: string;
 begin
      OdfElementGetNsAndName(et, s, vLocalName, vUri);
-     result:=GetChildElementByName(vUri, vLocalName, AParent);
+     result:=OdfGetChildByName(vUri, vLocalName, AParent, Recursive);
+end;
+
+function OdfGetElementList(AUri, ALocalName: string; AParent: TDOMElement;
+                           Recursive: boolean = false): TOdfDomElementList;
+  procedure GetElementsRecursive;
+  var
+    i: integer;
+    nodeList: TDOMNodeList;
+  begin
+    nodeList:=AParent.GetElementsByTagNameNS(AUri, ALocalName);
+    for i:=0 to Pred(nodeList.Count) do
+        result.Add(nodeList.Item[i] as TDOMElement);
+    nodeList.Free;
+  end;
+
+  procedure GetElementsNonRecursive;
+  var
+    e: TDOMElement;
+    n: TDOMNode;
+  begin
+    for n in AParent do
+        if (n is TDOMElement)
+        then
+        begin
+             e:=(n as TDOMElement);
+             if (e.LocalName = ALocalName) and (e.NamespaceURI = AUri)
+             then
+                 result.Add(e);
+        end;
+  end;
+
+begin
+     result:=TOdfDomElementList.Create;
+
+     if Recursive
+     then
+         GetElementsRecursive
+     else
+         GetElementsNonRecursive;
+
+end;
+
+function OdfGetElementList(et: TElementType; AParent: TDOMElement;
+                           Recursive: boolean = false): TOdfDomElementList;
+var
+   vUri, vLocalName: string;
+   s: string;
+begin
+     OdfElementGetNsAndName(et, s, vLocalName, vUri);
+     result:=OdfGetElementList(vUri, vLocalName, AParent, Recursive);
 end;
 
 procedure OdfElementSetNamespaceAtt(DestElement: TDOMElement; ns: TOdfNamespace
@@ -2020,6 +2103,7 @@ function GetURI(ns: TOdfNamespace): string;
 begin
      result:=OdfNamespaceURIs[ns];
 end;
+
 
 end.
 

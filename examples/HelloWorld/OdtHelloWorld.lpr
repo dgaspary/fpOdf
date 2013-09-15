@@ -30,36 +30,34 @@ uses
 
 const
      cOutput = '/tmp/HelloWorld.odt';
+     cStyleName = 'Standard';
 
 var
    doc: TOdfTextDocument;
+   vStyle: TOdfStyleStyle;
 begin
      doc:=TOdfTextDocument.Create;
 
      //Styles
-     with TOdfElement(doc.Styles).AppendOdfElement(oetStyleStyle) do
+     vStyle:=doc.CreateStyle(cStyleName, sfvParagraph);
+     with vStyle do
      begin
-          SetAttribute(oatStyleName, 'Standard');
-          SetAttribute(oatStyleDisplayName, 'Standard');
-          SetAttribute(oatStyleFamily, 'paragraph');
+          OdfStyleDisplayName:=OdfStyleName;
           AppendOdfElement(oetStyleTextProperties, oatFoFontSize, '12.00pt');
      end;
+     doc.Styles.AppendChild(vStyle);
 
      //Automatic Styles (Not automatic yet :)
-     with TOdfElement(doc.AutomaticStyles).AppendOdfElement(oetStyleStyle) do
-     begin
-          SetAttributes([oatStyleName, oatStyleParentStyleName, oatStyleFamily],
-                        ['P1', 'Standard', 'paragraph']);
-
-          AppendOdfElement(oetStyleTextProperties).
+     vStyle:=doc.CreateStyle('P1', vStyle);
+     vStyle.AppendOdfElement(oetStyleTextProperties).
              SetAttributes([oatFoColor, oatFoFontFamily],
                            ['#000000', 'Sans Serif']);
-     end;
+     doc.AutomaticStyles.AppendChild(vStyle);
 
      //Paragraph
-     doc.AddParagraph('Standard').TextContent:='Hello World!';
+     doc.AddParagraph(cStyleName).TextContent:='Hello World!';
 
-     TOdfDocument.SaveToZipFile(doc, cOutput);
+     doc.SaveToZipFile(cOutput);
      doc.Free;
 end.
 

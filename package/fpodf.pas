@@ -7,14 +7,8 @@ unit fpOdf;
 interface
 
 uses
-  odf_types, odf_mimetypes, LazarusPackageIntf;
+  odf_types, odf_mimetypes;
 
 implementation
 
-procedure Register;
-begin
-end;
-
-initialization
-  RegisterPackage('fpOdf', @Register);
 end.

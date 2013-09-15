@@ -32,7 +32,24 @@
 }
 
 
+//Family
+////////
 type
+    TStyleFamilyValue = (sfvNone, sfvText, sfvParagraph, sfvSection, sfvRuby,
+                         sfvTble, sfvTableColumn, sfvTbleRow, sfvTableCell,
+                         sfvGraphic, sfvPresentation, sfvDrawingPage, sfvChart);
+
+const
+     StyleFamilyValues : array[TStyleFamilyValue] of String =
+                        ('', 'text', 'paragraph', 'section', 'ruby',
+                         'table', 'table-column', 'table-row', 'table-cell',
+                         'graphic', 'presentation','drawing-page', 'chart');
+
+     function OdfGetStyleFamilyValue(AFamily: TStyleFamilyValue): string;
+     function OdfGetStyleFamilyValueFromString(AFamily: string): TStyleFamilyValue;
+
+type
+
 
     { TODO -oGaspary : Interfaces seems to be the best option to styles properties }
 
@@ -106,3 +123,4 @@ type
 
     TOdfStyleDefaultStyle = class(TOdfCustomStyle);
 
+    TOdfStyleType = (stUndefined, stCommon, stAutomatic, stMaster);

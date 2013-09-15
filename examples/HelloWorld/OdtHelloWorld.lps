@@ -1,9 +1,9 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectSession>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="18">
+    <Units Count="1">
       <Unit0>
         <Filename Value="OdtHelloWorld.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -11,159 +11,15 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="55"/>
-        <CursorPos X="30" Y="31"/>
-        <UsageCount Value="29"/>
+        <TopLine Value="40"/>
+        <CursorPos X="31" Y="53"/>
+        <UsageCount Value="47"/>
         <Loaded Value="True"/>
       </Unit0>
-      <Unit1>
-        <Filename Value="../odf_types.pas"/>
-        <UnitName Value="odf_types"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="365"/>
-        <CursorPos X="30" Y="367"/>
-        <FoldState Value=" TL00V4"/>
-        <UsageCount Value="12"/>
-        <Bookmarks Count="1">
-          <Item0 X="1" Y="473" ID="2"/>
-        </Bookmarks>
-      </Unit1>
-      <Unit2>
-        <Filename Value="../../../../projetos/odf/public_git/odf_types.pas"/>
-        <UnitName Value="odf_types"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="478"/>
-        <CursorPos X="36" Y="492"/>
-        <UsageCount Value="12"/>
-        <Bookmarks Count="2">
-          <Item0 X="10" Y="1411" ID="1"/>
-          <Item1 X="6" Y="1133" ID="5"/>
-        </Bookmarks>
-      </Unit2>
-      <Unit3>
-        <Filename Value="../../../../projetos/odf/public_git/incs/proc.inc"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="11" Y="1"/>
-        <UsageCount Value="10"/>
-      </Unit3>
-      <Unit4>
-        <Filename Value="../../../../projetos/odf/public_git/odf_mimetypes.pas"/>
-        <UnitName Value="odf_mimetypes"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="3"/>
-        <CursorPos X="28" Y="11"/>
-        <UsageCount Value="10"/>
-      </Unit4>
-      <Unit5>
-        <Filename Value="/usr/share/fpcsrc/2.7.1/packages/paszlib/src/zipper.pp"/>
-        <UnitName Value="zipper"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="294"/>
-        <CursorPos X="14" Y="298"/>
-        <UsageCount Value="10"/>
-      </Unit5>
-      <Unit6>
-        <Filename Value="/usr/share/fpcsrc/2.7.1/packages/paszlib/src/zstream.pp"/>
-        <UnitName Value="zstream"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="33"/>
-        <CursorPos X="11" Y="32"/>
-        <UsageCount Value="10"/>
-      </Unit6>
-      <Unit7>
-        <Filename Value="../incs/proc.inc"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="55" Y="3"/>
-        <UsageCount Value="10"/>
-      </Unit7>
-      <Unit8>
-        <Filename Value="../odf_mimetypes.pas"/>
-        <UnitName Value="odf_mimetypes"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="11"/>
-        <CursorPos X="21" Y="19"/>
-        <UsageCount Value="10"/>
-      </Unit8>
-      <Unit9>
-        <Filename Value="/usr/share/fpcsrc/2.7.1/packages/fcl-xml/src/dom.pp"/>
-        <UnitName Value="DOM"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="577"/>
-        <CursorPos X="3" Y="584"/>
-        <UsageCount Value="11"/>
-      </Unit9>
-      <Unit10>
-        <Filename Value="../../../../projetos/odf/public_git/incs/styles-decl.inc"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="4"/>
-        <CursorPos X="37" Y="9"/>
-        <UsageCount Value="11"/>
-      </Unit10>
-      <Unit11>
-        <Filename Value="../incs/ElementEnum.inc"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="1"/>
-        <UsageCount Value="10"/>
-      </Unit11>
-      <Unit12>
-        <Filename Value="../incs/Elements-Proc-Declaration.inc"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="1"/>
-        <UsageCount Value="10"/>
-      </Unit12>
-      <Unit13>
-        <Filename Value="../package/fpodf.pas"/>
-        <UnitName Value="fpOdf"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="3" Y="1"/>
-        <UsageCount Value="10"/>
-      </Unit13>
-      <Unit14>
-        <Filename Value="/usr/share/lazarus/1.1-qt/components/lazutils/laz_dom.pas"/>
-        <UnitName Value="Laz_DOM"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="32" Y="5"/>
-        <UsageCount Value="10"/>
-      </Unit14>
-      <Unit15>
-        <Filename Value="/usr/share/lazarus/1.1-qt/components/lazutils/laz2_dom.pas"/>
-        <UnitName Value="laz2_DOM"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="133"/>
-        <CursorPos X="1" Y="1"/>
-        <UsageCount Value="10"/>
-      </Unit15>
-      <Unit16>
-        <Filename Value="../../odf_types.pas"/>
-        <UnitName Value="odf_types"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="561"/>
-        <CursorPos X="54" Y="567"/>
-        <UsageCount Value="11"/>
-      </Unit16>
-      <Unit17>
-        <Filename Value="../../incs/proc.inc"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="787"/>
-        <CursorPos X="51" Y="796"/>
-        <UsageCount Value="11"/>
-      </Unit17>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="1" HistoryIndex="0">
-      <Position1>
-        <Filename Value="OdtHelloWorld.lpr"/>
-        <Caret Line="31" Column="30" TopLine="1"/>
-      </Position1>
-    </JumpHistory>
   </ProjectSession>
   <EditorMacros Count="0"/>
 </CONFIG>
