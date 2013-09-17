@@ -384,6 +384,7 @@ type
 
            function GetRootChild(et: TElementType): TDOMElement;
            procedure InitFonts; virtual;
+           procedure InitDefaultStyles; virtual;
 
            procedure InitXmlDocument; virtual;
 
@@ -650,8 +651,9 @@ end;
 
 function TOdfParagraph.AddSpan(AText: string; FontStyles: TFontStyles): TSpan;
 begin
-     result:=tspan.CreateSpan(self.OwnerDocument as TXMLDocument, AText);
+     result:=TSpan.CreateSpan(self.OwnerDocument as TXMLDocument, AText);
      result.SetStyle(FontStyles);
+     AppendChild(result);
 end;
 
 { TSpan }
@@ -1565,6 +1567,34 @@ begin
      end;
 end;
 
+
+procedure TOdfDocument.InitDefaultStyles;
+var
+   ds: TOdfStyleDefaultStyle;
+   e: TOdfElement;
+begin
+     ds:=TOdfStyleDefaultStyle(CreateOdfElement(oetStyleDefaultStyle));
+     with ds do
+     begin
+          OdfStyleFamily:=StyleFamilyValues[sfvParagraph];
+          e:=AppendOdfElement(oetStyleParagraphProperties);
+          e.SetAttributes([oatFoHyphenationLadderCount, oatStyleTextAutospace,
+               oatStylePunctuationWrap, oatStyleLineBreak,
+               oatStyleTabStopDistance, oatStyleWritingMode],
+               ['no-limit', 'ideograph-alpha', 'hanging', 'strict',
+                '1.25095cm', 'page']);
+
+          e:=AppendOdfElement(oetStyleTextProperties);
+          e.SetAttributes([oatStyleUseWindowFontColor, oatStyleName,
+             oatFoFontSize, oatFoLanguage, oatFoCountry, oatStyleLetterKerning,
+             oatFoHyphenate, oatFoHyphenationRemainCharCount,
+             oatFoHyphenationPushCharCount],
+             ['true', 'Liberation Serif', '12pt', 'en', 'US', 'true',
+              'false', '2', '2']);
+     end;
+     FStyles.AppendChild(ds);
+end;
+
 procedure TOdfDocument.InitXmlDocument;
 var
    e: TOdfElement;
@@ -1588,6 +1618,9 @@ begin
           FStyles:=AppendOdfElement(oetOfficeStyles);
           FAutomaticStyles:=AppendOdfElement(oetOfficeAutomaticStyles);
           FMasterStyles:=AppendOdfElement(oetOfficeMasterStyles);
+
+          InitDefaultStyles;
+
           FBody:=AppendOdfElement(oetOfficeBody);
      end;
 end;

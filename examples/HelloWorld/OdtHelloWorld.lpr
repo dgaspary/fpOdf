@@ -30,7 +30,7 @@ uses
 
 const
      cOutput = '/tmp/HelloWorld.odt';
-     cStyleName = 'Standard';
+     cStyleName = 'MyStandardStyle';
 
 var
    doc: TOdfTextDocument;
