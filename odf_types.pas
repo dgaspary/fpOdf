@@ -319,6 +319,7 @@ type
           function GetAttributeString(AType: TAttributeType): String;
           function HasAttribute(AType: TAttributeType): boolean;
           function RemoveAttribute(AType: TAttributeType): TDOMAttr;
+          procedure DeleteAttributes(const atts: array of TAttributeType);
           procedure SetAttribute(AType: TAttributeType; AValue: string);
           procedure SetAttributes(const atts: array of TAttributeType;
                                   const Values: array of String);
@@ -523,14 +524,14 @@ function OdfPrepareString(AText: UTF8String; out Segment1: UTF8String;
 
 implementation
 
-{$INCLUDE incs/proc.inc}
-{$INCLUDE incs/Atts-Proc-Implemetation.inc}
-{$INCLUDE incs/styles-impl.inc}
-
 procedure NotYetImplemented(FunctionName: string);
 begin
      raise Exception.Create(FunctionName + ' not yet implemented');
 end;
+
+{$INCLUDE incs/proc.inc}
+{$INCLUDE incs/Atts-Proc-Implemetation.inc}
+{$INCLUDE incs/styles-impl.inc}
 
 procedure OdfXmlSetDefaultAtts(doc: TXMLDocument);
 begin
@@ -939,6 +940,20 @@ end;
 function TOdfElement.RemoveAttribute(AType: TAttributeType): TDOMAttr;
 begin
      result:=RemoveAttributeNode(GetAttribute(AType));
+end;
+
+procedure TOdfElement.DeleteAttributes(const atts: array of TAttributeType);
+var
+   at: TAttributeType;
+   a: TDOMAttr;
+begin
+     for at in atts do
+     begin
+          a:=RemoveAttribute(at);
+          if Assigned(a)
+          then
+              a.Free;
+     end;
 end;
 
 procedure TOdfElement.SetAttribute(AType: TAttributeType; AValue: string);
