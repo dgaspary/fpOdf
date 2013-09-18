@@ -324,7 +324,8 @@ type
           procedure SetAttributes(const atts: array of TAttributeType;
                                   const Values: array of String);
 
-          function GetEnumerator: TDomNodeEnumerator;
+          procedure SetOrDeleteAttributes(const atts: array of TAttributeType;
+                            const Value: String = '');
 
           //property OdfElementType: TElementType read GetElementType;
           //class property OdfElementType: TElementType index oetNone read GetElementType;
@@ -967,6 +968,26 @@ begin
      SetAttributes(atts, self, Values);
 end;
 
+//Set all Attributes of "atts" with "Value"
+//If Value = '' then the attributes are removed.
+procedure TOdfElement.SetOrDeleteAttributes(const atts: array of TAttributeType;
+                        const Value: String);
+var
+   sa: array of String;
+   i: integer;
+begin
+     if Value = ''
+     then
+         DeleteAttributes(atts)
+     else
+     begin
+          SetLength(sa, Length(atts));
+          for i:=Low(sa) to High(sa) do
+              sa[i]:=Value;
+          SetAttributes(atts, sa);
+     end;
+end;
+
 class function TOdfElement.OdfGetElementType(e: TDOMElement): TElementType;
 var
    vLocal, vUri: string;
@@ -975,11 +996,6 @@ begin
      vLocal:=e.LocalName;
 
      result:=OdfGetElementTypeByName(vLocal, vUri);
-end;
-
-function TOdfElement.GetEnumerator: TDomNodeEnumerator;
-begin
-     result:=TDomNodeEnumerator.Create(self);
 end;
 
 { TElementEnumerator }
