@@ -126,7 +126,7 @@ type
     TOdfStyleType = (stUndefined, stCommon, stAutomatic, stMaster);
 
 
-//Font Style
+//Font Style p1-20.184
 ////////////
 
 type
@@ -134,11 +134,31 @@ type
 
 const
      OdfFontStyleValues : array[TOdfFontStyle] of String =
-                        ('', 'normal', 'italica', 'oblique');
+                        ('', 'normal', 'italic', 'oblique');
 
      function OdfGetFontStyleValue(AFontStyle: TOdfFontStyle): string;
      function OdfGetFontStyleFromString(AFontStyle: string): TOdfFontStyle;
 
      procedure OdfSetFontStyleAttribute(AElement: TDOMElement; FontStyle: TOdfFontStyle);
      procedure OdfDeleteFontStyleAttribute(AElement: TDOMElement);
+
+
+//Font Weight p1-20.186
+/////////////
+
+
+type
+   TOdfFontWeight = (fwNone, fwNormal, fwBold, fw100, fw200, fw300, fw400,
+                     fw500, fw600, fw700, fw800, fw900);
+
+const
+    OdfFontWeightValues : array[TOdfFontWeight] of String =
+                       ('', 'normal', 'bold', '100', '200', '300', '400',
+                        '500', '600', '700', '800', '900');
+
+    function OdfGetFontWeightValue(AFontWeight: TOdfFontWeight): string;
+    function OdfGetFontWeightFromString(AFontWeight: string): TOdfFontWeight;
+
+    procedure OdfSetFontWeightAttribute(AElement: TDOMElement; FontWeight: TOdfFontWeight);
+    procedure OdfDeleteFontWeightAttribute(AElement: TDOMElement);
 

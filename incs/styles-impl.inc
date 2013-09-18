@@ -47,17 +47,9 @@ const
      fsAtts : array[1..3] of TAttributeType = (oatFoFontStyle,
                     oatStyleFontStyleAsian,
                     oatStyleFontStyleComplex);
-var
-   s: string;
 begin
-     s:=OdfGetFontStyleValue(FontStyle);
-
-     with TOdfElement(AElement) do
-          if s=''
-          then
-              DeleteAttributes(fsAtts)
-          else
-              SetAttributes(fsAtts, [s, s, s]);
+     TOdfElement(AElement).SetOrDeleteAttributes(fsAtts,
+         OdfGetFontStyleValue(FontStyle));
 end;
 
 procedure OdfDeleteFontStyleAttribute(AElement: TDOMElement);
@@ -65,3 +57,39 @@ begin
      OdfSetFontStyleAttribute(AElement, ofsNone);
 end;
 
+
+function OdfGetFontWeightValue(AFontWeight: TOdfFontWeight): string;
+begin
+     result:=OdfFontWeightValues[AFontWeight];
+end;
+
+function OdfGetFontWeightFromString(AFontWeight: string): TOdfFontWeight;
+var
+   fw: TOdfFontWeight;
+begin
+     result:=fwNone;
+     AFontWeight:=LowerCase(AFontWeight);
+     for fw in TOdfFontWeight do
+         if AFontWeight = OdfFontWeightValues[fw]
+         then
+         begin
+              result:=fw;
+              break;
+         end;
+end;
+
+procedure OdfSetFontWeightAttribute(AElement: TDOMElement;
+  FontWeight: TOdfFontWeight);
+const
+     fwAtts : array[1..3] of TAttributeType = (oatFoFontWeight,
+                    oatStyleFontWeightAsian,
+                    oatStyleFontWeightComplex);
+begin
+     TOdfElement(AElement).SetOrDeleteAttributes(fwAtts,
+              OdfGetFontWeightValue(FontWeight));
+end;
+
+procedure OdfDeleteFontWeightAttribute(AElement: TDOMElement);
+begin
+     OdfSetFontWeightAttribute(AElement, fwNone);
+end;
