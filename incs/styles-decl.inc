@@ -124,3 +124,21 @@ type
     TOdfStyleDefaultStyle = class(TOdfCustomStyle);
 
     TOdfStyleType = (stUndefined, stCommon, stAutomatic, stMaster);
+
+
+//Font Style
+////////////
+
+type
+    TOdfFontStyle = (ofsNone, ofsNormal, ofsItalic, ofsOblique);
+
+const
+     OdfFontStyleValues : array[TOdfFontStyle] of String =
+                        ('', 'normal', 'italica', 'oblique');
+
+     function OdfGetFontStyleValue(AFontStyle: TOdfFontStyle): string;
+     function OdfGetFontStyleFromString(AFontStyle: string): TOdfFontStyle;
+
+     procedure OdfSetFontStyleAttribute(AElement: TDOMElement; FontStyle: TOdfFontStyle);
+     procedure OdfDeleteFontStyleAttribute(AElement: TDOMElement);
+
