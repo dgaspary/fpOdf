@@ -298,7 +298,8 @@ type
 
           class function OdfGetElementType(e: TDOMElement): TElementType;
 
-
+          class function SameType(e1, e2: TDomElement): boolean;
+          class function SameType(e: TDomElement; AType: TElementType): boolean;
 
           class procedure SetAttribute(at: TAttributeType;
                                        AParent: TDOMElement;
@@ -458,14 +459,13 @@ type
     { TOdfContent }
 
     TOdfContent = class(TOdfElement)
-
     private
            function AddTextNode(const AValue: DOMString): TDOMText;
            procedure OdfSetTextContent(const AValue: DOMString);
 
     public
           //p1-6.1.1
-          function GetCharacterContent: string;
+          function GetCharacterContent(Recursive: boolean = true): string;
           property TextContent read GetTextContent write OdfSetTextContent;
     end;
 
@@ -714,9 +714,32 @@ begin
      until (et = oetNone) and (s='');
 end;
 
-function TOdfContent.GetCharacterContent: string;
+function TOdfContent.GetCharacterContent(Recursive: boolean): string;
+var
+   n: TDOMNode;
+   e: TDOMElement;
 begin
-     NotYetImplemented('TOdfContent.GetCharacterContent');
+     result:='';
+     for n in self do
+     begin
+          if (n is TDOMElement)
+          then
+          begin
+               if not Recursive
+               then
+                   Continue;
+
+               e:=n as TDOMElement;
+
+               if SameType(e, oetTextP) or SameType(e, oetTextSpan)
+               then
+                   result+=TOdfContent(e).GetCharacterContent;
+          end;
+
+          if n is TDOMText
+          then
+              result+=n.TextContent;
+     end;
 end;
 
 { TConfigConfigItemSet }
@@ -996,6 +1019,21 @@ begin
      vLocal:=e.LocalName;
 
      result:=OdfGetElementTypeByName(vLocal, vUri);
+end;
+
+class function TOdfElement.SameType(e1, e2: TDomElement): boolean;
+begin
+     result:=(e1.NamespaceURI = e2.NamespaceURI) and
+             (e1.LocalName = e2.LocalName);
+end;
+
+class function TOdfElement.SameType(e: TDomElement; AType: TElementType): boolean;
+var
+   vPrefix, vLocalname, vUri: string;
+begin
+     OdfElementGetNsAndName(AType, vPrefix, vLocalname, vUri);
+
+     result:=(e.NamespaceURI = vUri) and (e.LocalName = vLocalname);
 end;
 
 { TElementEnumerator }
