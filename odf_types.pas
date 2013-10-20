@@ -159,6 +159,18 @@ type
 
     TElementTypeArray = array of TElementType; //Max Length: oetTextSenderEmail
 
+    { TOdfElementTypeSet }
+
+    TOdfElementTypeSet = class(specialize TFPGList<TElementType>)
+
+        function Add(const Item: T): Integer;
+        function HasItem(const Item: T): boolean;
+        function HasItem(ALocalName, ANsUri: string): boolean;
+
+        constructor Create(EtArray: TElementTypeArray);
+    end;
+
+
     TOdfDomElementList = specialize TFPGList<TDOMElement>;
 
     function OdfGetElementLocalName(et: TElementType): string;
@@ -272,7 +284,6 @@ type
           function MoveNext: Boolean;
           property Current: TDOMElement read FCurrent;
     end;
-
 
     TOdfElement = class;
     TSpan = class;
@@ -429,6 +440,16 @@ type
 
           function CreateSpan(AText: string; FontStyles: TFontStyles): TSpan;
 
+          function SearchText(AText: string; AParent: TDOMElement;
+                              Accepted: TElementTypeArray;
+                              out FoundAt: TDOMText;
+                              Partial: boolean = true): boolean; overload;
+
+          function SearchText(AText: string; AParent: TDOMElement;
+                              Accepted: array of TElementType;
+                              out FoundAt: TDOMText;
+                              Partial: boolean = true): boolean; overload;
+
           procedure SaveToSingleXml(AFilename: string); overload;
 
           class procedure SaveToZipFile(AOdf: TOdfDocument;
@@ -500,6 +521,11 @@ type
           constructor Create;
 
           function AddParagraph(ATextStyleName: String): TOdfParagraph;
+
+          function SearchText(AText: string; out FoundAt: TDOMText): boolean; overload;
+          function SearchText(AText: string; out FoundAt: TDOMText;
+            out AParagraph: TOdfParagraph): boolean; overload;
+
 
           property Text: TDOMElement read FText write FText;
     end;
@@ -648,6 +674,50 @@ begin
           AppendChild(Body);
      end;
 end;
+
+{ TOdfElementTypeSet }
+
+function TOdfElementTypeSet.Add(const Item: T): Integer;
+begin
+     Result:=IndexOf(Item);
+
+     if Result < 0
+     then
+         Result:=inherited Add(Item);
+end;
+
+function TOdfElementTypeSet.HasItem(const Item: T): boolean;
+begin
+     result:=IndexOf(item) >= 0;
+end;
+
+function TOdfElementTypeSet.HasItem(ALocalName, ANsUri: string): boolean;
+var
+   et: TElementType;
+   vPrefix, vLocal, vUri: string;
+begin
+     result:=false;
+     for et in self do
+     begin
+          OdfElementGetNsAndName(et, vPrefix, vLocal, vUri);
+          result:=(vLocal = ALocalName) and (vUri = ANsUri);
+
+          if result
+          then
+              break;
+     end;
+end;
+
+constructor TOdfElementTypeSet.Create(EtArray: TElementTypeArray);
+var
+   et: TElementType;
+begin
+     inherited Create;
+
+     for et in EtArray do
+         Add(et);
+end;
+
 
 { TOdfParagraph }
 
@@ -807,6 +877,47 @@ begin
      result:=TOdfParagraph(CreateOdfElement(oetTextP));
      result.SetAttribute(oatTextStyleName, ATextStyleName);
      FText.AppendChild(result);
+end;
+
+function TOdfTextDocument.SearchText(AText: string; out FoundAt: TDOMText): boolean;
+var
+   AParagraph: TOdfParagraph;
+begin
+     result:=SearchText(AText, FoundAt, AParagraph);
+end;
+
+function TOdfTextDocument.SearchText(AText: string; out FoundAt: TDOMText;
+    out AParagraph: TOdfParagraph): boolean;
+var
+   n: TDOMNode;
+begin
+     result:=false;
+     AParagraph:=nil;
+
+     { TODO : The "Accepted" parameter must have all allowed types of elements
+        bellow Paragraph. At least, all that can have text or other children
+        that can have text.
+       Maybe use a function to discover all possible types from the elements
+       include file}
+     if inherited SearchText(AText, FText, [oetTextP, oetTextSpan], FoundAt)
+     then
+     begin
+          n:=FoundAt.ParentNode;
+          while Assigned(n) do
+          begin
+                if (n is TDOMElement) and
+                   TOdfElement.SameType(n as TDOMElement, oetTextP)
+                then
+                begin
+                     AParagraph:=TOdfParagraph(n);
+                     break;
+                end;
+
+                n:=n.ParentNode;
+          end;
+
+          result:=Assigned(AParagraph);
+     end;
 end;
 
 { TOdfElement }
@@ -1045,16 +1156,33 @@ begin
 end;
 
 function TElementEnumerator.MoveNext: Boolean;
+
+  function GetNextElement(n: TDOMNode): TDOMElement;
+  begin
+       result:=nil;
+       while Assigned(n) do
+       begin
+            if n is TDOMElement
+            then
+                break;
+
+             n:=n.NextSibling;
+        end;
+
+       if Assigned(n)
+       then
+           result:=n as TDOMElement;
+  end;
+
 begin
      if FCurrent = nil
      then
-         FCurrent:=(FParent.FirstChild as TDOMElement)
+         FCurrent:=GetNextElement(FParent.FirstChild)
      else
-         FCurrent := (FCurrent.NextSibling as TDOMElement);
+         FCurrent:=GetNextElement(FCurrent.NextSibling);
 
      Result := FCurrent <> nil;
 end;
-
 
 class function TOdfDocument.ParseXmlFile(AStream: TStream): TXMLDocument;
 var
@@ -1851,6 +1979,78 @@ function TOdfDocument.CreateSpan(AText: string; FontStyles: TFontStyles): TSpan;
 begin
      result:=TSpan.CreateSpan(self.XmlDocument, AText);
      result.SetStyle(FontStyles);
+end;
+
+{ TODO : Create a SiblingNode Parameter.
+If assigned the method will begin the search using it as a starting point,
+a context node. }
+function TOdfDocument.SearchText(AText: string; AParent: TDOMElement;
+            Accepted: TElementTypeArray; out FoundAt: TDOMText;
+            Partial: boolean): boolean;
+var
+   e: TDOMElement;
+   EtList: TOdfElementTypeSet;
+   n: TDOMNode;
+
+   vTextNode: TDOMText;
+begin
+     Result:=false;
+     FoundAt:=nil;
+
+     EtList:=TOdfElementTypeSet.Create(Accepted);
+
+     try
+        for n in AParent do
+        begin
+             if n is TDOMElement
+             then
+             begin
+                  e:=n as TDOMElement;
+                  if not EtList.HasItem(e.LocalName, e.NamespaceURI)
+                  then
+                      Continue;
+
+                  result:=SearchText(AText, e, Accepted, FoundAt, Partial);
+
+                  if result
+                  then
+                      break;
+             end
+             else if n is TDOMText
+                  then
+                  begin
+                       vTextNode:=n as TDOMText;
+                       if (Partial and (Pos(AText, vTextNode.TextContent) > 0)) or
+                          (not Partial and (vTextNode.TextContent = AText))
+                       then
+                       begin
+                            FoundAt:=vTextNode;
+                            break;
+                       end;
+                  end;
+        end;
+
+        result:=Assigned(FoundAt);
+
+     finally
+            EtList.Free;
+     end;
+
+end;
+
+function TOdfDocument.SearchText(AText: string; AParent: TDOMElement;
+  Accepted: array of TElementType; out FoundAt: TDOMText;
+  Partial: boolean = true): boolean;
+var
+   vArray: TElementTypeArray;
+   i: integer;
+begin
+     SetLength(vArray, Length(Accepted));
+
+     for i:=Low(Accepted) to High(Accepted) do
+         vArray[i]:=Accepted[i];
+
+     result:=SearchText(AText, AParent, vArray, FoundAt, Partial);
 end;
 
 procedure TOdfDocument.SaveToSingleXml(AFilename: string);
