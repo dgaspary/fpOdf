@@ -93,3 +93,14 @@ procedure OdfDeleteFontWeightAttribute(AElement: TDOMElement);
 begin
      OdfSetFontWeightAttribute(AElement, fwNone);
 end;
+
+
+procedure TOdfCustomStyle.SetStyleFamily(family: TStyleFamilyValue);
+begin
+     self.OdfStyleFamily:=OdfGetStyleFamilyValue(family);
+end;
+
+function TOdfCustomStyle.GetStyleFamily: TStyleFamilyValue;
+begin
+     result:=OdfGetStyleFamilyValueFromString(self.OdfStyleFamily);
+end;

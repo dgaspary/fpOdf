@@ -54,6 +54,10 @@ type
     { TODO -oGaspary : Interfaces seems to be the best option to styles properties }
 
     TOdfCustomStyle = class(TOdfElement)
+
+      procedure SetStyleFamily(family: TStyleFamilyValue);
+      function GetStyleFamily: TStyleFamilyValue;
+
       property OdfStyleFamily: String index oatStyleFamily
                   read GetAttributeString write SetAttribute;
     end;
