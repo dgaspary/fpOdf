@@ -1,6 +1,6 @@
 { fpOdf "Hello World" Example
 
-  Copyright (c) 2013 Daniel F.Gaspary
+  Copyright (c) 2013-2014 Daniel F.Gaspary
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to
@@ -30,34 +30,14 @@ uses
 
 const
      cOutput = '/tmp/HelloWorld.odt';
-     cStyleName = 'MyStandardStyle';
+     cStyleName = 'Standard';
 
-var
-   doc: TOdfTextDocument;
-   vStyle: TOdfStyleStyle;
 begin
-     doc:=TOdfTextDocument.Create;
-
-     //Styles
-     vStyle:=doc.CreateStyle(cStyleName, sfvParagraph);
-     with vStyle do
+     with TOdfTextDocument.Create do
      begin
-          OdfStyleDisplayName:=OdfStyleName;
-          AppendOdfElement(oetStyleTextProperties, oatFoFontSize, '12.00pt');
+          AddParagraph(cStyleName).TextContent:='Hello World!';
+          SaveToZipFile(cOutput);
+          Free;
      end;
-     doc.Styles.AppendChild(vStyle);
-
-     //Automatic Styles (Not automatic yet :)
-     vStyle:=doc.CreateStyle('P1', vStyle);
-     vStyle.AppendOdfElement(oetStyleTextProperties).
-             SetAttributes([oatFoColor, oatFoFontFamily],
-                           ['#000000', 'Sans Serif']);
-     doc.AutomaticStyles.AppendChild(vStyle);
-
-     //Paragraph
-     doc.AddParagraph(cStyleName).TextContent:='Hello World!';
-
-     doc.SaveToZipFile(cOutput);
-     doc.Free;
 end.
 
