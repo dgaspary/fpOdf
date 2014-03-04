@@ -3,7 +3,7 @@
   fpOdf is a library used to help users to create and to modify OpenDocument
   Files(ODF)
 
-  Copyright (C) 2013 Daniel F. Gaspary https://github.com/dgaspary
+  Copyright (C) 2013-2014 Daniel F. Gaspary https://github.com/dgaspary
 
   This library is free software; you can redistribute it and/or modify it
   under the terms of the GNU Library General Public License as published by
@@ -398,7 +398,7 @@ type
 
            function GetRootChild(et: TElementType): TDOMElement;
            procedure InitFonts; virtual;
-           procedure InitDefaultStyles; virtual;
+           procedure InitStyles; virtual;
 
            procedure InitXmlDocument; virtual;
 
@@ -561,9 +561,12 @@ end;
 {$INCLUDE incs/styles-impl.inc}
 
 procedure OdfXmlSetDefaultAtts(doc: TXMLDocument);
+var
+   root: TDOMElement;
 begin
-     OdfSetAttributeDefaultValue(oatGrddlTransformation, doc.DocumentElement);
-     OdfSetAttributeDefaultValue(oatOfficeVersion, doc.DocumentElement);
+     root:=doc.DocumentElement;
+     OdfSetAttributeDefaultValue(oatGrddlTransformation, root);
+     OdfSetAttributeDefaultValue(oatOfficeVersion, root);
 end;
 
 procedure WriteStringToFile(str, AFileName: string);
@@ -880,10 +883,14 @@ begin
 end;
 
 function TOdfTextDocument.SearchText(AText: string; out FoundAt: TDOMText): boolean;
-var
-   AParagraph: TOdfParagraph;
 begin
-     result:=SearchText(AText, FoundAt, AParagraph);
+     { TODO : The "Accepted" parameter must have all allowed types of elements
+        bellow Paragraph. At least, all that can have text or other children
+        that can have text.
+       Maybe use a function to discover all possible types from the elements
+       include file}
+     result:=inherited SearchText(AText, FText, [oetTextP, oetTextSpan],
+                                  FoundAt);
 end;
 
 function TOdfTextDocument.SearchText(AText: string; out FoundAt: TDOMText;
@@ -894,12 +901,7 @@ begin
      result:=false;
      AParagraph:=nil;
 
-     { TODO : The "Accepted" parameter must have all allowed types of elements
-        bellow Paragraph. At least, all that can have text or other children
-        that can have text.
-       Maybe use a function to discover all possible types from the elements
-       include file}
-     if inherited SearchText(AText, FText, [oetTextP, oetTextSpan], FoundAt)
+     if SearchText(AText, FoundAt)
      then
      begin
           n:=FoundAt.ParentNode;
@@ -1765,13 +1767,13 @@ begin
 end;
 
 
-procedure TOdfDocument.InitDefaultStyles;
+procedure TOdfDocument.InitStyles;
 var
-   ds: TOdfStyleDefaultStyle;
+   vStyle: TOdfElement;
    e: TOdfElement;
 begin
-     ds:=TOdfStyleDefaultStyle(CreateOdfElement(oetStyleDefaultStyle));
-     with ds do
+     vStyle:=CreateOdfElement(oetStyleDefaultStyle);
+     with TOdfStyleDefaultStyle(vStyle) do
      begin
           OdfStyleFamily:=StyleFamilyValues[sfvParagraph];
           e:=AppendOdfElement(oetStyleParagraphProperties);
@@ -1782,14 +1784,22 @@ begin
                 '1.25095cm', 'page']);
 
           e:=AppendOdfElement(oetStyleTextProperties);
-          e.SetAttributes([oatStyleUseWindowFontColor, oatStyleName,
+          e.SetAttributes([oatStyleUseWindowFontColor, oatStyleFontName,
              oatFoFontSize, oatFoLanguage, oatFoCountry, oatStyleLetterKerning,
              oatFoHyphenate, oatFoHyphenationRemainCharCount,
              oatFoHyphenationPushCharCount],
              ['true', 'Liberation Serif', '12pt', 'en', 'US', 'true',
               'false', '2', '2']);
      end;
-     FStyles.AppendChild(ds);
+     FStyles.AppendChild(vStyle);
+
+     vStyle:=CreateOdfElement(oetStyleStyle);
+     with TOdfStyleStyle(vStyle) do
+     begin
+          OdfStyleName:='Standard';
+          SetStyleFamily(sfvParagraph);
+     end;
+     FStyles.AppendChild(vStyle);
 end;
 
 procedure TOdfDocument.InitXmlDocument;
@@ -1816,7 +1826,7 @@ begin
           FAutomaticStyles:=AppendOdfElement(oetOfficeAutomaticStyles);
           FMasterStyles:=AppendOdfElement(oetOfficeMasterStyles);
 
-          InitDefaultStyles;
+          InitStyles;
 
           FBody:=AppendOdfElement(oetOfficeBody);
      end;
@@ -1883,7 +1893,7 @@ var
    s: string;
 begin
      s:=OdfGetMimeTypeName(AValue);
-     XmlDocument.DocumentElement.SetAttributeNS(GetURI(onsOffice), 'mimetype', s);
+     OdfSetAttributeValue(oatOfficeMimetype, XmlDocument.DocumentElement, s);
 end;
 
 class function TOdfDocument.LoadFromZipFile(AFilename, TempDir: string): TOdfDocument;
@@ -1927,6 +1937,9 @@ class procedure TOdfDocument.SaveToSingleXml(AOdf: TOdfDocument;
 begin
      ReorderElements(AOdf);
      OdfXmlSetDefaultAtts(AOdf.XmlDocument);
+     OdfElementSetNamespaceAtt(AOdf.XmlDocument.DocumentElement,
+          [onsStyle, onsFo, onsSvg]);
+
      WriteXMLFile(AOdf.XmlDocument, AFilename);
 end;
 
@@ -1980,6 +1993,10 @@ begin
      result:=TSpan.CreateSpan(self.XmlDocument, AText);
      result.SetStyle(FontStyles);
 end;
+
+
+
+
 
 { TODO : Create a SiblingNode Parameter.
 If assigned the method will begin the search using it as a starting point,
@@ -2293,13 +2310,21 @@ function OdfSetAttributeValue(at: TAttributeType; AElement: TDOMElement;
   AValue: string): TDOMAttr;
 var
    vUri,
+   vLocal,
    vQname: string;
-
 begin
-     vUri:=GetURI(OdfGetAttributeNamespace(at));
+     vLocal:=OdfGetAttributeLocalName(at, vUri);
      vQname:=OdfGetAttributeQName(at);
-     AElement.SetAttributeNS(vUri, vQname, AValue);
-     result:=AElement.GetAttributeNodeNS(vUri, OdfGetAttributeLocalName(at));
+
+     result:=AElement.GetAttributeNodeNS(vUri, vLocal);
+     if not Assigned(result)
+     then
+     begin
+          result:=AElement.OwnerDocument.CreateAttributeNS(vUri, vQname);
+          AElement.SetAttributeNodeNS(result);
+     end;
+
+     result.Value:=AValue;
 end;
 
 function OdfSetAttributeDefaultValue(at: TAttributeType; AElement: TDOMElement
@@ -2308,7 +2333,6 @@ var
    s: string;
 begin
      s:=OdfGetAttributeDefaultValue(at, oetNone); //{ TODO -oGaspary : Need to use a TOdfElement.ElementType }
-
      result:=OdfSetAttributeValue(at, AElement, s);
 end;
 
