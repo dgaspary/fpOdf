@@ -1,8 +1,11 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
     <Version Value="9"/>
     <General>
+      <Flags>
+        <SaveJumpHistory Value="False"/>
+      </Flags>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
       <Title Value="fpOdfTest"/>
@@ -27,7 +30,6 @@
       <local>
         <FormatVersion Value="1"/>
         <CommandLineParams Value="-a --format=plain"/>
-        <LaunchingApplication PathPlusParams="/usr/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
     <RequiredPackages Count="3">
@@ -41,7 +43,7 @@
         <PackageName Value="FCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="2">
+    <Units Count="4">
       <Unit0>
         <Filename Value="fpOdfTest.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -52,6 +54,16 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="TestStringPrep"/>
       </Unit1>
+      <Unit2>
+        <Filename Value="ElementFunctionsTests.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ElementFunctionsTests"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="CharacterContentTest.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="CharacterContentTest"/>
+      </Unit3>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
