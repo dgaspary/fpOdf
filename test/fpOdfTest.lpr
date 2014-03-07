@@ -4,7 +4,7 @@ program fpOdfTest;
 
 uses
   Classes, consoletestrunner, TestStringPrep, ElementFunctionsTests,
-  CharacterContentTest;
+  CharacterContentTest, SearchTest;
 
 type
 

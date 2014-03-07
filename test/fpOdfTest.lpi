@@ -43,7 +43,7 @@
         <PackageName Value="FCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="4">
+    <Units Count="5">
       <Unit0>
         <Filename Value="fpOdfTest.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -64,6 +64,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="CharacterContentTest"/>
       </Unit3>
+      <Unit4>
+        <Filename Value="SearchTest.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="SearchTest"/>
+      </Unit4>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
