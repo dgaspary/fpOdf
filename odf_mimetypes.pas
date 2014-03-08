@@ -3,7 +3,7 @@
   fpOdf is a library used to help users to create and to modify OpenDocument
   Files(ODF)
 
-  Copyright (C) 2013 Daniel F. Gaspary https://github.com/dgaspary
+  Copyright (C) 2013-2014 Daniel F. Gaspary https://github.com/dgaspary
 
   This library is free software; you can redistribute it and/or modify it
   under the terms of the GNU Library General Public License as published by
@@ -39,7 +39,7 @@ unit odf_mimetypes;
 interface
 
 uses
-  Classes, SysUtils;
+  Classes, SysUtils, FileUtil;
 
 type
     TOdfMimetype = (omtText, omtTextTemplate, omtGraphics, omtGraphicsTemplate,
@@ -76,6 +76,8 @@ Const
 function OdfGetMimeTypeName(AType: TOdfMimetype): string;
 function OdfGetMimeTypeByName(AName: string): TOdfMimetype;
 
+function OdfGetMimeTypeFromFile(AFile: string): TOdfMimetype;
+
 implementation
 
 function OdfGetMimeTypeName(AType: TOdfMimetype): string;
@@ -102,6 +104,14 @@ begin
      then
          raise Exception.Create('Mime type not found. Name: ' +
              AnsiQuotedStr(AName, '"'));
+end;
+
+function OdfGetMimeTypeFromFile(AFile: string): TOdfMimetype;
+var
+   s: string;
+begin
+     s:=ReadFileToString(AFile);
+     result:=OdfGetMimeTypeByName(s);
 end;
 
 end.

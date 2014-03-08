@@ -1346,16 +1346,6 @@ begin
      end;
 end;
 
-function GetMimeTypeFromFile(AFile: string): TOdfMimetype;
-var
-   s: string;
-begin
-     {$IFDEF fpodf_debug}WriteLn(AFile);{$ENDIF}
-
-     s:=ReadFileToString(AFile);
-     result:=OdfGetMimeTypeByName(s);
-end;
-
 procedure MergeChildren(StylesParent, ContentParent: TDOMElement;
              AOdf: TOdfDocument);
 
@@ -1953,7 +1943,7 @@ begin
 
      TempDir:=IncludeTrailingPathDelimiter(TempDir);
 
-     mt:=GetMimeTypeFromFile(TempDir + 'mimetype');
+     mt:=OdfGetMimeTypeFromFile(TempDir + 'mimetype');
 
      case mt of
           omtText: result:=TOdfTextDocument.Create;
