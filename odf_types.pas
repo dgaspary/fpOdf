@@ -46,7 +46,7 @@ uses
   {$ifdef patched_dom}
    DOM_patched, XMLRead_patched, XMLWrite_patched
   {$else}
-   Laz2_DOM, laz2_XMLRead, laz2_XMLWrite
+   Laz2_DOM, laz2_XMLRead, laz2_XMLWrite, laz2_xpath
   {$endif},
 
   xmlutils, odf_mimetypes;
@@ -146,7 +146,7 @@ type
                     cUrnOpenDocument + 'of:1.2');
 
          function GetURI(ns: TOdfNamespace): string;
-
+         function OdfGetNsUri(APrefix: string): string;
 
 //Elements
 //////////
@@ -375,6 +375,10 @@ type
 {$INCLUDE incs/styles-decl.inc}
 
 type
+    TOdfNodeSet = TNodeSet;
+
+    TOdfXPathNsResolver = class;
+
     { TOdfDocument }
 
     TOdfDocument = class
@@ -396,11 +400,15 @@ type
            FManifest: TDOMElement;
            FManifestRdf: TDOMElement;
 
+           FXPathNsResolver: TOdfXPathNsResolver;
+
            function GetRootChild(et: TElementType): TDOMElement;
            procedure InitFonts; virtual;
            procedure InitStyles; virtual;
 
            procedure InitXmlDocument; virtual;
+
+           procedure InitBodyContent; virtual; abstract;
 
            function GetMimeType: TOdfMimetype;
            procedure SetCreationMeta;
@@ -414,6 +422,7 @@ type
                                         ATempDir: string = '');
     public
           constructor Create;
+          destructor Destroy; override;
 
           class function ElementOdfClassByType(et: TElementType): TOdfElementClass;
 
@@ -449,6 +458,11 @@ type
                               Accepted: array of TElementType;
                               out FoundAt: TDOMText;
                               Partial: boolean = true): boolean; overload;
+
+          function XPathSearch(AXPathExpression: string; AParent: TDOMElement;
+                              Accepted: array of TElementType;
+                              out Results: TOdfNodeSet;
+                              Partial: boolean = true): boolean;
 
           procedure SaveToSingleXml(AFilename: string); overload;
 
@@ -517,6 +531,8 @@ type
     private
            FText: TDOMElement;
            procedure InitXmlDocument; override;
+
+           procedure InitBodyContent; override;
     public
           constructor Create;
 
@@ -548,6 +564,15 @@ procedure OdfXmlSetDefaultAtts(doc: TXMLDocument);
 function OdfPrepareString(AText: UTF8String; out Segment1: UTF8String;
                           out Segment2: UTF8String;
                           out NoSpaces: word): TElementType;
+
+type
+
+    { TOdfXPathNsResolver }
+
+    TOdfXPathNsResolver = class(TXPathNSResolver)
+      function LookupNamespaceURI(const aPrefix: DOMString): DOMString;
+        override;
+    end;
 
 implementation
 
@@ -868,6 +893,15 @@ begin
      FText:=TOdfElement(FBody).AppendOdfElement(oetOfficeText);
 
      MimeType:=omtText;
+end;
+
+procedure TOdfTextDocument.InitBodyContent;
+begin
+     if Assigned(FText)
+     then
+         FreeAndNil(FText);
+
+     FText:=OdfGetElement(oetOfficeText, FBody);
 end;
 
 constructor TOdfTextDocument.Create;
@@ -1443,8 +1477,6 @@ begin
           newParent:=XmlDocument.CreateElementNS(GetURI(onsOffice), OdfGetElementQName(oetOfficeDocument));
           XmlDocument.AppendChild(newParent);
 
-          MimeType:=GetMimeTypeFromFile(ADir + 'mimetype');
-
           OdfXmlSetDefaultAtts(XmlDocument);
      end;
 
@@ -1489,6 +1521,8 @@ begin
      vDoc.Free;
 
      DeleteDirectory(ADir, false);
+
+     AOdf.InitBodyContent;
 end;
 
 function OdfCreateManifestRdfFile: TXMLDocument;
@@ -1839,6 +1873,14 @@ begin
      InitXmlDocument;
 end;
 
+destructor TOdfDocument.Destroy;
+begin
+     FXPathNsResolver.Free;
+     FXmlDocument.Free;
+
+     inherited Destroy;
+end;
+
 class function TOdfDocument.ElementOdfClassByType(et: TElementType
   ): TOdfElementClass;
 begin
@@ -1899,6 +1941,7 @@ end;
 class function TOdfDocument.LoadFromZipFile(AFilename, TempDir: string): TOdfDocument;
 var
    z: TUnZipper;
+   mt: TOdfMimetype;
 begin
      z:=TUnZipper.Create;
 
@@ -1910,7 +1953,15 @@ begin
 
      TempDir:=IncludeTrailingPathDelimiter(TempDir);
 
-     result:=TOdfDocument.Create;
+     mt:=GetMimeTypeFromFile(TempDir + 'mimetype');
+
+     case mt of
+          omtText: result:=TOdfTextDocument.Create;
+          else
+              result:=TOdfDocument.Create;
+     end;
+
+     result.MimeType:=mt;
 
      ReadPackage(TempDir, result);
 
@@ -2068,6 +2119,43 @@ begin
          vArray[i]:=Accepted[i];
 
      result:=SearchText(AText, AParent, vArray, FoundAt, Partial);
+end;
+
+function TOdfDocument.XPathSearch(AXPathExpression: string; AParent: TDOMElement;
+                    Accepted: array of TElementType;
+                    out Results: TOdfNodeSet;
+                    Partial: boolean = true): boolean;
+var
+   v: TXPathVariable;
+begin
+     result:=false;
+     Results:=nil;
+
+     if not Assigned(FXPathNsResolver)
+     then
+         FXPathNsResolver:=TOdfXPathNsResolver.Create(XmlDocument.DocumentElement);
+
+     v:=EvaluateXPathExpression(AXPathExpression, AParent, FXPathNsResolver);
+
+     if assigned(v)
+     then
+     begin
+          if v is TXPathNodeSetVariable
+          then
+              Results:=v.AsNodeSet
+          else
+              Raise Exception.Create('XPath: Unexpected evaluation result type.');
+
+          if Assigned(Results)
+          then
+          begin
+               if (Results.Count>0)
+               then
+                   result:=true
+               else
+                   Results.Free;
+          end;
+     end;
 end;
 
 procedure TOdfDocument.SaveToSingleXml(AFilename: string);
@@ -2429,6 +2517,28 @@ function GetURI(ns: TOdfNamespace): string;
 begin
      result:=OdfNamespaceURIs[ns];
 end;
+
+function OdfGetNsUri(APrefix: string): string;
+var
+   ns: TOdfNamespace;
+begin
+     for ns in TOdfNamespace do
+         if APrefix=OdfNamespaceDefaultPrefixes[ns]
+         then
+         begin
+              result:=OdfNamespaceURIs[ns];
+              break;
+         end;
+end;
+
+{ TOdfXPathNsResolver }
+
+function TOdfXPathNsResolver.LookupNamespaceURI(const aPrefix: DOMString
+  ): DOMString;
+begin
+     Result:=OdfGetNsUri(aPrefix);
+end;
+
 
 
 end.
