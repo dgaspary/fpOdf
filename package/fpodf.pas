@@ -7,7 +7,7 @@ unit fpOdf;
 interface
 
 uses
-  odf_types, odf_mimetypes;
+  odf_types, odf_mimetypes, odf_xmlutils;
 
 implementation
 
