@@ -104,3 +104,38 @@ function TOdfCustomStyle.GetStyleFamily: TStyleFamilyValue;
 begin
      result:=OdfGetStyleFamilyValueFromString(self.OdfStyleFamily);
 end;
+
+{ TODO : Remove this function case it remains Unused.}
+{ TODO : Possible parser bug:
+
+when This funcion implementation and declaration are Uncommented
+the compiler says it cannot find the Styles.inc }
+
+{ TODO : UPDATE: The bug described above is not happening anymore.
+
+The function needs extensive testing. }
+
+function OdfGetStyleName(AElement: TDOMElement; out ALocalName: String;
+                         out AUri: String): boolean;
+var
+   at: TAttributeType;
+begin
+     ALocalName:='';
+     AUri:='';
+     Result:=false;
+
+     for at in OdfStyleNameAttributes do
+     begin
+          Result:=TOdfElement(AElement).HasAttribute(at);
+
+          if Result
+          then
+          begin
+               ALocalName:=OdfGetAttributeLocalName(at, AUri);
+               Break;
+          end;
+     end;
+end;
+
+
+

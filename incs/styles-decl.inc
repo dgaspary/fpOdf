@@ -129,6 +129,14 @@ type
 
     TOdfStyleType = (stUndefined, stCommon, stAutomatic, stMaster);
 
+const
+     OdfStyleNameAttributes : array [1..2] of TAttributeType =
+         (oatTextStyleName, oatTableStyleName);
+
+
+     function OdfGetStyleName(AElement: TDOMElement; out ALocalName: String;
+                              out AUri: String): boolean;
+
 
 //Font Style p1-20.184
 ////////////

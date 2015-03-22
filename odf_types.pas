@@ -3,7 +3,7 @@
   fpOdf is a library used to help users to create and to modify OpenDocument
   Files(ODF)
 
-  Copyright (C) 2013-2014 Daniel F. Gaspary https://github.com/dgaspary
+  Copyright (C) 2013-2015 Daniel F. Gaspary https://github.com/dgaspary
 
   This library is free software; you can redistribute it and/or modify it
   under the terms of the GNU Library General Public License as published by
@@ -44,12 +44,12 @@ uses
   Classes, SysUtils, FileUtil, zipper, zstream, fgl, LazUTF8, Graphics,
 
   {$ifdef patched_dom}
-   DOM_patched, XMLRead_patched, XMLWrite_patched
+   DOM_patched, XMLRead_patched
   {$else}
-   Laz2_DOM, laz2_XMLRead, laz2_XMLWrite, laz2_xpath
+   Laz2_DOM, laz2_XMLRead, laz2_xpath
   {$endif},
 
-  xmlutils, odf_mimetypes;
+  xmlutils, odf_mimetypes, odf_xmlutils;
 
 const
      cCharSpace = #32;
@@ -213,6 +213,7 @@ type
     function OdfGetAttributeQName(at: TAttributeType): string; overload;
     function OdfGetAttributeTypeByName(const AAttributeName: string): TAttributeType;
     function OdfGetAttribute(at: TAttributeType; AParent: TDOMElement): TDOMAttr;
+    function OdfGetAttributeValue(at: TAttributeType; AParent: TDOMElement): String;
     function OdfGetAttributeDefaultValue(at: TAttributeType;
                et: TElementType): string;
 
@@ -415,6 +416,10 @@ type
 
            procedure SetMimeType(AValue: TOdfMimetype);
 
+    //public { TODO : Make it public to test. }
+           function StylesUsed(AParent: TDomElement): TStrings;
+
+    private
            class function ParseXmlFile(AStream: TStream): TXMLDocument;
            class procedure ReadPackage(ADir: String; AOdf: TOdfDocument);
            class procedure WritePackage(DestFile: String;
@@ -490,6 +495,8 @@ type
           property Manifest: TDOMElement read FManifest write FManifest;
           property ManifestRdf: TDOMElement read FManifestRdf write FManifestRdf;
     end;
+
+
 
     { TOdfContent }
 
@@ -573,6 +580,10 @@ type
       function LookupNamespaceURI(const aPrefix: DOMString): DOMString;
         override;
     end;
+
+    function OdfXPathSearch(AXPathExpression: string; AParent: TDOMElement;
+                          out Results: TOdfNodeSet;
+                          Resolver: TOdfXPathNsResolver = nil): boolean;
 
 implementation
 
@@ -686,12 +697,9 @@ procedure ReorderElements(AOdf: TOdfDocument);
 begin
      with AOdf, AOdf.XmlDocument.DocumentElement do
      begin
-          while AOdf.XmlDocument.DocumentElement.ChildNodes.Count>0 do
+          while ChildNodes.Count>0 do
                 RemoveChild(FirstChild);
-     end;
 
-     with AOdf, AOdf.XmlDocument.DocumentElement do
-     begin
           AppendChild(Meta);
           AppendChild(Settings);
           AppendChild(Scripts);
@@ -1054,7 +1062,9 @@ begin
          if n is TDOMElement
          then
          begin
-              result:=(n as TOdfElement); { TODO -oGaspary : Need Fix. Will rise Exception when find a element that is not a TOdfElement }
+              result:=(n as TOdfElement); { TODO -oGaspary : Fixing Needed.
+                                             Will rise Exception when find an
+                                             element that is not a TOdfElement }
               break;
          end;
 end;
@@ -1218,6 +1228,51 @@ begin
          FCurrent:=GetNextElement(FCurrent.NextSibling);
 
      Result := FCurrent <> nil;
+end;
+
+function TOdfDocument.StylesUsed(AParent: TDomElement): TStrings;
+var
+   StylesFound: TOdfNodeSet;
+   s: string;
+   att: TAttributeType;
+   p: Pointer;
+begin
+     Result:=TStringList.Create;
+
+     with Result as TStringList do
+     begin
+          Duplicates:=dupIgnore;
+          Sorted:=true;
+     end;
+
+     { TODO : Check wether is possible to set a relative path }
+     s:='';
+     for att in OdfStyleNameAttributes do
+     begin
+          if s<>''
+          then
+              s+=' | ';
+          s+='//' + AParent.TagName + '//@' + OdfGetAttributeQName(att);
+     end;
+
+     if XPathSearch(s, FXmlDocument.DocumentElement, [], StylesFound)
+     then
+     begin
+          for p in StylesFound do
+          begin
+               if TObject(p) is TDOMAttr
+               then
+               begin
+                    Result.Add(TDOMAttr(p).Value);
+               end
+               else
+               begin
+                    Raise Exception.Create('Unexpected node type found: ' + TObject(p).ClassName);
+               end;
+          end;
+
+          StylesFound.Free;
+     end;
 end;
 
 class function TOdfDocument.ParseXmlFile(AStream: TStream): TXMLDocument;
@@ -1427,14 +1482,14 @@ class procedure TOdfDocument.ReadPackage(ADir: String; AOdf: TOdfDocument);
 var
    vDoc: TXMLDocument;
 
-   oldParent, newParent,
+   vRootLoading, vRootMemory,
    ContentFFD: TDomElement;
    ContentAutoStyles: TDomElement;
 
    vNsURI: string;
 
 
-   procedure SetOldParent(AFile: string);
+   procedure LoadXml(AFile: string);
    var
       fs: TFileStream;
    begin
@@ -1450,12 +1505,12 @@ var
                fs.Free;
         end;
 
-        oldParent:=vDoc.DocumentElement;
+        vRootLoading:=vDoc.DocumentElement;
    end;
 
    function MoveElem(ANsURI, ALocalName: string): TDOMElement;
    begin
-        result:=MoveElement(ANsURI, ALocalName, oldParent, newParent);
+        result:=MoveElement(ANsURI, ALocalName, vRootLoading, vRootMemory);
    end;
 
 begin
@@ -1464,8 +1519,8 @@ begin
      with AOdf do
      begin
           XmlDocument:=TXMLDocument.Create;
-          newParent:=XmlDocument.CreateElementNS(GetURI(onsOffice), OdfGetElementQName(oetOfficeDocument));
-          XmlDocument.AppendChild(newParent);
+          vRootMemory:=XmlDocument.CreateElementNS(GetURI(onsOffice), OdfGetElementQName(oetOfficeDocument));
+          XmlDocument.AppendChild(vRootMemory);
 
           OdfXmlSetDefaultAtts(XmlDocument);
      end;
@@ -1473,8 +1528,11 @@ begin
      { TODO -oGaspary : All steps bellow could be automatized using an Enum items in a list }
 
      // content.xml //
-     SetOldParent('content.xml');
-     vNsURI:=GetURI(onsOffice);
+     LoadXml('content.xml');
+     vNsURI:=GetURI(onsOffice);  { TODO : Optimization needed:
+
+                                          -Remove "vnsuri" variable and move
+                                          the "get" to MoveElem function}
 
      AOdf.Scripts:=MoveElem(vNsURI, 'scripts');
 
@@ -1485,9 +1543,11 @@ begin
      //vDoc.Free;
 
      // styles.xml //
-     SetOldParent('styles.xml');
+     LoadXml('styles.xml');
+
      AOdf.FontFaceDecls:=MoveElem(vNsURI, 'font-face-decls');
      MergeChildren(AOdf.FontFaceDecls, ContentFFD, AOdf); { TODO -oGaspary : Need more references about the correct way to merge. }
+
      if Assigned(ContentFFD)
      then
          ContentFFD.Free;
@@ -1495,17 +1555,22 @@ begin
      AOdf.Styles:=MoveElem(vNsURI, 'styles');
 
      AOdf.AutomaticStyles:=MoveElem(vNsURI, 'automatic-styles');
+
+     OdfElementSetNamespaceAtt(AOdf.AutomaticStyles, [onsStyle, onsFo, onsTable]);
+     OdfElementSetNamespaceAtt(ContentAutoStyles, [onsStyle, onsFo, onsTable]);
+
      MergeChildren(AOdf.AutomaticStyles, ContentAutoStyles, AOdf);
+
      if Assigned(ContentAutoStyles)
      then
          ContentAutoStyles.Free;
 
      AOdf.MasterStyles:=MoveElem(vNsURI, 'master-styles');
 
-     SetOldParent('meta.xml');
+     LoadXml('meta.xml');
      AOdf.Meta:=MoveElem(vNsURI, 'meta');
 
-     SetOldParent('settings.xml');
+     LoadXml('settings.xml');
      AOdf.Settings:=MoveElem(vNsURI, 'settings');
 
      vDoc.Free;
@@ -1629,6 +1694,58 @@ var
    z: TZipper;
    zfe: TCollectionItem;
 
+   vBodyStyles: TStrings;
+
+
+   procedure RemoveUnusedStyles(xmlDoc: TXMLDocument; ParentQName: string);
+   var
+      n: TDOMNode;
+      i: integer;
+      e: TDOMElement;
+      vStyleName: string;
+
+      FoundElements: TOdfNodeSet;
+
+      vXPath: string;
+   begin
+        vXPath:='/*/' + ParentQName + '/*[@style:name]';
+
+        if not OdfXPathSearch(vXPath, xmlDoc.DocumentElement,
+                    FoundElements)
+        then
+            Raise Exception.Create('No Styles Found at destiny file.');
+
+        if FoundElements.Count>0
+        then
+        begin
+             i:=0;
+             repeat
+                   n:=TDomNode(FoundElements[i]);
+
+                   if n is TDOMElement
+                   then
+                   begin
+                        e:=n as TDOMElement;
+
+                        vStyleName:=OdfGetAttributeValue(oatStyleName, e);
+
+                        if vBodyStyles.IndexOf(vStyleName)>=0
+                        then
+                        begin
+                             n.Free;
+                             Dec(i);
+                        end;
+
+                   end;
+
+                   Inc(i);
+             until i>=FoundElements.Count;
+        end;
+
+        FoundElements.Free;
+
+   end;
+
    procedure WriteFileToDisk;
    var
       vDoc: TXMLDocument;
@@ -1681,13 +1798,20 @@ var
         begin
              OdfSetAttributeDefaultValue(oatOfficeVersion, vDoc.DocumentElement);
              OdfSetAttributeDefaultValue(oatGrddlTransformation, vDoc.DocumentElement);
+
+             if f = ofStyles
+             then
+             begin
+                  //RemoveUnusedStyles(vDoc, OdfGetElementQName(oetOfficeStyles));
+                  //RemoveUnusedStyles(vDoc, OdfGetElementQName(oetOfficeAutomaticStyles));
+             end;
         end
         else
             vRoot:=vDoc.DocumentElement;
 
         OdfElementSetNamespaceAtt(vRoot, nsSet);
 
-        WriteXMLFile(vDoc, ATempDir +  vFilename);
+        OdfWriteXmlToFile(vDoc, ATempDir +  vFilename);
 
         z.Entries.AddFileEntry(ATempDir +  vFilename, vFilename);
 
@@ -1700,7 +1824,7 @@ begin
          ATempDir:=SysUtils.GetTempFileName;
 
      ATempDir:=IncludeTrailingPathDelimiter(ATempDir);
-     CreateDirUTF8(ATempDir); //Gaspary: Need to test if is possible to
+     CreateDirUTF8(ATempDir); //Gaspary: Need to test if it is possible to
                               //write at temp dir.
 
      z:=TZipper.Create;
@@ -1713,12 +1837,23 @@ begin
      zfe:=z.Entries.AddFileEntry(ATempDir + cFileMimetype, cFileMimetype);
      (zfe as TZipFileEntry).CompressionLevel:=Tcompressionlevel.clnone;
 
+     ReorderElements(AOdf);
+
+     vBodyStyles:=AOdf.StylesUsed(AOdf.Body);
+
      for f in TOdfXmlFiles do
      begin
           WriteFileToDisk;
      end;
 
-     z.ZipAllFiles;
+     try
+        z.ZipAllFiles;
+     except
+           { TODO -oGaspary : Replace with a proper reraise. }
+           on e: Exception do
+              Write(e.Message);
+     end;
+
 
      for zfe in z.Entries do
        with (zfe as TZipFileEntry) do
@@ -1742,6 +1877,8 @@ begin
             s:=ExtractFilePath(s);
             RemoveDirUTF8(s);
        end;
+
+     vBodyStyles.Free;
      z.Free;
 end;
 
@@ -1951,9 +2088,9 @@ begin
               result:=TOdfDocument.Create;
      end;
 
-     result.MimeType:=mt;
-
      ReadPackage(TempDir, result);
+
+     result.MimeType:=mt;
 
      RemoveDirUTF8(TempDir);
 end;
@@ -1981,7 +2118,7 @@ begin
      OdfElementSetNamespaceAtt(AOdf.XmlDocument.DocumentElement,
           [onsStyle, onsFo, onsSvg]);
 
-     WriteXMLFile(AOdf.XmlDocument, AFilename);
+     OdfWriteXmlToFile(AOdf.XmlDocument, AFilename);
 end;
 
 function TOdfDocument.CreateOdfElement(et: TElementType): TOdfElement;
@@ -2115,8 +2252,6 @@ function TOdfDocument.XPathSearch(AXPathExpression: string; AParent: TDOMElement
                     Accepted: array of TElementType;
                     out Results: TOdfNodeSet;
                     Partial: boolean = true): boolean;
-var
-   v: TXPathVariable;
 begin
      result:=false;
      Results:=nil;
@@ -2125,28 +2260,10 @@ begin
      then
          FXPathNsResolver:=TOdfXPathNsResolver.Create(XmlDocument.DocumentElement);
 
-     v:=EvaluateXPathExpression(AXPathExpression, AParent, FXPathNsResolver);
-
-     if assigned(v)
-     then
-     begin
-          if v is TXPathNodeSetVariable
-          then
-              Results:=v.AsNodeSet
-          else
-              Raise Exception.Create('XPath: Unexpected evaluation result type.');
-
-          if Assigned(Results)
-          then
-          begin
-               if (Results.Count>0)
-               then
-                   result:=true
-               else
-                   Results.Free;
-          end;
-     end;
+     Result:=OdfXPathSearch(AXPathExpression, AParent, Results, FXPathNsResolver);
 end;
+
+
 
 procedure TOdfDocument.SaveToSingleXml(AFilename: string);
 begin
@@ -2384,6 +2501,19 @@ begin
      result:=AParent.GetAttributeNodeNS(vUri, OdfGetAttributeLocalName(at));
 end;
 
+function OdfGetAttributeValue(at: TAttributeType; AParent: TDOMElement): String;
+var
+   att: TDOMAttr;
+begin
+     att:=OdfGetAttribute(at, AParent);
+
+     Result:='';
+
+     if Assigned(att)
+     then
+         Result:=att.Value;
+end;
+
 function OdfSetAttributeValue(at: TAttributeType; AElement: TDOMElement;
   AValue: string): TDOMAttr;
 var
@@ -2512,6 +2642,7 @@ function OdfGetNsUri(APrefix: string): string;
 var
    ns: TOdfNamespace;
 begin
+     result:='';
      for ns in TOdfNamespace do
          if APrefix=OdfNamespaceDefaultPrefixes[ns]
          then
@@ -2529,7 +2660,48 @@ begin
      Result:=OdfGetNsUri(aPrefix);
 end;
 
+function OdfXPathSearch(AXPathExpression: string;
+  AParent: TDOMElement; out Results: TOdfNodeSet;
+  Resolver: TOdfXPathNsResolver): boolean;
+var
+   v: TXPathVariable;
+   vResolver: TOdfXPathNsResolver;
+begin
+     result:=false;
+     Results:=nil;
 
+     vResolver:=Resolver;
+
+     if not Assigned(vResolver)
+     then
+         vResolver:=TOdfXPathNsResolver.Create(AParent.OwnerDocument.DocumentElement);
+
+     v:=EvaluateXPathExpression(AXPathExpression, AParent, vResolver);
+
+     if assigned(v)
+     then
+     begin
+          if v is TXPathNodeSetVariable
+          then
+              Results:=v.AsNodeSet
+          else
+              Raise Exception.Create('XPath: Unexpected evaluation result type.');
+
+          if Assigned(Results)
+          then
+          begin
+               if (Results.Count>0)
+               then
+                   result:=true
+               else
+                   Results.Free;
+          end;
+     end;
+
+     if not Assigned(Resolver)
+     then
+         vResolver.Free;
+end;
 
 end.
 

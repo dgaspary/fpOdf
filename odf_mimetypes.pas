@@ -1,9 +1,9 @@
-{ odf_mimetypes.pas is part of the fpOdf.
+{ This file is part of the fpOdf.
 
   fpOdf is a library used to help users to create and to modify OpenDocument
   Files(ODF)
 
-  Copyright (C) 2013-2014 Daniel F. Gaspary https://github.com/dgaspary
+  Copyright (C) 2013-2015 Daniel F. Gaspary https://github.com/dgaspary
 
   This library is free software; you can redistribute it and/or modify it
   under the terms of the GNU Library General Public License as published by
