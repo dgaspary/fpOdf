@@ -163,8 +163,8 @@ type
 
     TOdfElementTypeSet = class(specialize TFPGList<TElementType>)
 
-        function Add(const Item: T): Integer;
-        function HasItem(const Item: T): boolean;
+        function Add(const Item: TElementType): Integer;
+        function HasItem(const Item: TElementType): boolean;
         function HasItem(ALocalName, ANsUri: string): boolean;
 
         constructor Create(EtArray: TElementTypeArray);
@@ -713,7 +713,7 @@ end;
 
 { TOdfElementTypeSet }
 
-function TOdfElementTypeSet.Add(const Item: T): Integer;
+function TOdfElementTypeSet.Add(const Item: TElementType): Integer;
 begin
      Result:=IndexOf(Item);
 
@@ -722,7 +722,7 @@ begin
          Result:=inherited Add(Item);
 end;
 
-function TOdfElementTypeSet.HasItem(const Item: T): boolean;
+function TOdfElementTypeSet.HasItem(const Item: TElementType): boolean;
 begin
      result:=IndexOf(item) >= 0;
 end;
