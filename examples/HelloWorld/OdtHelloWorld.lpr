@@ -31,8 +31,10 @@ uses
 const
      cOutputFile = 'HelloWorld.odt';
 
-     {$IfNDef WINDOWS}
-     cOutput = '/tmp/' + cOutputFile;
+     {$IfDef WINDOWS}
+        cOutput = cOutputFile;             
+     {$Else}
+        cOutput = '/tmp/' + cOutputFile;
      {$EndIf}     
      
      cStyleName = 'Standard';
