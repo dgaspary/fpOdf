@@ -57,6 +57,44 @@ begin
      OdfSetFontStyleAttribute(AElement, ofsNone);
 end;
 
+function OdfGetTextStyleProperties(AStyleElement: TDOMElement): TStrings;
+
+var
+   att: TAttributeType;
+
+   e: TDOMElement;
+
+   procedure AddProp(AElement: TDOMElement; att2: TAttributeType);
+   var
+      s: string;
+   begin
+        s:=OdfGetAttributeValue(att2, AElement);
+
+        if s<>''
+        then
+            OdfGetTextStyleProperties.Values[OdfGetAttributeQName(att2)]:= s;
+   end;
+
+begin
+     Result:=TStringList.Create;
+
+     for att in [oatStyleFamily] do
+     begin
+          AddProp(AStyleElement, att);
+     end;
+
+
+     e:=OdfGetElement(oetStyleTextProperties, AStyleElement);
+
+     if Assigned(e)
+     then
+     begin
+          AddProp(e, oatFoFontSize);
+          AddProp(e, oatFoFontWeight);
+     end;
+
+end;
+
 
 function OdfGetFontWeightValue(AFontWeight: TOdfFontWeight): string;
 begin

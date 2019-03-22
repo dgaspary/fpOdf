@@ -54,6 +54,7 @@ uses
 
 procedure OdfWriteXmlToFile(ADoc: TXMLDocument;  AFilename: string);
 
+function OdfAttributesAsStrings(e: TDOMElement; OnlyNames: boolean = true): TStrings;
 
 implementation
 
@@ -65,6 +66,32 @@ begin
             WriteXMLFile(ADoc, AFilename);
      {$EndIf}
 
+end;
+
+function OdfAttributesAsStrings(e: TDOMElement; OnlyNames: boolean): TStrings;
+var
+  list: TDOMNamedNodeMap;
+  i: integer;
+  att: TDOMAttr;
+  s: string;
+begin
+     Result:=TStringList.Create;
+
+     list:=e.Attributes;
+
+     for i:=0 to pred(list.Length) do
+     begin
+          att:=list[i] as TDOMAttr;
+          s:=att.Name;
+
+          if not OnlyNames
+          then
+              s+='=' + att.Value;
+
+          Result.Add(s);
+     end;
+
+     //list.Free; Don't Free it !!.. The List belongs to the element.
 end;
 
 end.

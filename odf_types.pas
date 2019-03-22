@@ -3,7 +3,7 @@
   fpOdf is a library used to help users to create and to modify OpenDocument
   Files(ODF)
 
-  Copyright (C) 2013-2015 Daniel F. Gaspary https://github.com/dgaspary
+  Copyright (C) 2013-2019 Daniel F. Gaspary https://github.com/dgaspary
 
   This library is free software; you can redistribute it and/or modify it
   under the terms of the GNU Library General Public License as published by
@@ -43,10 +43,17 @@ interface
 uses
   Classes, SysUtils, FileUtil, zipper, zstream, fgl, LazUTF8, Graphics,
 
+  {$Define ODF_LOGGING}
+
   {$ifdef patched_dom}
    DOM_patched, XMLRead_patched
   {$else}
    Laz2_DOM, laz2_XMLRead, laz2_xpath
+  {$endif},
+
+
+  {$ifdef odf_logging}
+  eventlog
   {$endif},
 
   xmlutils, odf_mimetypes, odf_xmlutils;
@@ -485,6 +492,17 @@ type
           property Meta: TDOMElement read FMeta write FMeta;
           //property Meta: TDOMElement index oetOfficeMeta read GetRootChild;
 
+          class function GetStyleName(AStartNode: TDOMNode; out StyleNode: TDOMNode
+            ): String;
+          class function GetStyleName(AStartNode: TDOMNode): String;
+
+          function GetStyleElementByName(AStyleName: string): TDOMElement;
+
+          function GetStyleByProperties(AFamily: TStyleFamilyValue;
+            AFontSize: integer; AFontSizeUnit: string;
+            AFontStyle: TOdfFontStyle; AFontWeigth: TOdfFontWeight;
+            AStyleFamily: string): TStrings;
+
           property Settings: TDOMElement read FSettings write FSettings;
           property Scripts: TDOMElement read FScripts write FScripts;
           property FontFaceDecls: TDOMElement read FFontFaceDecls write FFontFaceDecls;
@@ -543,11 +561,14 @@ type
     public
           constructor Create;
 
+          { TODO : Replace AddParagraph, param ATextSytleName, with A Style Object or interface}
           function AddParagraph(ATextStyleName: String): TOdfParagraph;
 
           function SearchText(AText: string; out FoundAt: TDOMText): boolean; overload;
           function SearchText(AText: string; out FoundAt: TDOMText;
             out AParagraph: TOdfParagraph): boolean; overload;
+
+          { TODO : Needed: A function that searches a Style using its name  }
 
 
           property Text: TDOMElement read FText write FText;
@@ -586,6 +607,116 @@ type
                           Resolver: TOdfXPathNsResolver = nil): boolean;
 
 implementation
+
+{$IfDef ODF_LOGGING}
+
+type
+
+    { TOdfEventLog }
+
+    TOdfEventLog = class(TEventLog)
+    private
+      FIdentation: integer;
+      fProcs: TStrings;
+      const cIdentSize = 4;
+
+    public
+          constructor Create(AOwner: TComponent); override;
+          destructor Destroy; override;
+
+          procedure Log(EventType: TEventType; const Msg: String);
+          procedure Log(const Msg: String);
+
+          procedure EnterProc(ProcName: string);
+          procedure ExitProc;
+    end;
+
+constructor TOdfEventLog.Create(AOwner: TComponent);
+begin
+     inherited Create(AOwner);
+
+     FIdentation:=0;
+
+     fProcs:=TStringList.Create;
+end;
+
+destructor TOdfEventLog.Destroy;
+begin
+     fProcs.Free;
+
+     inherited Destroy;
+end;
+
+procedure TOdfEventLog.Log(EventType: TEventType; const Msg: String);
+var
+   s: string;
+begin
+     s:='';
+     if FIdentation>0
+     then
+         s:=Space(FIdentation);
+
+     inherited Log(EventType, s + Msg);
+end;
+
+procedure TOdfEventLog.Log(const Msg: String);
+begin
+     self.Log(DefaultEventType, Msg);
+end;
+
+procedure TOdfEventLog.EnterProc(ProcName: string);
+begin
+     Log('Entering Proc: ' + ProcName);
+     inc(FIdentation, cIdentSize);
+     fProcs.Add(ProcName);
+end;
+
+procedure TOdfEventLog.ExitProc;
+var
+   i: integer;
+   ProcName: string;
+begin
+     i:=fProcs.Count - 1 ;
+     ProcName:=fProcs[i];
+     fProcs.Delete(i);
+     Dec(FIdentation, cIdentSize);
+     Log('Leaving Proc: ' + ProcName);
+end;
+
+
+
+var
+   odfEventLog: TOdfEventLog;
+{$EndIf}
+
+procedure OdfLog(msg: string);
+begin
+     {$IfDef ODF_LOGGING}
+     odfEventLog.Log(msg);
+     {$EndIf}
+end;
+
+procedure OdfLogError(msg: string);
+begin
+     {$IfDef ODF_LOGGING}
+     odfEventLog.Error(msg);
+     {$EndIf}
+end;
+
+procedure OdfLogEnterProc(ProcName: string);
+begin
+     {$IfDef ODF_LOGGING}
+     odfEventLog.EnterProc(ProcName);
+     {$EndIf}
+end;
+
+procedure OdfLogExitProc;
+begin
+     {$IfDef ODF_LOGGING}
+     odfEventLog.ExitProc;
+     {$EndIf}
+end;
+
 
 procedure NotYetImplemented(FunctionName: string);
 begin
@@ -1313,7 +1444,7 @@ begin
           '.ODT' : result:=LoadFromZipFile(AFilename, SysUtils.GetTempFileName);
           { TODO -oGaspary : Other Extensions }
           else
-              result:=LoadFromSingleXml(AFilename);
+              result:=LoadFromSingleXml(AFilename); { TODO Throws a proper exception when reading a unindentified file type. }
      end;
 
 end;
@@ -2251,7 +2382,7 @@ end;
 function TOdfDocument.XPathSearch(AXPathExpression: string; AParent: TDOMElement;
                     Accepted: array of TElementType;
                     out Results: TOdfNodeSet;
-                    Partial: boolean = true): boolean;
+                    Partial: boolean): boolean;
 begin
      result:=false;
      Results:=nil;
@@ -2279,6 +2410,115 @@ end;
 procedure TOdfDocument.SaveToZipFile(AFilename: string);
 begin
      TOdfDocument.SaveToZipFile(self, AFilename);
+end;
+
+class function TOdfDocument.GetStyleName(AStartNode: TDOMNode; out StyleNode: TDOMNode): String;
+var
+   n: TDOMNode;
+   vStyleName: string;
+begin
+     OdfLogEnterProc('class function TOdfDocument.GetStyleName');
+
+     Result:='';
+     StyleNode:=nil;
+
+     n:=AStartNode;
+
+     while Assigned(n) do
+     begin
+          OdfLog('Dentro do laço');
+
+          OdfLog('n.nodeType: ' + inttostr(n.NodeType));
+          OdfLog('n.NodeName: ' + n.NodeName);
+          OdfLog('n.NodeValue: ' + n.NodeValue);
+
+          if (n is TDOMElement)
+          then
+          begin
+               OdfLog('      n.tag=>' + (n as TDOMElement).TagName);
+
+               { TODO : There are other 'style-name' attributes.
+
+                        It's possible to be necessary to include these
+                        (others beyond *-style-name?) }
+
+               Result:=OdfGetAttributeValue(oatTextStyleName, (n as TDOMElement));
+
+               OdfLog('      Result=>' + Result);
+
+               if Result<>''
+               then
+               begin
+                    StyleNode:=n;
+                    break;
+               end;
+          end;
+
+          n:=n.ParentNode;
+     end;
+
+     OdfLogExitProc;
+end;
+
+class function TOdfDocument.GetStyleName(AStartNode: TDOMNode): String;
+var
+   DummyNode: TDOMNode;
+begin
+     Result:=GetStyleName(AStartNode, DummyNode);
+end;
+
+function TOdfDocument.GetStyleElementByName(AStyleName: string): TDOMElement;
+var
+   list: TOdfDomElementList;
+
+  procedure ListSearch;
+  var
+    e: TDOMElement;
+  begin
+    while list.Count>0 do
+    begin
+         e:=list.First;
+
+         list.Delete(0);
+
+         if OdfGetAttributeValue(oatStyleName, e)=AStyleName
+         then
+         begin
+              OdfLog('StyleName Found.');
+              Result:=e;
+              break;
+         end;
+    end;
+    list.Free;
+  end;
+
+begin
+     OdfLogEnterProc('GetStyleElementByName');
+     OdfLog('AStyleName: ' + AStyleName);
+     Result:=nil;
+
+
+     list:=OdfGetElementList(oetStyleStyle, FAutomaticStyles, true);
+     OdfLog('Searching in AutomaticStyles');
+     ListSearch;
+
+     if not Assigned(Result)
+     then
+     begin
+          list:=OdfGetElementList(oetStyleStyle, FStyles, true);
+          OdfLog('Searching in Styles');
+          ListSearch;
+     end;
+
+
+     OdfLogExitProc;
+end;
+
+function TOdfDocument.GetStyleByProperties(AFamily: TStyleFamilyValue;
+  AFontSize: integer; AFontSizeUnit: string; AFontStyle: TOdfFontStyle;
+  AFontWeigth: TOdfFontWeight; AStyleFamily: string): TStrings;
+begin
+     { TODO : To be done..  }
 end;
 
 
@@ -2702,6 +2942,31 @@ begin
      then
          vResolver.Free;
 end;
+
+{$IfDef ODF_LOGGING}
+
+initialization
+begin
+     odfEventLog:=TOdfEventLog.Create(nil);
+     odfEventLog.RaiseExceptionOnError:=true;
+
+     odfEventLog.FileName:='fpOdf.log';
+     {$IfDef FPC}
+     odfEventLog.FileName:='/tmp/' + odfEventLog.FileName;
+     {$EndIf}
+
+     odfEventLog.LogType:=ltFile;
+     odfEventLog.Identification:='fpOdf';
+     odfEventLog.Active:=true;
+end;
+
+finalization
+begin
+     odfEventLog.Free;
+end;
+
+{$EndIf}
+
 
 end.
 

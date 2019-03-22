@@ -154,6 +154,8 @@ const
      procedure OdfSetFontStyleAttribute(AElement: TDOMElement; FontStyle: TOdfFontStyle);
      procedure OdfDeleteFontStyleAttribute(AElement: TDOMElement);
 
+     function OdfGetTextStyleProperties(AStyleElement: TDOMElement): TStrings;
+
 
 //Font Weight p1-20.186
 /////////////

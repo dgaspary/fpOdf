@@ -7,19 +7,12 @@
       <Unit0>
         <Filename Value="OdtHelloWorld.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="OdtHelloWorld"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="0"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="40"/>
-        <CursorPos X="31" Y="53"/>
-        <UsageCount Value="47"/>
+        <TopLine Value="14"/>
+        <CursorPos X="24" Y="16"/>
+        <UsageCount Value="26"/>
         <Loaded Value="True"/>
       </Unit0>
     </Units>
-    <General>
-      <ActiveWindowIndexAtStart Value="0"/>
-    </General>
   </ProjectSession>
-  <EditorMacros Count="0"/>
 </CONFIG>
