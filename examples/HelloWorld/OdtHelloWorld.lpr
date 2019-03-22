@@ -29,7 +29,14 @@ uses
     odf_types;
 
 const
-     cOutput = '/tmp/HelloWorld.odt';
+     cOutputFile = 'HelloWorld.odt';
+
+     {$IfDef WINDOWS}
+        cOutput = cOutputFile;             
+     {$Else}
+        cOutput = '/tmp/' + cOutputFile;
+     {$EndIf}     
+     
      cStyleName = 'Standard';
 
 begin
