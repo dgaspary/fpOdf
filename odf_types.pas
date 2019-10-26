@@ -43,7 +43,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, LazFileUtils, zipper, zstream, fgl, LazUTF8, Graphics,
 
-  {$Define ODF_LOGGING}
+  { $Define ODF_LOGGING}
 
   {$ifdef patched_dom}
    DOM_patched, XMLRead_patched
@@ -53,8 +53,8 @@ uses
 
 
   {$ifdef odf_logging}
-  eventlog
-  {$endif},
+  eventlog,
+  {$endif}
 
   xmlutils, odf_mimetypes, odf_xmlutils;
 
@@ -988,10 +988,7 @@ begin
   lBookmark.SetAttribute(oatTextName,aBMName);
 end;
 
-const CNormal = 'normal';
-     CFontWeightBold = 'bold';
-     CFontStyleItalic = 'italic';
-     CSolid = 'solid';
+const CSolid = 'solid';
      CAuto='auto';
      CFontColor='font-color';
      CSingle='single';
@@ -1032,11 +1029,10 @@ end;
 
 procedure TSpan.SetStyle(const doc: TOdfDocument; aFont: TFont);
 var
-  lNewStyleNr: LongWord;
   lStyle: TOdfStyleStyle;
   lStyleprop: TOdfElement;
-  ldebug: String;
   lFontdcls: TDOMNode;
+
 begin
   if  doc.InheritsFrom(TOdfTextDocument) then
     with TOdfTextDocument(doc) do
@@ -1049,7 +1045,6 @@ begin
             FontFaceDecls.AppendChild(lFontdcls);
           end;
         lStyle:= AddAutomaticStyle();
-        ldebug := lStyle.OdfStyleName;
         lStyleprop :=CreateOdfElement(oetStyleTextProperties);
         lStyle.AppendChild(lStyleprop);
         lStyleprop.SetAttribute(oatStyleFontName,afont.Name) ;
@@ -1219,9 +1214,9 @@ end;
 
 procedure TOdfTextDocument.InitBodyContent;
 begin
-   {  if Assigned(FText)
+     if Assigned(FText)
      then
-         FreeAndNil(FText); }
+         FreeAndNil(FText);
 
      FText:=OdfGetElement(oetOfficeText, FBody);
 end;
@@ -3233,9 +3228,12 @@ begin
 
      odfEventLog.FileName:='fpOdf.log';
      {$IfDef FPC}
+     {$ifdef WINDOWS}
+     odfEventLog.FileName:='..\..\output\' + odfEventLog.FileName;
+     {$else}
      odfEventLog.FileName:='/tmp/' + odfEventLog.FileName;
      {$EndIf}
-
+      {$EndIf}
      odfEventLog.LogType:=ltFile;
      odfEventLog.Identification:='fpOdf';
      odfEventLog.Active:=true;

@@ -41,7 +41,7 @@ uses
   Classes, SysUtils, Laz2_DOM,
 
 
-  {$Define UseStaxWriter}
+  { $Define UseStaxWriter}
 
   {$ifdef UseStaxWriter}
    StaxWriter_Dom

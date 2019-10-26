@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectGroup FileVersion="1">
+    <Targets Count="5">
+      <Target0 FileName="package\fpodf.lpk"/>
+      <Target1 FileName="examples\HelloWorld\OdtHelloWorld.lpi">
+        <BuildModes Count="1"/>
+        <Mode1 Name="Default"/>
+      </Target1>
+      <Target2 FileName="examples\BoldText\OdtBoldTextExample.lpi">
+        <BuildModes Count="1"/>
+        <Mode1 Name="Default"/>
+      </Target2>
+      <Target3 FileName="..\..\..\..\..\lazarus\components\fpvectorial\examples\fpvtextwritetest.lpi">
+        <BuildModes Count="1"/>
+        <Mode1 Name="default"/>
+      </Target3>
+      <Target4 FileName="examples\ImprovedDemo\ImprovedDemo.lpi">
+        <BuildModes Count="1"/>
+        <Mode1 Name="Default"/>
+      </Target4>
+    </Targets>
+  </ProjectGroup>
+</CONFIG>
