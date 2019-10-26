@@ -415,7 +415,7 @@ type
            procedure InitStyles; virtual;
 
            procedure InitXmlDocument; virtual;
-
+           procedure FindOdfRootElements;virtual;
            procedure InitBodyContent; virtual; abstract;
 
            function GetMimeType: TOdfMimetype;
@@ -429,6 +429,7 @@ type
     private
            class function ParseXmlFile(AStream: TStream): TXMLDocument;
            class procedure ReadPackage(ADir: String; AOdf: TOdfDocument);
+           procedure SetXmlDocument(AValue: TXMLDocument);
            class procedure WritePackage(DestFile: String;
                                         AOdf: TOdfDocument;
                                         ATempDir: string = '');
@@ -476,6 +477,7 @@ type
                               out Results: TOdfNodeSet;
                               Partial: boolean = true): boolean;
 
+          Procedure Clear;virtual;
           procedure SaveToSingleXml(AFilename: string); overload;
 
           class procedure SaveToZipFile(AOdf: TOdfDocument;
@@ -483,7 +485,7 @@ type
 
           procedure SaveToZipFile(AFilename: string); overload;
 
-          property XmlDocument: TXMLDocument read FXmlDocument write FXmlDocument;
+          property XmlDocument: TXMLDocument read FXmlDocument write SetXmlDocument;
 
           property MimeType: TOdfMimetype read GetMimeType write SetMimeType;
           property Body: TDOMElement read FBody write FBody;
@@ -525,17 +527,24 @@ type
 
     public
           //p1-6.1.1
+          Procedure AppendText(aText:String);
           function GetCharacterContent(Recursive: boolean = true): string;
           property TextContent read GetTextContent write OdfSetTextContent;
     end;
 
-
+    THyperLink=class;
     { TOdfParagraph }
 
     TOdfParagraph = class(TOdfContent)
+    private
 
     public
-          function AddSpan(AText: string; FontStyles: TFontStyles): TSpan;
+          function AddSpan(AText: string; FontStyles: TFontStyles): TSpan;overload;
+          function AddSpan(AText: string; aFont: TFont;const doc: TOdfDocument): TSpan;
+            overload;
+          function AddSpan(AText: string; aStyle: string): TSpan;overload;
+          function AddBookmark(AText: string; FontStyles: TFontStyles;aBMName:string): TSpan;
+          function AddLink(AText: string; FontStyles: TFontStyles;aBMName:string): THyperLink;
     end;
 
 
@@ -546,9 +555,31 @@ type
 
     public
           class function CreateSpan(doc: TXMLDocument; AText: string): TSpan;
-          procedure SetStyle(fs: TFontStyles);
+          procedure SetStyle(fs: TFontStyles);overload;
+          procedure SetStyle(const doc: TOdfDocument; aFont: TFont); overload;
+          procedure SetStyle(aStyleName: string);overload;
     end;
 
+    { TBookMark }
+
+    TBookMark = class(TSpan)
+    private
+
+    public
+          class function CreateBookmark(doc: TXMLDocument; AText, aBMName: string): TSpan;
+          procedure SetBookmark(aBMName:string);
+    end;
+
+    { THyperLink }
+
+    THyperLink = class(TSpan)
+    private
+
+    public
+          class function CreateLink(doc: TXMLDocument; AText, aBMName: string
+            ): THyperLink;
+          Procedure SetLink(aBMName:string);
+    end;
 
     { TOdfTextDocument }
 
@@ -558,18 +589,21 @@ type
            procedure InitXmlDocument; override;
 
            procedure InitBodyContent; override;
+           Procedure GenerateAutoStyles;
     public
           constructor Create;
-
+          Procedure Clear; override;
           { TODO : Replace AddParagraph, param ATextSytleName, with A Style Object or interface}
           function AddParagraph(ATextStyleName: String): TOdfParagraph;
-
+          function AddAutomaticStyle:TOdfStyleStyle;overload;
+          function AddAutomaticStyle(aName:string):TOdfStyleStyle;overload;
+          function AddStyle(aName: String; aFamily: TStyleFamilyValue): TOdfStyleStyle;
+            overload;
           function SearchText(AText: string; out FoundAt: TDOMText): boolean; overload;
           function SearchText(AText: string; out FoundAt: TDOMText;
             out AParagraph: TOdfParagraph): boolean; overload;
 
           { TODO : Needed: A function that searches a Style using its name  }
-
 
           property Text: TDOMElement read FText write FText;
     end;
@@ -895,11 +929,154 @@ begin
      AppendChild(result);
 end;
 
+function TOdfParagraph.AddSpan(AText: string; aFont: TFont;
+  const doc: TOdfDocument): TSpan;
+begin
+     result:=TSpan.CreateSpan(self.OwnerDocument as TXMLDocument, AText);
+     result.SetStyle(doc,aFont);
+     AppendChild(result);
+end;
+
+function TOdfParagraph.AddSpan(AText: string; aStyle: string): TSpan;
+begin
+     result:=TSpan.CreateSpan(self.OwnerDocument as TXMLDocument, AText);
+     result.SetStyle(aStyle);
+     AppendChild(result);
+end;
+
+function TOdfParagraph.AddBookmark(AText: string; FontStyles: TFontStyles;
+  aBMName: string): TSpan;
+begin
+  result := TBookMark.CreateBookmark(self.OwnerDocument as TXMLDocument,AText,aBMName);
+  result.SetStyle(FontStyles);
+  AppendChild(result);
+end;
+
+function TOdfParagraph.AddLink(AText: string; FontStyles: TFontStyles;
+  aBMName: string): THyperLink;
+begin
+     result := THyperLink.CreateLink(self.OwnerDocument as TXMLDocument,AText,aBMName);
+     result.SetStyle(FontStyles);
+     AppendChild(result);
+end;
+
+{ TBookMark }
+
+class function TBookMark.CreateBookmark(doc: TXMLDocument; AText,
+  aBMName: string): TSpan;
+var
+  lBookmark: TOdfElement;
+begin
+     result:=TSpan(CreateOdfElement(oetTextSpan, TSpan, doc));
+     lBookmark:=CreateOdfElement(oetTextBookmark, TOdfElement, doc);
+     result.AppendChild(lBookmark);
+     lBookmark.SetAttribute(oatTextName,aBMName);
+     result.AppendText(AText);
+end;
+
+procedure TBookMark.SetBookmark(aBMName: string);
+var
+  lBookmark: TOdfElement;
+begin
+  if ChildNodes.Count= 0 then
+    begin
+      lBookmark:=CreateOdfElement(oetTextBookmark, TOdfElement,TXMLDocument( OwnerDocument));
+      AppendChild(lBookmark);
+    end
+  else
+    lBookmark:=TOdfElement(ChildNodes[0]);
+  lBookmark.SetAttribute(oatTextName,aBMName);
+end;
+
+const CNormal = 'normal';
+     CFontWeightBold = 'bold';
+     CFontStyleItalic = 'italic';
+     CSolid = 'solid';
+     CAuto='auto';
+     CFontColor='font-color';
+     CSingle='single';
+     CSimple='simple';
+
+{ THyperLink }
+
+class function THyperLink.CreateLink(doc: TXMLDocument; AText, aBMName: string
+  ): THyperLink;
+begin
+  result:=THyperLink(CreateOdfElement(oetTextA, THyperLink, doc));
+  Result.SetAttribute(oatXlinkType,CSimple);
+  Result.SetAttribute(oatXlinkHref,'#'+aBMName);
+  result.TextContent:=AText;
+end;
+
+procedure THyperLink.SetLink(aBMName: string);
+begin
+
+end;
+
 { TSpan }
 
 procedure TSpan.SetStyle(fs: TFontStyles);
+var
+  lfs: TFontStyle;
+  lFsName: string;
+  lFsVal: Integer;
 begin
-     { TODO : Search or create a style with FontStyles }
+   lFsVal:=0;
+   for lfs in fs do
+     lFsVal +=  1 shl ord(lfs) ;
+
+   lFsName:='TA'+inttostr(lFsVal);
+
+   SetAttribute(oatTextStyleName,lFsName);
+end;
+
+procedure TSpan.SetStyle(const doc: TOdfDocument; aFont: TFont);
+var
+  lNewStyleNr: LongWord;
+  lStyle: TOdfStyleStyle;
+  lStyleprop: TOdfElement;
+  ldebug: String;
+  lFontdcls: TDOMNode;
+begin
+  if  doc.InheritsFrom(TOdfTextDocument) then
+    with TOdfTextDocument(doc) do
+      begin
+        lFontdcls := FFontFaceDecls.FindNode(afont.Name);
+        if not assigned(lFontdcls) then
+          begin
+            lFontdcls := CreateOdfElement(oetStyleFontFace,oatStyleName,afont.Name);
+            TOdfElement(lFontdcls).SetAttribute(oatSvgFontFamily,afont.Name.QuotedString(''''));
+            FontFaceDecls.AppendChild(lFontdcls);
+          end;
+        lStyle:= AddAutomaticStyle();
+        ldebug := lStyle.OdfStyleName;
+        lStyleprop :=CreateOdfElement(oetStyleTextProperties);
+        lStyle.AppendChild(lStyleprop);
+        lStyleprop.SetAttribute(oatStyleFontName,afont.Name) ;
+        if afont.Size>0 then
+          lStyleprop.SetAttribute(oatFoFontSize,inttostr(afont.Size)+'pt') ;
+        if aFont.Bold then
+          lStyleprop.SetAttribute(oatFoFontWeight,OdfFontWeightValues[fwBold]);
+        if aFont.Italic then
+          lStyleprop.SetAttribute(oatFoFontStyle,OdfFontStyleValues[ofsItalic]);
+        if aFont.Underline then
+          begin
+           lStyleProp.SetAttribute(oatStyleTextUnderlineStyle,CSolid);
+           lStyleProp.SetAttribute(oatStyleTextUnderlineWidth,CAuto);
+           lStyleProp.SetAttribute(oatStyleTextUnderlineColor,CFontColor);
+          end;
+        if aFont.StrikeThrough then
+          begin
+           lStyleProp.SetAttribute(oatStyleTextLineThroughStyle,CSolid);
+           lStyleProp.SetAttribute(oatStyleTextLineThroughType,CSingle);
+          end;
+      end;
+   SetAttribute(oatTextStyleName,lstyle.OdfStyleName);
+end;
+
+procedure TSpan.SetStyle(aStyleName: string);
+begin
+   SetAttribute(oatTextStyleName,aStyleName);
 end;
 
 
@@ -918,16 +1095,22 @@ begin
 end;
 
 procedure TOdfContent.OdfSetTextContent(const AValue: DOMString);
+begin
+     inherited SetTextContent('');
+     AppendText(AValue);
+end;
+
+procedure TOdfContent.AppendText(aText: String);
+
 var
    et: TElementType;
    s, s1, s2: UTF8String;
    vSpaces: word;
 
    vChild: TOdfElement;
-begin
-     inherited SetTextContent('');
 
-     s:=AValue;
+begin
+     s:=aText;
      repeat
            et:=OdfPrepareString(s, s1, s2, vSpaces);
 
@@ -1036,16 +1219,59 @@ end;
 
 procedure TOdfTextDocument.InitBodyContent;
 begin
-     if Assigned(FText)
+   {  if Assigned(FText)
      then
-         FreeAndNil(FText);
+         FreeAndNil(FText); }
 
      FText:=OdfGetElement(oetOfficeText, FBody);
+end;
+
+procedure TOdfTextDocument.GenerateAutoStyles;
+
+
+
+var
+  lStyle, lStyleProp: TOdfElement;
+  i: Integer;
+begin
+   for i := 0 to 15 do
+     begin
+       lStyle :=AddAutomaticStyle('TA'+inttostr(i));
+
+       lstyleProp := CreateOdfElement(oetStyleTextProperties);
+       lStyle.AppendChild(lStyleProp);
+
+       if i and 1 <>0 then
+          lStyleProp.SetAttribute(oatFoFontWeight,OdfFontWeightValues[fwBold]);
+
+       if i and 2 <>0 then
+          lStyleProp.SetAttribute(oatFoFontStyle,OdfFontStyleValues[ofsItalic]);
+
+       if i and 4 <>0 then
+                        begin
+           lStyleProp.SetAttribute(oatStyleTextUnderlineStyle,CSolid);
+           lStyleProp.SetAttribute(oatStyleTextUnderlineWidth,CAuto);
+           lStyleProp.SetAttribute(oatStyleTextUnderlineColor,CFontColor);
+          end;
+
+       if i and 8 <>0 then
+          begin
+           lStyleProp.SetAttribute(oatStyleTextLineThroughStyle,CSolid);
+           lStyleProp.SetAttribute(oatStyleTextLineThroughType,CSingle);
+          end;
+     end;
 end;
 
 constructor TOdfTextDocument.Create;
 begin
      inherited Create;
+     GenerateAutoStyles;
+end;
+
+procedure TOdfTextDocument.Clear;
+begin
+  inherited Clear;
+  GenerateAutoStyles;
 end;
 
 function TOdfTextDocument.AddParagraph(ATextStyleName: String): TOdfParagraph;
@@ -1054,6 +1280,27 @@ begin
      result.SetAttribute(oatTextStyleName, ATextStyleName);
      FText.AppendChild(result);
 end;
+
+function TOdfTextDocument.AddAutomaticStyle: TOdfStyleStyle;
+begin
+     result:=AddAutomaticStyle('TS'+inttostr(FAutomaticStyles.GetChildCount));
+end;
+
+function TOdfTextDocument.AddAutomaticStyle(aName: string): TOdfStyleStyle;
+var
+  lDebug, lres: TDOMNode;
+  lcno, lcno2: SizeInt;
+begin
+     result:=CreateStyle(aName,sfvText);
+     FAutomaticStyles.AppendChild(result);
+end;
+
+function TOdfTextDocument.AddStyle(aName:String;aFamily:TStyleFamilyValue): TOdfStyleStyle;
+begin
+     result:=CreateStyle(aName,aFamily);
+     FStyles.AppendChild(result);
+end;
+
 
 function TOdfTextDocument.SearchText(AText: string; out FoundAt: TDOMText): boolean;
 begin
@@ -1711,6 +1958,13 @@ begin
      AOdf.InitBodyContent;
 end;
 
+procedure TOdfDocument.SetXmlDocument(AValue: TXMLDocument);
+begin
+  if assigned(FXmlDocument) then
+    FreeAndNil(FXmlDocument);
+  FXmlDocument:=AValue;
+end;
+
 function OdfCreateManifestRdfFile: TXMLDocument;
 var
    uriRdf, uriPkg: string;
@@ -2124,6 +2378,26 @@ begin
      end;
 end;
 
+procedure TOdfDocument.FindOdfRootElements;
+var
+   e: TDomElement;
+begin
+     e:=OdfGetElement(oetOfficeDocument,TDomElement( FXmlDocument));
+     with e do
+     begin
+          FMeta:=OdfGetElement(oetOfficeMeta,e);
+
+          FSettings:=OdfGetElement(oetOfficeSettings,e);
+          FScripts:=OdfGetElement(oetOfficeScripts,e);
+          FFontFaceDecls:=OdfGetElement(oetOfficeFontFaceDecls,e);
+
+          FStyles:=OdfGetElement(oetOfficeStyles,e);
+          FAutomaticStyles:=OdfGetElement(oetOfficeAutomaticStyles,e);
+          FMasterStyles:=OdfGetElement(oetOfficeMasterStyles,e);
+
+          FBody:=OdfGetElement(oetOfficeBody,e);
+     end;
+end;
 constructor TOdfDocument.Create;
 begin
      inherited Create;
@@ -2236,6 +2510,7 @@ begin
      try
         result:=TOdfDocument.Create;
         result.XmlDocument:=ParseXmlFile(fs);
+        result.FindOdfRootElements;
      finally
             fs.Free;
      end;
@@ -2248,7 +2523,6 @@ begin
      OdfXmlSetDefaultAtts(AOdf.XmlDocument);
      OdfElementSetNamespaceAtt(AOdf.XmlDocument.DocumentElement,
           [onsStyle, onsFo, onsSvg]);
-
      OdfWriteXmlToFile(AOdf.XmlDocument, AFilename);
 end;
 
@@ -2382,7 +2656,7 @@ end;
 function TOdfDocument.XPathSearch(AXPathExpression: string; AParent: TDOMElement;
                     Accepted: array of TElementType;
                     out Results: TOdfNodeSet;
-                    Partial: boolean): boolean;
+                    Partial: boolean = true): boolean;
 begin
      result:=false;
      Results:=nil;
@@ -2392,6 +2666,13 @@ begin
          FXPathNsResolver:=TOdfXPathNsResolver.Create(XmlDocument.DocumentElement);
 
      Result:=OdfXPathSearch(AXPathExpression, AParent, Results, FXPathNsResolver);
+end;
+
+procedure TOdfDocument.Clear;
+begin
+     freeandnil(FXPathNsResolver);
+     freeandnil(FXmlDocument);
+     InitXmlDocument;
 end;
 
 
@@ -2426,7 +2707,7 @@ begin
 
      while Assigned(n) do
      begin
-          OdfLog('Dentro do laÃ§o');
+          OdfLog('Dentro do laço');
 
           OdfLog('n.nodeType: ' + inttostr(n.NodeType));
           OdfLog('n.NodeName: ' + n.NodeName);

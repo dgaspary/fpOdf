@@ -2,6 +2,7 @@
 <CONFIG>
   <Package Version="4">
     <Name Value="fpOdf"/>
+    <Type Value="RunTimeOnly"/>
     <Author Value="Daniel F. Gaspary"/>
     <CompilerOptions>
       <Version Value="11"/>
@@ -36,27 +37,22 @@ Read the file COPYING.modifiedLGPL.txt for more informations."/>
         <UnitName Value="odf_xmlutils"/>
       </Item3>
     </Files>
-    <Type Value="RunTimeOnly"/>
-    <RequiredPkgs Count="4">
+    <RequiredPkgs Count="3">
       <Item1>
-        <PackageName Value="Stax"/>
+        <PackageName Value="LCLBase"/>
       </Item1>
       <Item2>
-        <PackageName Value="LCLBase"/>
+        <PackageName Value="LazUtils"/>
       </Item2>
       <Item3>
-        <PackageName Value="LazUtils"/>
-      </Item3>
-      <Item4>
         <PackageName Value="FCL"/>
-      </Item4>
+      </Item3>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>
     </UsageOptions>
     <PublishOptions>
       <Version Value="2"/>
-      <DestinationDirectory Value="/tmp/publishedpackage/"/>
     </PublishOptions>
   </Package>
 </CONFIG>
