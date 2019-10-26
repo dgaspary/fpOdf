@@ -32,7 +32,7 @@ const
      cOutputFile = 'HelloWorld.odt';
 
      {$IfDef WINDOWS}
-        cOutput = cOutputFile;             
+        cOutput = '..\..\output\'+cOutputFile;             
      {$Else}
         cOutput = '/tmp/' + cOutputFile;
      {$EndIf}     
