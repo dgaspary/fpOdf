@@ -595,6 +595,7 @@ type
           Procedure Clear; override;
           { TODO : Replace AddParagraph, param ATextSytleName, with A Style Object or interface}
           function AddParagraph(ATextStyleName: String): TOdfParagraph;
+          function AddHeadline(aLevel: integer): TOdfContent;
           function AddAutomaticStyle:TOdfStyleStyle;overload;
           function AddAutomaticStyle(aName:string):TOdfStyleStyle;overload;
           function AddStyle(aName: String; aFamily: TStyleFamilyValue): TOdfStyleStyle;
@@ -993,6 +994,8 @@ const CSolid = 'solid';
      CFontColor='font-color';
      CSingle='single';
      CSimple='simple';
+     CStyleHeading='Heading';
+     CStyleHeadingStb='Heading_20_';
 
 { THyperLink }
 
@@ -1037,6 +1040,12 @@ begin
   if  doc.InheritsFrom(TOdfTextDocument) then
     with TOdfTextDocument(doc) do
       begin
+        lStyle:= AddAutomaticStyle();
+        lStyleprop :=CreateOdfElement(oetStyleTextProperties);
+        lStyle.AppendChild(lStyleprop);
+
+        if aFont.name <> 'default' then
+          begin
         lFontdcls := FFontFaceDecls.FindNode(afont.Name);
         if not assigned(lFontdcls) then
           begin
@@ -1044,10 +1053,10 @@ begin
             TOdfElement(lFontdcls).SetAttribute(oatSvgFontFamily,afont.Name.QuotedString(''''));
             FontFaceDecls.AppendChild(lFontdcls);
           end;
-        lStyle:= AddAutomaticStyle();
-        lStyleprop :=CreateOdfElement(oetStyleTextProperties);
-        lStyle.AppendChild(lStyleprop);
         lStyleprop.SetAttribute(oatStyleFontName,afont.Name) ;
+          end;
+        if afont.Color <>clDefault then
+          lStyleprop.SetAttribute(oatFoColor,'#'+IntToHex(ColorToRGB(afont.Color),6)) ;
         if afont.Size>0 then
           lStyleprop.SetAttribute(oatFoFontSize,inttostr(afont.Size)+'pt') ;
         if aFont.Bold then
@@ -1276,15 +1285,38 @@ begin
      FText.AppendChild(result);
 end;
 
+function TOdfTextDocument.AddHeadline(aLevel: integer): TOdfContent;
+var
+  lStHeading: TDOMNode;
+begin
+  result:=TOdfContent(CreateOdfElement(oetTextH));
+  result.SetAttribute(oatTextStyleName, CStyleHeading+Inttostr(aLevel));
+  result.SetAttribute(oatTextOutlineLevel, Inttostr(aLevel));
+  FText.AppendChild(result);
+  {
+  lStHeading:= TOdfElement(FStyles).FindNode(CStyleHeading+Inttostr(aLevel))
+  if not assigned(lStHeading) then
+    begin
+         vStyle:=CreateOdfElement(oetStyleStyle);
+             with TOdfStyleStyle(vStyle) do
+             begin
+                  OdfStyleName:=CStyleHeading+Inttostr(aLevel);
+                  SetStyleFamily(sfvParagraph);
+                  OdfStyleParentStyleName:=CStyleHeading;
+                  OdfStyleDefaultOutlineLevel:=inttostr(aLevel);
+                  OdfStyleNextStyleName:=cTextBody;
+             end;
+             FStyles.AppendChild(vStyle);
+    end;  }
+end;
+
 function TOdfTextDocument.AddAutomaticStyle: TOdfStyleStyle;
 begin
      result:=AddAutomaticStyle('TS'+inttostr(FAutomaticStyles.GetChildCount));
 end;
 
 function TOdfTextDocument.AddAutomaticStyle(aName: string): TOdfStyleStyle;
-var
-  lDebug, lres: TDOMNode;
-  lcno, lcno2: SizeInt;
+
 begin
      result:=CreateStyle(aName,sfvText);
      FAutomaticStyles.AppendChild(result);
