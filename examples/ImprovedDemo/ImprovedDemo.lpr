@@ -8,8 +8,9 @@ var FOdfTextDocument:TOdftextDocument;
     FDatapath:String;
 
 const COutout1='ShowStyles.fodt';
-      COutout2='ShowLinks.odf';
-      COutout3='ShowFonts.odf';
+      COutout2='ShowLinks.odt';
+      COutout3='ShowFonts.odt';
+      COutout4='ShowColors.fodt';
 
 procedure Init;
 
@@ -38,11 +39,16 @@ var
   i: Integer;
   aFont: TFont;
   lSpan: TSpan;
+  lFirstChar: string;
+  w: ValReal;
 
 begin
-
-
   FOdfTextDocument.Clear;
+  FOdfTextDocument.AddHeadline(1).AppendText('Demonstration of fpOdf');
+  FOdfTextDocument.AddHeadline(2).AppendText('Headlines');
+    for i := 3 to 8 do
+        FOdfTextDocument.AddHeadline(i).AppendText('Headline ' + IntToStr(i));
+  FOdfTextDocument.AddHeadline(2).AppendText('Some Textstyles');
   lPara := FOdfTextDocument.AddParagraph(cStyleName);
   lpara.AddSpan('Here (bold)',[fsBold]);
   lpara.AppendOdfElement(oetTextLineBreak);
@@ -54,7 +60,8 @@ begin
   FOdfTextDocument.SaveToSingleXml(FDatapath+DirectorySeparator+COutout1);
   FOdfTextDocument.Clear;
 
-
+  FOdfTextDocument.AddHeadline(1).AppendText('Demonstration of fpOdf');
+  FOdfTextDocument.AddHeadline(2).AppendText('All Textstyles');
   for i := 0 to 15 do
     begin
       lFS:=[];
@@ -78,20 +85,27 @@ begin
       lPara := FOdfTextDocument.AddParagraph(cStyleName);
       lPara.AddBookmark(lText,lFS,'F'+inttostr(i));
     end;
-
+  FOdfTextDocument.AddHeadline(2).AppendText('Hyperlinks ...');
   for i := 0 to 15 do
     begin
       lPara := FOdfTextDocument.AddParagraph(cStyleName);
       lPara.AddLink('Go to '+Inttostr(i),[],'F'+inttostr(i))
     end;
-
   FOdfTextDocument.SaveToZipFile(FDatapath+DirectorySeparator+COutout2);
-  FOdfTextDocument.Clear;
 
-  aFont := TFont.Create;
-  try
-  for lFont in Screen.Fonts do
-     begin
+  FOdfTextDocument.Clear;
+  FOdfTextDocument.AddHeadline(1).AppendText('Demonstration of fpOdf');
+  FOdfTextDocument.AddHeadline(2).AppendText('All Fonts');
+ lFirstChar := '!';
+    aFont := TFont.Create;
+      try
+        for lFont in Screen.Fonts do
+          begin
+            if copy(lfont, 1, 1) <> lFirstChar then
+              begin
+                FOdfTextDocument.AddHeadline(4).AppendText(copy(lfont, 1, 1));
+                lFirstChar := copy(lfont, 1, 1);
+              end;
        lPara := FOdfTextDocument.AddParagraph(cStyleName);
        aFont.Name:=lFont;
        lpara.AddSpan('This is Font: "'+lFont+'"',[]);
@@ -105,6 +119,34 @@ begin
     freeandnil(aFont)
   end;
   FOdfTextDocument.SaveToZipFile(FDatapath+DirectorySeparator+COutout3);
+
+  FOdfTextDocument.Clear;
+  FOdfTextDocument.AddHeadline(1).AppendText('Demonstration of fpOdf');
+  FOdfTextDocument.AddHeadline(2).AppendText('Textcolors');
+  lText := 'Bring more color into your life, because it brightens your life, and touches your soul.';
+   lPara := FOdfTextDocument.AddParagraph(cStyleName);
+   aFont := TFont.Create;
+   aFont.Name := 'default';
+     try
+       i := 1;
+       while i <= length(lText) do
+         begin
+           w := i / length(lText) * pi * 2;
+           afont.Color :=
+               RGBToColor(96 + trunc(cos(w) * 96), 96 + trunc(sin(w - pi / 3) * 96), 96 + trunc(sin(w + 4 * pi / 3) * 96));
+           if lText[i] <> 'ü'[1] then
+               lpara.AddSpan(lText[i], aFont, FOdfTextDocument)
+           else
+             begin
+               lpara.AddSpan(copy(lText, i, 2), aFont, FOdfTextDocument);
+               Inc(i);
+             end;
+           Inc(i);
+         end;
+     finally;
+       FreeAndNil(aFont)
+     end;
+   FOdfTextDocument.SaveToSingleXml(FDatapath+DirectorySeparator+COutout4);
 end;
 
 Procedure Done;

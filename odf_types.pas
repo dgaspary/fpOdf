@@ -335,6 +335,7 @@ type
           function OdfGetFirstElement: TOdfElement;
           function HasOdfElement(AType: TElementType): boolean;
 
+          function Find(aName:String):TOdfElement;
           function GetAttribute(AType: TAttributeType): TDOMAttr;
           function GetAttributeString(AType: TAttributeType): String;
           function HasAttribute(AType: TAttributeType): boolean;
@@ -994,8 +995,12 @@ const CSolid = 'solid';
      CFontColor='font-color';
      CSingle='single';
      CSimple='simple';
+     CClassText='text';
      CStyleHeading='Heading';
      CStyleHeadingStb='Heading_20_';
+     CStyleTextBody='Text_20_body';
+     CTextBodyDis='Text body';
+     CStyleStandard='Standard';
 
 { THyperLink }
 
@@ -1035,6 +1040,7 @@ var
   lStyle: TOdfStyleStyle;
   lStyleprop: TOdfElement;
   lFontdcls: TDOMNode;
+  lR, lG, lB: Byte;
 
 begin
   if  doc.InheritsFrom(TOdfTextDocument) then
@@ -1056,7 +1062,11 @@ begin
         lStyleprop.SetAttribute(oatStyleFontName,afont.Name) ;
           end;
         if afont.Color <>clDefault then
-          lStyleprop.SetAttribute(oatFoColor,'#'+IntToHex(ColorToRGB(afont.Color),6)) ;
+          begin
+            RedGreenBlue(afont.Color,lR,lG,lB);
+            lStyleprop.SetAttribute(oatFoColor,'#'+IntToHex(Integer(RGBToColor(lb,lg,lr)),6)) ;
+
+          end;
         if afont.Size>0 then
           lStyleprop.SetAttribute(oatFoFontSize,inttostr(afont.Size)+'pt') ;
         if aFont.Bold then
@@ -1287,27 +1297,49 @@ end;
 
 function TOdfTextDocument.AddHeadline(aLevel: integer): TOdfContent;
 var
-  lStHeading: TDOMNode;
+
+  vStyle, lParaStyle: TOdfElement;
 begin
   result:=TOdfContent(CreateOdfElement(oetTextH));
-  result.SetAttribute(oatTextStyleName, CStyleHeading+Inttostr(aLevel));
+  result.SetAttribute(oatTextStyleName, CStyleHeadingStb+Inttostr(aLevel));
   result.SetAttribute(oatTextOutlineLevel, Inttostr(aLevel));
   FText.AppendChild(result);
-  {
-  lStHeading:= TOdfElement(FStyles).FindNode(CStyleHeading+Inttostr(aLevel))
-  if not assigned(lStHeading) then
+
+  lParaStyle:= TOdfElement(FStyles).Find(CStyleTextBody) ;
+  if not assigned(lParaStyle) then
     begin
          vStyle:=CreateOdfElement(oetStyleStyle);
              with TOdfStyleStyle(vStyle) do
              begin
-                  OdfStyleName:=CStyleHeading+Inttostr(aLevel);
+                  OdfStyleName:=CStyleTextBody;
+                  OdfStyleDisplayName:=CTextBodyDis;
                   SetStyleFamily(sfvParagraph);
-                  OdfStyleParentStyleName:=CStyleHeading;
-                  OdfStyleDefaultOutlineLevel:=inttostr(aLevel);
-                  OdfStyleNextStyleName:=cTextBody;
+                  OdfStyleParentStyleName:=CStyleStandard;
+                  OdfStyleClass:=CClassText;
              end;
              FStyles.AppendChild(vStyle);
-    end;  }
+
+    end;
+
+  lParaStyle:= TOdfElement(FStyles).Find(CStyleHeadingStb+Inttostr(aLevel)) ;
+  if not assigned(lParaStyle) then
+    begin
+         vStyle:=CreateOdfElement(oetStyleStyle);
+             with TOdfStyleStyle(vStyle) do
+             begin
+                  OdfStyleName:=CStyleHeadingStb+Inttostr(aLevel);
+                  OdfStyleDisplayName:=CStyleHeading+' '+Inttostr(aLevel);
+                  SetStyleFamily(sfvParagraph);
+                  OdfStyleParentStyleName:=CStyleHeading;
+                  OdfStyleNextStyleName:=CStyleTextBody;
+                  OdfStyleDefaultOutlineLevel:=inttostr(aLevel);
+                  OdfStyleClass:=CClassText;
+                  AppendOdfElement(oetStyleTextProperties,oatFoFontSize,inttostr(156-trunc(sqrt(aLevel)*25))+'%')
+                    .SetAttribute(oatFoFontWeight,OdfFontWeightValues[fwBold]);
+             end;
+             FStyles.AppendChild(vStyle);
+
+    end;
 end;
 
 function TOdfTextDocument.AddAutomaticStyle: TOdfStyleStyle;
@@ -1493,6 +1525,19 @@ begin
                   then
                       break;
              end;
+end;
+
+function TOdfElement.Find(aName: String): TOdfElement;
+var
+  lChlds: TOdfElement;
+begin
+   lChlds := TOdfElement(FirstChild);
+   result := nil;
+   while assigned(lChlds) do
+      begin if  (TOdfStyleStyle(lChlds).OdfStyleName=aname) then
+        exit(lChlds);
+        lChlds:=TOdfElement(lChlds.GetNextNodeSkipChildren);
+      end;
 end;
 
 function TOdfElement.GetAttribute(AType: TAttributeType): TDOMAttr;
@@ -2369,7 +2414,7 @@ begin
      vStyle:=CreateOdfElement(oetStyleStyle);
      with TOdfStyleStyle(vStyle) do
      begin
-          OdfStyleName:='Standard';
+          OdfStyleName:=CStyleStandard;
           SetStyleFamily(sfvParagraph);
      end;
      FStyles.AppendChild(vStyle);
