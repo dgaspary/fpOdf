@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fpdoc-descriptions><package name="ImprovedDemo"><module name="ImprovedDemo"><short>The Improved demo demonstrates the new features like fontstyle, color, heading, bookmark and links</short><element name="FOdfTextDocument" link="TOdfTextDocuments"><short>The OpenDocument-class</short>
+      </element><element name="FDatapath"><short>Path to the output / data-directory</short>
+      </element><element name="Init"><short>Initialization-procedure initializes the ODF-Class and the Datapath</short>
+      </element><element name="HeadingandStyles"><short>Generate a chapter of the document with various headings and some styles</short>
+      </element><element name="FontsDisplay"><short>Generate a chapter of the document with a display of all fonts</short>
+      </element><element name="StylesBookmarkAndLinks"><short>Generate a chapter of the document for demonstating bookmarks, links and all styles</short>
+      </element><element name="TextColors"><short>Generate a chapter of the document to display textcolors</short>
+      </element><element name="Execute"><short>Execute the demo. First write the chapters in separate files, then write all chapters in one file.</short>
+      </element><element name="Done"><short>Cleanup after the execution.</short>
+      </element>
+    </module>
+  </package>
+</fpdoc-descriptions>
