@@ -37,6 +37,7 @@ Read the file COPYING.modifiedLGPL.txt for more informations."/>
         <UnitName Value="odf_xmlutils"/>
       </Item3>
     </Files>
+    <LazDoc Paths="../FPdoc"/>
     <RequiredPkgs Count="3">
       <Item1>
         <PackageName Value="LCLBase"/>
