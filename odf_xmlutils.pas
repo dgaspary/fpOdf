@@ -41,7 +41,7 @@ uses
   Classes, SysUtils, Laz2_DOM,
 
 
-  {$Define UseStaxWriter}
+  { $Define UseStaxWriter}
 
   {$ifdef UseStaxWriter}
    StaxWriter_Dom
@@ -63,7 +63,7 @@ begin
      {$IfDef UseStaxWriter}
             XmlStreamWrite(ADoc, AFilename, 'utf-8', '1.0');
      {$Else}
-            WriteXMLFile(ADoc, AFilename);
+            WriteXMLFile(ADoc, AFilename,[xwfPreserveWhiteSpace]);
      {$EndIf}
 
 end;

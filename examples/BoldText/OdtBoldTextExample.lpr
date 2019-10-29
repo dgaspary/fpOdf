@@ -32,29 +32,23 @@ const
      cOutputFile = 'BoldText.fodt';
 
      {$IfDef WINDOWS}
-          cOutput = cOutputFile;
+          cOutput = '..\..\output\'+cOutputFile;
      {$Else}
           cOutput = '/tmp/' + cOutputFile;
      {$EndIf}
 
-
      cParagraphStyle = 'Standard';
-     cSpanStyle = 'T1';
+
 var
    p: TOdfParagraph;
-   style: TOdfStyleStyle;
+
 begin
      with TOdfTextDocument.Create do
      begin
           p:=AddParagraph(cParagraphStyle);
           p.TextContent:='A ';
 
-          style:=CreateStyle(cSpanStyle, sfvText);
-          OdfSetFontWeightAttribute(style.AppendOdfElement(oetStyleTextProperties), fwBold);
-
-          AutomaticStyles.AppendChild(style);
-
-          p.AddSpan('bold', [fsBold]).SetAttribute(oatTextStyleName, cSpanStyle);
+          p.AddSpan('bold', [fsBold]);
 
           p.AddSpan(' text', []);
 

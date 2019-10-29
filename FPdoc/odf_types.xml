@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fpdoc-descriptions><package name="fpOdf"><module name="odf_types"><element name="TOdfElement"><short>OdfElement: Basedefinition of all Open-Document-Elements</short>
+      </element><element name="TFontFaceDecls"><short>FontFaceDecls definition of the shortcut-node for font-declarations.</short>
+      </element><element name="TOdfDocument"><short>OdfDocument basedefintion (it contains! the XMLStructure of the OpenDocument</short>
+      </element><element name="TOdfContent"><short>All parts that contain text are based on TOdfContent</short>
+      </element><element name="THyperLink"><short>THyperlink is a link to either a point in the document, a file or an url.</short>
+      </element><element name="TOdfParagraph"><short>OdfParagraph is the class for a paragraph in the text.</short>
+      </element><element name="TSpan"><short>Span is a (small) part of the text with a constant style.</short>
+      </element><element name="TBookMark"><short>BookMark is a point in the text the reader can jump to. (see also Hyperlink)</short>
+      </element><element name="TOdfTextDocument"><short>OdfTextDocument is the class to use to open, close &amp; modify OpenDocument-Files</short>
+      </element><short>fpOdf is a library used to help users to create and to modify OpenDocument Files (ODF)</short>
+    </module>
+  </package>
+</fpdoc-descriptions>

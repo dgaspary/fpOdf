@@ -2,34 +2,69 @@
 <CONFIG>
   <ProjectOptions>
     <Version Value="11"/>
+    <PathDelim Value="\"/>
     <General>
-      <Flags>
-        <SaveClosedFiles Value="False"/>
-        <MainUnitHasCreateFormStatements Value="False"/>
-        <MainUnitHasTitleStatement Value="False"/>
-        <SaveJumpHistory Value="False"/>
-      </Flags>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
-      <Title Value="OdtHelloWorld"/>
-      <UseAppBundle Value="False"/>
+      <Title Value="fpcTestfpOdf"/>
       <ResourceType Value="res"/>
+      <UseXPManifest Value="True"/>
+      <Icon Value="0"/>
     </General>
-    <LazDoc Paths="../../FPDoc"/>
-    <i18n>
-      <EnableI18N LFM="False"/>
-    </i18n>
     <BuildModes Count="3">
       <Item1 Name="Default" Default="True"/>
       <Item2 Name="Debug">
         <CompilerOptions>
           <Version Value="11"/>
+          <PathDelim Value="\"/>
           <Target>
-            <Filename Value="../../bin/$(TargetCPU)-$(TargetOS)/OdtHelloWorld"/>
+            <Filename Value="..\..\bin\$(TargetCPU)-$(TargetOS)\fpcTestfpOdf"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <UnitOutputDirectory Value="../../bin/$(TargetCPU)-$(TargetOS)/units"/>
+            <OtherUnitFiles Value="."/>
+            <UnitOutputDirectory Value="..\..\bin\$(TargetCPU)-$(TargetOS)\units"/>
+          </SearchPaths>
+          <Parsing>
+            <SyntaxOptions>
+              <IncludeAssertionCode Value="True"/>
+            </SyntaxOptions>
+          </Parsing>
+          <CodeGeneration>
+            <Checks>
+              <IOChecks Value="True"/>
+              <RangeChecks Value="True"/>
+              <OverflowChecks Value="True"/>
+              <StackChecks Value="True"/>
+            </Checks>
+            <VerifyObjMethodCallValidity Value="True"/>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <DebugInfoType Value="dsDwarf2Set"/>
+              <UseHeaptrc Value="True"/>
+              <TrashVariables Value="True"/>
+              <UseExternalDbgSyms Value="True"/>
+            </Debugging>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+        </CompilerOptions>
+      </Item2>
+      <Item3 Name="Debug_con">
+        <CompilerOptions>
+          <Version Value="11"/>
+          <PathDelim Value="\"/>
+          <Target>
+            <Filename Value="..\..\bin\$(TargetCPU)-$(TargetOS)\fpcTestfpOdf"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="."/>
+            <UnitOutputDirectory Value="..\..\bin\$(TargetCPU)-$(TargetOS)\units"/>
           </SearchPaths>
           <Parsing>
             <SyntaxOptions>
@@ -54,66 +89,58 @@
             </Debugging>
           </Linking>
         </CompilerOptions>
-      </Item2>
-      <Item3 Name="Release">
-        <CompilerOptions>
-          <Version Value="11"/>
-          <Target>
-            <Filename Value="../../bin/$(TargetCPU)-$(TargetOS)/OdtHelloWorld"/>
-          </Target>
-          <SearchPaths>
-            <IncludeFiles Value="$(ProjOutDir)"/>
-            <UnitOutputDirectory Value="../../bin/$(TargetCPU)-$(TargetOS)/units"/>
-          </SearchPaths>
-          <CodeGeneration>
-            <SmartLinkUnit Value="True"/>
-            <Optimizations>
-              <OptimizationLevel Value="3"/>
-            </Optimizations>
-          </CodeGeneration>
-          <Linking>
-            <Debugging>
-              <GenerateDebugInfo Value="False"/>
-            </Debugging>
-            <LinkSmart Value="True"/>
-          </Linking>
-        </CompilerOptions>
       </Item3>
     </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
+      <UseFileFilters Value="True"/>
     </PublishOptions>
     <RunParams>
       <FormatVersion Value="2"/>
-      <Modes Count="1">
-        <Mode0 Name="default"/>
-      </Modes>
+      <Modes Count="0"/>
     </RunParams>
-    <RequiredPackages Count="1">
+    <RequiredPackages Count="4">
       <Item1>
         <PackageName Value="fpOdf"/>
       </Item1>
+      <Item2>
+        <PackageName Value="fpcunittestrunner"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="LCL"/>
+      </Item3>
+      <Item4>
+        <PackageName Value="FCL"/>
+      </Item4>
     </RequiredPackages>
-    <Units Count="1">
+    <Units Count="2">
       <Unit0>
-        <Filename Value="OdtHelloWorld.lpr"/>
+        <Filename Value="fpcTestfpOdf.lpr"/>
         <IsPartOfProject Value="True"/>
       </Unit0>
+      <Unit1>
+        <Filename Value="tst_fpOdfBasics.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit1>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
+    <PathDelim Value="\"/>
     <Target>
-      <Filename Value="../../bin/$(TargetCPU)-$(TargetOS)/OdtHelloWorld"/>
+      <Filename Value="..\..\bin\$(TargetCPU)-$(TargetOS)\fpcTestfpOdf"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <UnitOutputDirectory Value="../../bin/$(TargetCPU)-$(TargetOS)/units"/>
+      <OtherUnitFiles Value="."/>
+      <UnitOutputDirectory Value="..\..\bin\$(TargetCPU)-$(TargetOS)\units"/>
     </SearchPaths>
     <Linking>
-      <Debugging>
-        <UseExternalDbgSyms Value="True"/>
-      </Debugging>
+      <Options>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
+      </Options>
     </Linking>
   </CompilerOptions>
   <Debugging>

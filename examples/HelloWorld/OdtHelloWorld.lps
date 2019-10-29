@@ -1,18 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectSession>
-    <Version Value="9"/>
-    <BuildModes Active="Default"/>
-    <Units Count="1">
+    <Version Value="11"/>
+    <BuildModes Active="Debug"/>
+    <Units Count="2">
       <Unit0>
         <Filename Value="OdtHelloWorld.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
-        <TopLine Value="14"/>
-        <CursorPos X="24" Y="16"/>
+        <CursorPos X="83" Y="25"/>
         <UsageCount Value="26"/>
         <Loaded Value="True"/>
       </Unit0>
+      <Unit1>
+        <Filename Value="../../odf_types.pas"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="1021"/>
+        <CursorPos X="38" Y="1047"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit1>
     </Units>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes Count="0" ActiveMode="default"/>
+    </RunParams>
   </ProjectSession>
 </CONFIG>
