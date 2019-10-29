@@ -27,12 +27,19 @@ procedure Init;
 var
     i: integer;
 begin
-    FDatapath := COutPut;
-    for i := 0 to 2 do
-        if DirectoryExists(FDatapath) then
-            break
-        else
-            FDatapath := '..' + DirectorySeparator + FDatapath;
+    if ParamStr(1) <> ''
+    then
+        FDatapath := ParamStr(1)
+    else
+    begin
+         FDatapath := COutPut;
+         for i := 0 to 2 do
+             if DirectoryExists(FDatapath) then
+                 break
+             else
+                 FDatapath := '..' + DirectorySeparator + FDatapath;
+    end;
+
     FOdfTextDocument := TOdfTextDocument.Create;
 end;
 
