@@ -335,7 +335,7 @@ type
           function OdfGetFirstElement: TOdfElement;
           function HasOdfElement(AType: TElementType): boolean;
 
-          function Find(aName:String):TOdfElement;
+          function FindStyle(aName: String): TOdfElement;
           function GetAttribute(AType: TAttributeType): TDOMAttr;
           function GetAttributeString(AType: TAttributeType): String;
           function HasAttribute(AType: TAttributeType): boolean;
@@ -1305,7 +1305,7 @@ begin
   result.SetAttribute(oatTextOutlineLevel, Inttostr(aLevel));
   FText.AppendChild(result);
 
-  lParaStyle:= TOdfElement(FStyles).Find(CStyleTextBody) ;
+  lParaStyle:= TOdfElement(FStyles).FindStyle(CStyleTextBody) ;
   if not assigned(lParaStyle) then
     begin
          vStyle:=CreateOdfElement(oetStyleStyle);
@@ -1321,7 +1321,7 @@ begin
 
     end;
 
-  lParaStyle:= TOdfElement(FStyles).Find(CStyleHeadingStb+Inttostr(aLevel)) ;
+  lParaStyle:= TOdfElement(FStyles).FindStyle(CStyleHeadingStb+Inttostr(aLevel)) ;
   if not assigned(lParaStyle) then
     begin
          vStyle:=CreateOdfElement(oetStyleStyle);
@@ -1500,7 +1500,7 @@ begin
          then
          begin
               result:=(n as TOdfElement); { TODO -oGaspary : Fixing Needed.
-                                             Will rise Exception when find an
+                                             Will rise an Exception when find an
                                              element that is not a TOdfElement }
               break;
          end;
@@ -1527,16 +1527,23 @@ begin
              end;
 end;
 
-function TOdfElement.Find(aName: String): TOdfElement;
+function TOdfElement.FindStyle(aName: String): TOdfElement;
 var
-  lChlds: TOdfElement;
+  lChlds: TDOMNode;
 begin
-   lChlds := TOdfElement(FirstChild);
+   lChlds := FirstChild;
    result := nil;
    while assigned(lChlds) do
-      begin if  (TOdfStyleStyle(lChlds).OdfStyleName=aname) then
-        exit(lChlds);
-        lChlds:=TOdfElement(lChlds.GetNextNodeSkipChildren);
+      begin
+        if not (lChlds is TDOMElement)
+        then
+            raise Exception.Create('Unexpected Node Type: ' + lChlds.ClassName);
+
+        if (TOdfStyleStyle(lChlds).OdfStyleName=aname)
+        then
+            exit(TOdfElement(lChlds));
+
+        lChlds:=lChlds.GetNextNodeSkipChildren;
       end;
 end;
 
@@ -2779,7 +2786,7 @@ begin
 
      while Assigned(n) do
      begin
-          OdfLog('Dentro do laço');
+          OdfLog('Inside the loop');
 
           OdfLog('n.nodeType: ' + inttostr(n.NodeType));
           OdfLog('n.NodeName: ' + n.NodeName);
