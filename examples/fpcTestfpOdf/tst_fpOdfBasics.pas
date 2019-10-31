@@ -19,7 +19,7 @@ type
     procedure SetUp; override;
     procedure TearDown; override;
   published
-    procedure TestHookUp;
+    procedure TestSetUp;
   public
     constructor Create; override;
     property OdfTextDocument:TOdfTextDocument read FOdfTextDocument;

@@ -7,6 +7,7 @@
     <CompilerOptions>
       <Version Value="11"/>
       <SearchPaths>
+        <IncludeFiles Value="../incs"/>
         <OtherUnitFiles Value=".."/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
@@ -23,7 +24,7 @@ http://en.wikipedia.org/wiki/OpenDocument"/>
 
 Read the file COPYING.modifiedLGPL.txt for more informations."/>
     <Version Release="1"/>
-    <Files Count="3">
+    <Files Count="11">
       <Item1>
         <Filename Value="../odf_types.pas"/>
         <UnitName Value="odf_types"/>
@@ -36,6 +37,38 @@ Read the file COPYING.modifiedLGPL.txt for more informations."/>
         <Filename Value="../odf_xmlutils.pas"/>
         <UnitName Value="odf_xmlutils"/>
       </Item3>
+      <Item4>
+        <Filename Value="../incs/Atts-Enum.inc"/>
+        <Type Value="Include"/>
+      </Item4>
+      <Item5>
+        <Filename Value="../incs/Atts-Proc-Declaration.inc"/>
+        <Type Value="Include"/>
+      </Item5>
+      <Item6>
+        <Filename Value="../incs/Atts-Proc-Implemetation.inc"/>
+        <Type Value="Include"/>
+      </Item6>
+      <Item7>
+        <Filename Value="../incs/ElementEnum.inc"/>
+        <Type Value="Include"/>
+      </Item7>
+      <Item8>
+        <Filename Value="../incs/Elements-Proc-Declaration.inc"/>
+        <Type Value="Include"/>
+      </Item8>
+      <Item9>
+        <Filename Value="../incs/proc.inc"/>
+        <Type Value="Include"/>
+      </Item9>
+      <Item10>
+        <Filename Value="../incs/styles-decl.inc"/>
+        <Type Value="Include"/>
+      </Item10>
+      <Item11>
+        <Filename Value="../incs/styles-impl.inc"/>
+        <Type Value="Include"/>
+      </Item11>
     </Files>
     <LazDoc Paths="../FPdoc"/>
     <RequiredPkgs Count="3">

@@ -329,13 +329,16 @@ type
                                        const Values: array of string);
 
 
-          function AppendOdfElement(AType: TElementType): TOdfElement;
+          function AppendOdfElement(AType: TElementType;AClass: TOdfElementClass): TOdfElement; overload;
+          function AppendOdfElement(AType: TElementType; at: TAttributeType;
+                                       AValue: string;AClass: TOdfElementClass): TOdfElement;
+          function AppendOdfElement(AType: TElementType): TOdfElement; overload;
           function AppendOdfElement(AType: TElementType; at: TAttributeType;
                                        AValue: string): TOdfElement;
           function OdfGetFirstElement: TOdfElement;
           function HasOdfElement(AType: TElementType): boolean;
 
-          function FindStyle(aName: String): TOdfElement;
+          function Find(aName: String;recursive:boolean=false): TOdfElement;
           function GetAttribute(AType: TAttributeType): TDOMAttr;
           function GetAttributeString(AType: TAttributeType): String;
           function HasAttribute(AType: TAttributeType): boolean;
@@ -517,7 +520,8 @@ type
           property ManifestRdf: TDOMElement read FManifestRdf write FManifestRdf;
     end;
 
-
+    {Foreward declaration}
+    THyperLink=class;
 
     { TOdfContent }
 
@@ -529,23 +533,25 @@ type
     public
           //p1-6.1.1
           Procedure AppendText(aText:String);
+          function AddLineBreak: TOdfContent;
+          function AddNBSpace(FontStyles: TFontStyles): TOdfContent;
+          function AddTab(FontStyles: TFontStyles): TOdfContent;
+          function AddSpan(AText: string; FontStyles: TFontStyles): TSpan;overload;
+          function AddSpan(AText: string; aFont: TFont;const doc: TOdfDocument): TSpan;
+                   overload;
+          function AddSpan(AText: string; aStyle: string): TSpan;overload;
+          function AddLink(AText: string; FontStyles: TFontStyles;aBMName:string): THyperLink;
           function GetCharacterContent(Recursive: boolean = true): string;
           property TextContent read GetTextContent write OdfSetTextContent;
     end;
 
-    THyperLink=class;
     { TOdfParagraph }
 
     TOdfParagraph = class(TOdfContent)
     private
 
     public
-          function AddSpan(AText: string; FontStyles: TFontStyles): TSpan;overload;
-          function AddSpan(AText: string; aFont: TFont;const doc: TOdfDocument): TSpan;
-            overload;
-          function AddSpan(AText: string; aStyle: string): TSpan;overload;
-          function AddBookmark(AText: string; FontStyles: TFontStyles;aBMName:string): TSpan;
-          function AddLink(AText: string; FontStyles: TFontStyles;aBMName:string): THyperLink;
+         function AddBookmark(AText: string; FontStyles: TFontStyles;aBMName:string): TSpan;
 
           //p1-7.4.15
           { TODO : Text input can also be included on Span, oetTextH, etc }
@@ -928,42 +934,12 @@ end;
 
 { TOdfParagraph }
 
-function TOdfParagraph.AddSpan(AText: string; FontStyles: TFontStyles): TSpan;
-begin
-     result:=TSpan.CreateSpan(self.OwnerDocument as TXMLDocument, AText);
-     result.SetStyle(FontStyles);
-     AppendChild(result);
-end;
-
-function TOdfParagraph.AddSpan(AText: string; aFont: TFont;
-  const doc: TOdfDocument): TSpan;
-begin
-     result:=TSpan.CreateSpan(self.OwnerDocument as TXMLDocument, AText);
-     result.SetStyle(doc,aFont);
-     AppendChild(result);
-end;
-
-function TOdfParagraph.AddSpan(AText: string; aStyle: string): TSpan;
-begin
-     result:=TSpan.CreateSpan(self.OwnerDocument as TXMLDocument, AText);
-     result.SetStyle(aStyle);
-     AppendChild(result);
-end;
-
 function TOdfParagraph.AddBookmark(AText: string; FontStyles: TFontStyles;
   aBMName: string): TSpan;
 begin
   result := TBookMark.CreateBookmark(self.OwnerDocument as TXMLDocument,AText,aBMName);
   result.SetStyle(FontStyles);
   AppendChild(result);
-end;
-
-function TOdfParagraph.AddLink(AText: string; FontStyles: TFontStyles;
-  aBMName: string): THyperLink;
-begin
-     result := THyperLink.CreateLink(self.OwnerDocument as TXMLDocument,AText,aBMName);
-     result.SetStyle(FontStyles);
-     AppendChild(result);
 end;
 
 function TOdfParagraph.AddTextInput(ADescription: string): TOdfElement;
@@ -974,7 +950,6 @@ begin
      else
          AppendOdfElement(oetTextTextInput, oatTextDescription, ADescription);
 end;
-
 { TBookMark }
 
 class function TBookMark.CreateBookmark(doc: TXMLDocument; AText,
@@ -1065,22 +1040,21 @@ begin
 
         if aFont.name <> 'default' then
           begin
-        lFontdcls := FFontFaceDecls.FindNode(afont.Name);
-        if not assigned(lFontdcls) then
-          begin
-            lFontdcls := CreateOdfElement(oetStyleFontFace,oatStyleName,afont.Name);
-            TOdfElement(lFontdcls).SetAttribute(oatSvgFontFamily,afont.Name.QuotedString(''''));
-            FontFaceDecls.AppendChild(lFontdcls);
-          end;
-        lStyleprop.SetAttribute(oatStyleFontName,afont.Name) ;
+            lFontdcls := TOdfElement(FFontFaceDecls).Find(afont.Name);
+            if not assigned(lFontdcls) then
+              begin
+                lFontdcls := CreateOdfElement(oetStyleFontFace,oatStyleName,afont.Name);
+                TOdfElement(lFontdcls).SetAttribute(oatSvgFontFamily,afont.Name.QuotedString(''''));
+                FontFaceDecls.AppendChild(lFontdcls);
+              end;
+            lStyleprop.SetAttribute(oatStyleFontName,afont.Name) ;
           end;
         if afont.Color <>clDefault then
           begin
             RedGreenBlue(afont.Color,lR,lG,lB);
             lStyleprop.SetAttribute(oatFoColor,'#'+IntToHex(Integer(RGBToColor(lb,lg,lr)),6)) ;
-
           end;
-        if afont.Size>0 then
+        if afont.Size>0 then   //Todo -ojc: Handling of negative font-sizes
           lStyleprop.SetAttribute(oatFoFontSize,inttostr(afont.Size)+'pt') ;
         if aFont.Bold then
           lStyleprop.SetAttribute(oatFoFontWeight,OdfFontWeightValues[fwBold]);
@@ -1159,6 +1133,51 @@ begin
            s:=s2;
 
      until (et = oetNone) and (s='');
+end;
+
+function TOdfContent.AddLineBreak: TOdfContent;
+begin
+  result := TOdfContent(AppendOdfElement(oetTextLineBreak,TOdfContent));
+end;
+
+function TOdfContent.AddNBSpace(FontStyles: TFontStyles): TOdfContent;
+begin
+  result := AddSpan('',FontStyles);
+end;
+
+function TOdfContent.AddTab(FontStyles: TFontStyles): TOdfContent;
+begin
+  result := TOdfContent(AppendOdfElement(oetTextTab,TOdfContent));
+end;
+
+function TOdfContent.AddSpan(AText: string; FontStyles: TFontStyles): TSpan;
+begin
+     result:=TSpan.CreateSpan(self.OwnerDocument as TXMLDocument, AText);
+     result.SetStyle(FontStyles);
+     AppendChild(result);
+end;
+
+function TOdfContent.AddSpan(AText: string; aFont: TFont;
+  const doc: TOdfDocument): TSpan;
+begin
+     result:=TSpan.CreateSpan(self.OwnerDocument as TXMLDocument, AText);
+     result.SetStyle(doc,aFont);
+     AppendChild(result);
+end;
+
+function TOdfContent.AddSpan(AText: string; aStyle: string): TSpan;
+begin
+     result:=TSpan.CreateSpan(self.OwnerDocument as TXMLDocument, AText);
+     result.SetStyle(aStyle);
+     AppendChild(result);
+end;
+
+function TOdfContent.AddLink(AText: string; FontStyles: TFontStyles;
+  aBMName: string): THyperLink;
+begin
+     result := THyperLink.CreateLink(self.OwnerDocument as TXMLDocument,AText,aBMName);
+     result.SetStyle(FontStyles);
+     AppendChild(result);
 end;
 
 function TOdfContent.GetCharacterContent(Recursive: boolean): string;
@@ -1318,7 +1337,7 @@ begin
   result.SetAttribute(oatTextOutlineLevel, Inttostr(aLevel));
   FText.AppendChild(result);
 
-  lParaStyle:= TOdfElement(FStyles).FindStyle(CStyleTextBody) ;
+  lParaStyle:= TOdfElement(FStyles).Find(CStyleTextBody) ;
   if not assigned(lParaStyle) then
     begin
          vStyle:=CreateOdfElement(oetStyleStyle);
@@ -1334,7 +1353,7 @@ begin
 
     end;
 
-  lParaStyle:= TOdfElement(FStyles).FindStyle(CStyleHeadingStb+Inttostr(aLevel)) ;
+  lParaStyle:= TOdfElement(FStyles).Find(CStyleHeadingStb+Inttostr(aLevel)) ;
   if not assigned(lParaStyle) then
     begin
          vStyle:=CreateOdfElement(oetStyleStyle);
@@ -1491,17 +1510,29 @@ begin
      end;
 end;
 
+function TOdfElement.AppendOdfElement(AType: TElementType;
+  AClass: TOdfElementClass): TOdfElement;
+begin
+  result:=CreateOdfElement(AType,AClass, self.OwnerDocument as TXMLDocument);
+  self.AppendChild(result);
+end;
+
+function TOdfElement.AppendOdfElement(AType: TElementType; at: TAttributeType;
+  AValue: string; AClass: TOdfElementClass): TOdfElement;
+begin
+  result:=AppendOdfElement(AType,AClass);
+  result.SetAttribute(at, AValue);
+end;
+
 function TOdfElement.AppendOdfElement(AType: TElementType): TOdfElement;
 begin
-     result:=CreateOdfElement(AType, self.OwnerDocument as TXMLDocument);
-     self.AppendChild(result);
+  result:=AppendOdfElement(AType,TOdfElement);
 end;
 
 function TOdfElement.AppendOdfElement(AType: TElementType; at: TAttributeType;
   AValue: string): TOdfElement;
 begin
-     result:=AppendOdfElement(AType);
-     result.SetAttribute(at, AValue);
+  result:=AppendOdfElement(AType,at,AValue,TOdfElement);
 end;
 
 function TOdfElement.OdfGetFirstElement: TOdfElement;
@@ -1540,23 +1571,39 @@ begin
              end;
 end;
 
-function TOdfElement.FindStyle(aName: String): TOdfElement;
+function TOdfElement.Find(aName: String; recursive: boolean): TOdfElement;
 var
-  lChlds: TDOMNode;
+  lChlds, lNext: TDOMNode;
 begin
    lChlds := FirstChild;
+   lNext:= GetNextNodeSkipChildren;
    result := nil;
-   while assigned(lChlds) do
+   while assigned(lChlds) and (lChlds<>lNext) do
       begin
         if not (lChlds is TDOMElement)
         then
             raise Exception.Create('Unexpected Node Type: ' + lChlds.ClassName);
 
-        if (TOdfStyleStyle(lChlds).OdfStyleName=aname)
+        {for some reason lChlds.inheritsfrom(TOdfStyleStyle)=False !}
+        if (TOdfElement(lChlds).GetAttributeString(oatStyleName)=aName)
         then
             exit(TOdfElement(lChlds));
 
-        lChlds:=lChlds.GetNextNodeSkipChildren;
+        if (TOdfElement(lChlds).GetAttributeString(oatFoFontFamily)=aName)
+        then
+            exit(TOdfElement(lChlds));
+
+        {for some reason lChlds.inheritsfrom(TOdfContent)=False !}
+        if (TOdfElement(lChlds).GetAttributeString(oatTextStyleName)=aName)
+        then
+            exit(TOdfElement(lChlds));
+
+
+        if recursive
+        then
+          lChlds:=lChlds.GetNextNode
+        else
+          lChlds:=lChlds.GetNextNodeSkipChildren;
       end;
 end;
 
@@ -1752,7 +1799,6 @@ var
 begin
      try
         Src:=TXMLInputSource.Create(AStream);
-
         Parser := TDOMParser.Create;
         Parser.Options.Namespaces:=True;
         Parser.Options.IgnoreComments:=True;
@@ -2668,10 +2714,6 @@ begin
      result:=TSpan.CreateSpan(self.XmlDocument, AText);
      result.SetStyle(FontStyles);
 end;
-
-
-
-
 
 { TODO : Create a SiblingNode Parameter.
 If assigned the method will begin the search using it as a starting point,
