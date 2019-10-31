@@ -546,6 +546,10 @@ type
           function AddSpan(AText: string; aStyle: string): TSpan;overload;
           function AddBookmark(AText: string; FontStyles: TFontStyles;aBMName:string): TSpan;
           function AddLink(AText: string; FontStyles: TFontStyles;aBMName:string): THyperLink;
+
+          //p1-7.4.15
+          { TODO : Text input can also be included on Span, oetTextH, etc }
+          function AddTextInput(ADescription: string = ''): TOdfElement;
     end;
 
 
@@ -960,6 +964,15 @@ begin
      result := THyperLink.CreateLink(self.OwnerDocument as TXMLDocument,AText,aBMName);
      result.SetStyle(FontStyles);
      AppendChild(result);
+end;
+
+function TOdfParagraph.AddTextInput(ADescription: string): TOdfElement;
+begin
+     if ADescription=''
+     then
+         AppendOdfElement(oetTextTextInput)
+     else
+         AppendOdfElement(oetTextTextInput, oatTextDescription, ADescription);
 end;
 
 { TBookMark }
