@@ -551,7 +551,11 @@ type
     private
 
     public
-     function AddBookmark(AText: string; FontStyles: TFontStyles;aBMName:string): TSpan;
+         function AddBookmark(AText: string; FontStyles: TFontStyles;aBMName:string): TSpan;
+
+          //p1-7.4.15
+          { TODO : Text input can also be included on Span, oetTextH, etc }
+          function AddTextInput(ADescription: string = ''): TOdfElement;
     end;
 
 
@@ -938,6 +942,14 @@ begin
   AppendChild(result);
 end;
 
+function TOdfParagraph.AddTextInput(ADescription: string): TOdfElement;
+begin
+     if ADescription=''
+     then
+         AppendOdfElement(oetTextTextInput)
+     else
+         AppendOdfElement(oetTextTextInput, oatTextDescription, ADescription);
+end;
 { TBookMark }
 
 class function TBookMark.CreateBookmark(doc: TXMLDocument; AText,
