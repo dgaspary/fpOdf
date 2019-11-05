@@ -38,16 +38,13 @@ Read the file COPYING.modifiedLGPL.txt for more informations."/>
       </Item3>
     </Files>
     <LazDoc Paths="../FPdoc"/>
-    <RequiredPkgs Count="3">
+    <RequiredPkgs Count="2">
       <Item1>
-        <PackageName Value="LCLBase"/>
+        <PackageName Value="LazUtils"/>
       </Item1>
       <Item2>
-        <PackageName Value="LazUtils"/>
-      </Item2>
-      <Item3>
         <PackageName Value="FCL"/>
-      </Item3>
+      </Item2>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>

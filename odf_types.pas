@@ -41,7 +41,7 @@ unit odf_types;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LazFileUtils, zipper, zstream, fgl, LazUTF8, Graphics,
+  Classes, SysUtils, FileUtil, LazFileUtils, zipper, zstream, fgl, LazUTF8, FPCanvas,
 
   { $Define ODF_LOGGING}
 
@@ -384,6 +384,25 @@ type
 {$INCLUDE incs/styles-decl.inc}
 
 type
+
+    TOdfColor = record
+        Red,
+        Green,
+        Blue: Byte;
+    end;
+
+    { TOdfFont }
+
+    TOdfFont = class(TFPCustomFont)
+    private
+      FColor: TOdfColor;
+    public
+       property Color: TOdfColor read FColor write FColor;
+    end;
+
+    { TODO : Odf Font Style has different items than TFontStyle }
+    TOdfFontStyles = set of TOdfFontStyle;
+
     TOdfNodeSet = TNodeSet;
 
     TOdfXPathNsResolver = class;
@@ -461,7 +480,7 @@ type
                                AParentStyle: TOdfStyleStyle): TOdfStyleStyle;
 
 
-          function CreateSpan(AText: string; FontStyles: TFontStyles): TSpan;
+          function CreateSpan(AText: string; FontStyles: TOdfFontStyles): TSpan;
 
           function SearchText(AText: string; AParent: TDOMElement;
                               Accepted: TElementTypeArray;
@@ -540,12 +559,12 @@ type
     private
 
     public
-          function AddSpan(AText: string; FontStyles: TFontStyles): TSpan;overload;
-          function AddSpan(AText: string; aFont: TFont;const doc: TOdfDocument): TSpan;
+          function AddSpan(AText: string; FontStyles: TOdfFontStyles): TSpan;overload;
+          function AddSpan(AText: string; aFont: TOdfFont;const doc: TOdfDocument): TSpan;
             overload;
           function AddSpan(AText: string; aStyle: string): TSpan;overload;
-          function AddBookmark(AText: string; FontStyles: TFontStyles;aBMName:string): TSpan;
-          function AddLink(AText: string; FontStyles: TFontStyles;aBMName:string): THyperLink;
+          function AddBookmark(AText: string; FontStyles: TOdfFontStyles;aBMName:string): TSpan;
+          function AddLink(AText: string; FontStyles: TOdfFontStyles;aBMName:string): THyperLink;
 
           //p1-7.4.15
           { TODO : Text input can also be included on Span, oetTextH, etc }
@@ -560,8 +579,8 @@ type
 
     public
           class function CreateSpan(doc: TXMLDocument; AText: string): TSpan;
-          procedure SetStyle(fs: TFontStyles);overload;
-          procedure SetStyle(const doc: TOdfDocument; aFont: TFont); overload;
+          procedure SetStyle(fs: TOdfFontStyles);overload;
+          procedure SetStyle(const doc: TOdfDocument; aFont: TOdfFont); overload;
           procedure SetStyle(aStyleName: string);overload;
     end;
 
@@ -928,14 +947,15 @@ end;
 
 { TOdfParagraph }
 
-function TOdfParagraph.AddSpan(AText: string; FontStyles: TFontStyles): TSpan;
+function TOdfParagraph.AddSpan(AText: string; FontStyles: TOdfFontStyles
+  ): TSpan;
 begin
      result:=TSpan.CreateSpan(self.OwnerDocument as TXMLDocument, AText);
      result.SetStyle(FontStyles);
      AppendChild(result);
 end;
 
-function TOdfParagraph.AddSpan(AText: string; aFont: TFont;
+function TOdfParagraph.AddSpan(AText: string; aFont: TOdfFont;
   const doc: TOdfDocument): TSpan;
 begin
      result:=TSpan.CreateSpan(self.OwnerDocument as TXMLDocument, AText);
@@ -950,7 +970,7 @@ begin
      AppendChild(result);
 end;
 
-function TOdfParagraph.AddBookmark(AText: string; FontStyles: TFontStyles;
+function TOdfParagraph.AddBookmark(AText: string; FontStyles: TOdfFontStyles;
   aBMName: string): TSpan;
 begin
   result := TBookMark.CreateBookmark(self.OwnerDocument as TXMLDocument,AText,aBMName);
@@ -958,7 +978,7 @@ begin
   AppendChild(result);
 end;
 
-function TOdfParagraph.AddLink(AText: string; FontStyles: TFontStyles;
+function TOdfParagraph.AddLink(AText: string; FontStyles: TOdfFontStyles;
   aBMName: string): THyperLink;
 begin
      result := THyperLink.CreateLink(self.OwnerDocument as TXMLDocument,AText,aBMName);
@@ -1033,9 +1053,9 @@ end;
 
 { TSpan }
 
-procedure TSpan.SetStyle(fs: TFontStyles);
+procedure TSpan.SetStyle(fs: TOdfFontStyles);
 var
-  lfs: TFontStyle;
+  lfs: TOdfFontStyle;
   lFsName: string;
   lFsVal: Integer;
 begin
@@ -1048,7 +1068,7 @@ begin
    SetAttribute(oatTextStyleName,lFsName);
 end;
 
-procedure TSpan.SetStyle(const doc: TOdfDocument; aFont: TFont);
+procedure TSpan.SetStyle(const doc: TOdfDocument; aFont: TOdfFont);
 var
   lStyle: TOdfStyleStyle;
   lStyleprop: TOdfElement;
@@ -1069,16 +1089,15 @@ begin
         if not assigned(lFontdcls) then
           begin
             lFontdcls := CreateOdfElement(oetStyleFontFace,oatStyleName,afont.Name);
-            TOdfElement(lFontdcls).SetAttribute(oatSvgFontFamily,afont.Name.QuotedString(''''));
+            TOdfElement(lFontdcls).SetAttribute(oatSvgFontFamily, QuotedStr(afont.Name));
             FontFaceDecls.AppendChild(lFontdcls);
           end;
         lStyleprop.SetAttribute(oatStyleFontName,afont.Name) ;
           end;
-        if afont.Color <>clDefault then
+//        if afont.Color <>clDefault then { TODO : There is no "default" color for TFpColor.. }
           begin
-            RedGreenBlue(afont.Color,lR,lG,lB);
-            lStyleprop.SetAttribute(oatFoColor,'#'+IntToHex(Integer(RGBToColor(lb,lg,lr)),6)) ;
-
+            with aFont.Color do
+                 lStyleprop.SetAttribute(oatFoColor,'#'+Format('%2.2x%2.2x%2.2x', [Red, Green, Blue])) ;
           end;
         if afont.Size>0 then
           lStyleprop.SetAttribute(oatFoFontSize,inttostr(afont.Size)+'pt') ;
@@ -2663,7 +2682,8 @@ begin
      result.OdfStyleParentStyleName:=AParentStyle.OdfStyleName;
 end;
 
-function TOdfDocument.CreateSpan(AText: string; FontStyles: TFontStyles): TSpan;
+function TOdfDocument.CreateSpan(AText: string; FontStyles: TOdfFontStyles
+  ): TSpan;
 begin
      result:=TSpan.CreateSpan(self.XmlDocument, AText);
      result.SetStyle(FontStyles);
