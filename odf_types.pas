@@ -457,14 +457,21 @@ type
           constructor Create;
           destructor Destroy; override;
 
+          class function GetMimeType(ADoc: TXMLDocument): TOdfMimetype;
+
           class function ElementOdfClassByType(et: TElementType): TOdfElementClass;
 
           class function ConvertOdfElement(AClass: TOdfElementClass;
                                        e: TDOMElement): TOdfElement;
 
+          class function CreateDocument(AMimeType: TOdfMimetype): TOdfDocument;
+
           class function LoadFromFile(AFilename: string): TOdfDocument;
           class function LoadFromZipFile(AFilename, TempDir: string): TOdfDocument;
-          class function LoadFromSingleXml(AFilename: string): TOdfDocument;
+
+          class function CreateFromXml(ADoc: TXMLDocument): TOdfDocument;
+          class function LoadFromSingleXml(AStream: TStream): TOdfDocument; overload;
+          class function LoadFromSingleXml(AFilename: string): TOdfDocument; overload;
 
           class procedure SaveToSingleXml(AOdf: TOdfDocument;
                                           AFilename: string); overload;
@@ -524,6 +531,8 @@ type
             AFontSize: integer; AFontSizeUnit: string;
             AFontStyle: TOdfFontStyle; AFontWeigth: TOdfFontWeight;
             AStyleFamily: string): TStrings;
+
+          function Clone: TOdfDocument; virtual;
 
           property Settings: TDOMElement read FSettings write FSettings;
           property Scripts: TDOMElement read FScripts write FScripts;
@@ -1784,11 +1793,8 @@ begin
 end;
 
 function TOdfDocument.GetMimeType: TOdfMimetype;
-var
-   s: string;
 begin
-     s:=XmlDocument.DocumentElement.GetAttributeNS(GetURI(onsOffice), 'mimetype');
-     result:=OdfGetMimeTypeByName(s);
+     Result:=GetMimeType(XmlDocument);
 end;
 
 class function TOdfDocument.LoadFromFile(AFilename: string): TOdfDocument;
@@ -2524,6 +2530,14 @@ begin
      inherited Destroy;
 end;
 
+class function TOdfDocument.GetMimeType(ADoc: TXMLDocument): TOdfMimetype;
+var
+   s: string;
+begin
+     s:=ADoc.DocumentElement.GetAttributeNS(GetURI(onsOffice), 'mimetype');
+     result:=OdfGetMimeTypeByName(s);
+end;
+
 class function TOdfDocument.ElementOdfClassByType(et: TElementType
   ): TOdfElementClass;
 begin
@@ -2581,6 +2595,15 @@ begin
      OdfSetAttributeValue(oatOfficeMimetype, XmlDocument.DocumentElement, s);
 end;
 
+class function TOdfDocument.CreateDocument(AMimeType: TOdfMimetype): TOdfDocument;
+begin
+     case AMimeType of
+          omtText: Result:=TOdfTextDocument.Create;
+          else
+              Result:=TOdfDocument.Create;
+     end;
+end;
+
 class function TOdfDocument.LoadFromZipFile(AFilename, TempDir: string): TOdfDocument;
 var
    z: TUnZipper;
@@ -2598,17 +2621,33 @@ begin
 
      mt:=OdfGetMimeTypeFromFile(TempDir + 'mimetype');
 
-     case mt of
-          omtText: result:=TOdfTextDocument.Create;
-          else
-              result:=TOdfDocument.Create;
-     end;
+     result:=TOdfDocument.CreateDocument(mt);
 
      ReadPackage(TempDir, result);
 
      result.MimeType:=mt;
 
      RemoveDirUTF8(TempDir);
+end;
+
+class function TOdfDocument.CreateFromXml(ADoc: TXMLDocument): TOdfDocument;
+var
+   mt: TOdfMimetype;
+begin
+     mt:=GetMimeType(ADoc);
+
+     Result:=CreateDocument(mt);
+
+     Result.XmlDocument:=ADoc;
+     Result.FindOdfRootElements;
+end;
+
+class function TOdfDocument.LoadFromSingleXml(AStream: TStream): TOdfDocument;
+var
+   vDoc: TXMLDocument;
+begin
+     vDoc:=ParseXmlFile(AStream);
+     Result:=TOdfDocument.CreateFromXml(vDoc);
 end;
 
 class function TOdfDocument.LoadFromSingleXml(AFilename: string
@@ -2619,9 +2658,7 @@ begin
      result:=nil;
      fs:=TFileStream.Create(AFilename, fmOpenRead);
      try
-        result:=TOdfDocument.Create;
-        result.XmlDocument:=ParseXmlFile(fs);
-        result.FindOdfRootElements;
+        result:=TOdfDocument.LoadFromSingleXml(fs);
      finally
             fs.Free;
      end;
@@ -2912,6 +2949,18 @@ function TOdfDocument.GetStyleByProperties(AFamily: TStyleFamilyValue;
   AFontWeigth: TOdfFontWeight; AStyleFamily: string): TStrings;
 begin
      { TODO : To be done..  }
+end;
+
+function TOdfDocument.Clone: TOdfDocument;
+var
+   vDoc: TXMLDocument;
+   e: TDOMElement;
+begin
+     vDoc:=TXMLDocument.Create;
+     e:=FXmlDocument.DocumentElement.CloneNode(true, vDoc) as TDOMElement;
+     vDoc.AppendChild(e);
+
+     Result:=TOdfDocument.CreateFromXml(vDoc);
 end;
 
 

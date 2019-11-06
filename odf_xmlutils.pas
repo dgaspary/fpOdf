@@ -3,7 +3,7 @@
   fpOdf is a library used to help users to create and to modify OpenDocument
   Files(ODF)
 
-  Copyright (C) 2013-2015 Daniel F. Gaspary https://github.com/dgaspary
+  Copyright (C) 2013-2019 Daniel F. Gaspary https://github.com/dgaspary
 
   This library is free software; you can redistribute it and/or modify it
   under the terms of the GNU Library General Public License as published by
@@ -52,20 +52,32 @@ uses
   ;
 
 
+procedure OdfWriteXmlToStream(ADoc: TXMLDocument;  AStream: TStream);
 procedure OdfWriteXmlToFile(ADoc: TXMLDocument;  AFilename: string);
 
 function OdfAttributesAsStrings(e: TDOMElement; OnlyNames: boolean = true): TStrings;
 
 implementation
 
-procedure OdfWriteXmlToFile(ADoc: TXMLDocument;  AFilename: string);
+procedure OdfWriteXmlToStream(ADoc: TXMLDocument;  AStream: TStream);
 begin
      {$IfDef UseStaxWriter}
-            XmlStreamWrite(ADoc, AFilename, 'utf-8', '1.0');
+            XmlStreamWrite(ADoc, AStream, 'utf-8', '1.0');
      {$Else}
-            WriteXMLFile(ADoc, AFilename,[xwfPreserveWhiteSpace]);
+            WriteXMLFile(ADoc, AStream,[xwfPreserveWhiteSpace]);
      {$EndIf}
+end;
 
+procedure OdfWriteXmlToFile(ADoc: TXMLDocument;  AFilename: string);
+var
+   fs: TFileStream;
+begin
+     try
+        fs:=TFileStream.Create(AFilename, fmCreate);
+        OdfWriteXmlToStream(ADoc, fs);
+     finally
+            fs.Free;
+     end;
 end;
 
 function OdfAttributesAsStrings(e: TDOMElement; OnlyNames: boolean): TStrings;
