@@ -527,10 +527,11 @@ type
 
           function GetStyleElementByName(AStyleName: string): TDOMElement;
 
-          function GetStyleByProperties(AFamily: TStyleFamilyValue;
-            AFontSize: integer; AFontSizeUnit: string;
-            AFontStyle: TOdfFontStyle; AFontWeigth: TOdfFontWeight;
-            AStyleFamily: string): TStrings;
+          //Params with default values will be ignored in search.
+          //Example: 0 for AFontSize, '' for AStyleFamily and fwNone for AFontWeight
+          function GetStyleByProperties(AFontSize: integer; AFontSizeUnit: string;
+            AFontStyle: TOdfFontStyle; AFontWeight: TOdfFontWeight;
+            AFontUnderlineStyle: string): TStrings;
 
           function Clone: TOdfDocument; virtual;
 
@@ -1753,6 +1754,7 @@ begin
           s+='//' + AParent.TagName + '//@' + OdfGetAttributeQName(att);
      end;
 
+     { TODO : Maybe the correct is to search starting from BODY element }
      if XPathSearch(s, FXmlDocument.DocumentElement, [], StylesFound)
      then
      begin
@@ -2215,7 +2217,7 @@ var
         if not OdfXPathSearch(vXPath, xmlDoc.DocumentElement,
                     FoundElements)
         then
-            Raise Exception.Create('No Styles Found at destiny file.');
+            Raise Exception.Create('No Styles Found at dOdfXPathSearchestiny file.');
 
         if FoundElements.Count>0
         then
@@ -2944,11 +2946,79 @@ begin
      OdfLogExitProc;
 end;
 
-function TOdfDocument.GetStyleByProperties(AFamily: TStyleFamilyValue;
-  AFontSize: integer; AFontSizeUnit: string; AFontStyle: TOdfFontStyle;
-  AFontWeigth: TOdfFontWeight; AStyleFamily: string): TStrings;
+function TOdfDocument.GetStyleByProperties(AFontSize: integer;
+  AFontSizeUnit: string; AFontStyle: TOdfFontStyle;
+  AFontWeight: TOdfFontWeight; AFontUnderlineStyle: string): TStrings;
+var
+   vConditions: string;
+   s: string;
+
+   p: pointer;
+   PropertiesFound: TOdfNodeSet;
+
+   AStyle: TDOMElement;
+
+   procedure AddCondition(Att: TAttributeType; AValue: string);
+   begin
+        if vConditions<>''
+        then
+            vConditions+=' and ';
+
+        vConditions+='@' + OdfGetAttributeQName(Att) + '=' + QuotedStr(AValue);
+   end;
+
 begin
-     { TODO : To be done..  }
+     Result:=TStringList.Create;
+
+     vConditions:='';
+
+     { TODO : Include Complex and Asian font attributes? }
+     if AFontSize>0
+     then
+         AddCondition(oatFoFontSize, IntToStr(AFontSize) + AFontSizeUnit);
+
+     if AFontStyle<>ofsNone
+     then
+         AddCondition(oatFoFontStyle, OdfGetFontStyleValue(AFontStyle));
+
+     if AFontWeight<>fwNone
+     then
+         AddCondition(oatFoFontWeight, OdfGetFontWeightValue(AFontWeight));
+
+     if AFontUnderlineStyle<>''
+     then
+         AddCondition(oatStyleTextUnderlineStyle, AFontUnderlineStyle);
+
+     if vConditions=''
+     then
+         exit;
+
+     try
+        { TODO : Automatic styles and Parent resolution }
+
+        //s:=Format('//style:text-properties[%s]', [s]);
+        s:='//style:text-properties[' + vConditions + ']';
+
+        PropertiesFound:=nil;
+        if XPathSearch(s, FStyles, [], PropertiesFound)
+        then
+            for p in PropertiesFound do
+                if TObject(p) is TDOMElement
+                then
+                begin
+                     AStyle:=TDOMElement(p).ParentNode as TDOMElement;
+                     s:=OdfGetAttributeValue(oatStyleName, AStyle);
+
+                     if (s<>'') and (Result.IndexOf(s)<0)
+                     then
+                         Result.Add(s);
+
+                end;
+     finally
+            if Assigned(PropertiesFound)
+            then
+                PropertiesFound.Free;
+     end;
 end;
 
 function TOdfDocument.Clone: TOdfDocument;
