@@ -41,7 +41,7 @@ unit odf_types;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LazFileUtils, zipper, zstream, fgl, LazUTF8, Graphics,
+  Classes, SysUtils, FileUtil, LazFileUtils, zipper, zstream, fgl, LazUTF8, FPCanvas,
 
   { $Define ODF_LOGGING}
 
@@ -387,6 +387,25 @@ type
 {$INCLUDE incs/styles-decl.inc}
 
 type
+
+    TOdfColor = record
+        Red,
+        Green,
+        Blue: Byte;
+    end;
+
+    { TOdfFont }
+
+    TOdfFont = class(TFPCustomFont)
+    private
+      FColor: TOdfColor;
+    public
+       property Color: TOdfColor read FColor write FColor;
+    end;
+
+    { TODO : Odf Font Style has different items than TFontStyle }
+    TOdfFontStyles = set of TOdfFontStyle;
+
     TOdfNodeSet = TNodeSet;
 
     TOdfXPathNsResolver = class;
@@ -441,14 +460,21 @@ type
           constructor Create;
           destructor Destroy; override;
 
+          class function GetMimeType(ADoc: TXMLDocument): TOdfMimetype;
+
           class function ElementOdfClassByType(et: TElementType): TOdfElementClass;
 
           class function ConvertOdfElement(AClass: TOdfElementClass;
                                        e: TDOMElement): TOdfElement;
 
+          class function CreateDocument(AMimeType: TOdfMimetype): TOdfDocument;
+
           class function LoadFromFile(AFilename: string): TOdfDocument;
           class function LoadFromZipFile(AFilename, TempDir: string): TOdfDocument;
-          class function LoadFromSingleXml(AFilename: string): TOdfDocument;
+
+          class function CreateFromXml(ADoc: TXMLDocument): TOdfDocument;
+          class function LoadFromSingleXml(AStream: TStream): TOdfDocument; overload;
+          class function LoadFromSingleXml(AFilename: string): TOdfDocument; overload;
 
           class procedure SaveToSingleXml(AOdf: TOdfDocument;
                                           AFilename: string); overload;
@@ -464,7 +490,7 @@ type
                                AParentStyle: TOdfStyleStyle): TOdfStyleStyle;
 
 
-          function CreateSpan(AText: string; FontStyles: TFontStyles): TSpan;
+          function CreateSpan(AText: string; FontStyles: TOdfFontStyles): TSpan;
 
           function SearchText(AText: string; AParent: TDOMElement;
                               Accepted: TElementTypeArray;
@@ -504,10 +530,13 @@ type
 
           function GetStyleElementByName(AStyleName: string): TDOMElement;
 
-          function GetStyleByProperties(AFamily: TStyleFamilyValue;
-            AFontSize: integer; AFontSizeUnit: string;
-            AFontStyle: TOdfFontStyle; AFontWeigth: TOdfFontWeight;
-            AStyleFamily: string): TStrings;
+          //Params with default values will be ignored in search.
+          //Example: 0 for AFontSize, '' for AStyleFamily and fwNone for AFontWeight
+          function GetStyleByProperties(AFontSize: integer; AFontSizeUnit: string;
+            AFontStyle: TOdfFontStyle; AFontWeight: TOdfFontWeight;
+            AFontUnderlineStyle: string): TStrings;
+
+          function Clone: TOdfDocument; virtual;
 
           property Settings: TDOMElement read FSettings write FSettings;
           property Scripts: TDOMElement read FScripts write FScripts;
@@ -551,8 +580,14 @@ type
     private
 
     public
-         function AddBookmark(AText: string; FontStyles: TFontStyles;aBMName:string): TSpan;
 
+          function AddSpan(AText: string; FontStyles: TOdfFontStyles): TSpan;overload;
+          function AddSpan(AText: string; aFont: TOdfFont;const doc: TOdfDocument): TSpan;
+            overload;
+          function AddSpan(AText: string; aStyle: string): TSpan;overload;
+          function AddBookmark(AText: string; FontStyles: TOdfFontStyles;aBMName:string): TSpan;
+          function AddLink(AText: string; FontStyles: TOdfFontStyles;aBMName:string): THyperLink;
+          
           //p1-7.4.15
           { TODO : Text input can also be included on Span, oetTextH, etc }
           function AddTextInput(ADescription: string = ''): TOdfElement;
@@ -566,8 +601,8 @@ type
 
     public
           class function CreateSpan(doc: TXMLDocument; AText: string): TSpan;
-          procedure SetStyle(fs: TFontStyles);overload;
-          procedure SetStyle(const doc: TOdfDocument; aFont: TFont); overload;
+          procedure SetStyle(fs: TOdfFontStyles);overload;
+          procedure SetStyle(const doc: TOdfDocument; aFont: TOdfFont); overload;
           procedure SetStyle(aStyleName: string);overload;
     end;
 
@@ -934,12 +969,43 @@ end;
 
 { TOdfParagraph }
 
-function TOdfParagraph.AddBookmark(AText: string; FontStyles: TFontStyles;
+function TOdfParagraph.AddSpan(AText: string; FontStyles: TOdfFontStyles
+  ): TSpan;
+begin
+     result:=TSpan.CreateSpan(self.OwnerDocument as TXMLDocument, AText);
+     result.SetStyle(FontStyles);
+     AppendChild(result);
+end;
+
+function TOdfParagraph.AddSpan(AText: string; aFont: TOdfFont;
+  const doc: TOdfDocument): TSpan;
+begin
+     result:=TSpan.CreateSpan(self.OwnerDocument as TXMLDocument, AText);
+     result.SetStyle(doc,aFont);
+     AppendChild(result);
+end;
+
+function TOdfParagraph.AddSpan(AText: string; aStyle: string): TSpan;
+begin
+     result:=TSpan.CreateSpan(self.OwnerDocument as TXMLDocument, AText);
+     result.SetStyle(aStyle);
+     AppendChild(result);
+end;
+
+function TOdfParagraph.AddBookmark(AText: string; FontStyles: TOdfFontStyles;
   aBMName: string): TSpan;
 begin
   result := TBookMark.CreateBookmark(self.OwnerDocument as TXMLDocument,AText,aBMName);
   result.SetStyle(FontStyles);
   AppendChild(result);
+end;
+
+function TOdfParagraph.AddLink(AText: string; FontStyles: TOdfFontStyles;
+  aBMName: string): THyperLink;
+begin
+     result := THyperLink.CreateLink(self.OwnerDocument as TXMLDocument,AText,aBMName);
+     result.SetStyle(FontStyles);
+     AppendChild(result);
 end;
 
 function TOdfParagraph.AddTextInput(ADescription: string): TOdfElement;
@@ -1008,9 +1074,9 @@ end;
 
 { TSpan }
 
-procedure TSpan.SetStyle(fs: TFontStyles);
+procedure TSpan.SetStyle(fs: TOdfFontStyles);
 var
-  lfs: TFontStyle;
+  lfs: TOdfFontStyle;
   lFsName: string;
   lFsVal: Integer;
 begin
@@ -1023,7 +1089,7 @@ begin
    SetAttribute(oatTextStyleName,lFsName);
 end;
 
-procedure TSpan.SetStyle(const doc: TOdfDocument; aFont: TFont);
+procedure TSpan.SetStyle(const doc: TOdfDocument; aFont: TOdfFont);
 var
   lStyle: TOdfStyleStyle;
   lStyleprop: TOdfElement;
@@ -1040,19 +1106,19 @@ begin
 
         if aFont.name <> 'default' then
           begin
-            lFontdcls := TOdfElement(FFontFaceDecls).Find(afont.Name);
-            if not assigned(lFontdcls) then
-              begin
-                lFontdcls := CreateOdfElement(oetStyleFontFace,oatStyleName,afont.Name);
-                TOdfElement(lFontdcls).SetAttribute(oatSvgFontFamily,afont.Name.QuotedString(''''));
-                FontFaceDecls.AppendChild(lFontdcls);
-              end;
-            lStyleprop.SetAttribute(oatStyleFontName,afont.Name) ;
-          end;
-        if afont.Color <>clDefault then
+        lFontdcls := FFontFaceDecls.FindNode(afont.Name);
+        if not assigned(lFontdcls) then
           begin
-            RedGreenBlue(afont.Color,lR,lG,lB);
-            lStyleprop.SetAttribute(oatFoColor,'#'+IntToHex(Integer(RGBToColor(lb,lg,lr)),6)) ;
+            lFontdcls := CreateOdfElement(oetStyleFontFace,oatStyleName,afont.Name);
+            TOdfElement(lFontdcls).SetAttribute(oatSvgFontFamily, QuotedStr(afont.Name));
+            FontFaceDecls.AppendChild(lFontdcls);
+          end;
+        lStyleprop.SetAttribute(oatStyleFontName,afont.Name) ;
+          end;
+//        if afont.Color <>clDefault then { TODO : There is no "default" color for TFpColor.. }
+          begin
+            with aFont.Color do
+                 lStyleprop.SetAttribute(oatFoColor,'#'+Format('%2.2x%2.2x%2.2x', [Red, Green, Blue])) ;
           end;
         if afont.Size>0 then   //Todo -ojc: Handling of negative font-sizes
           lStyleprop.SetAttribute(oatFoFontSize,inttostr(afont.Size)+'pt') ;
@@ -1772,6 +1838,7 @@ begin
           s+='//' + AParent.TagName + '//@' + OdfGetAttributeQName(att);
      end;
 
+     { TODO : Maybe the correct is to search starting from BODY element }
      if XPathSearch(s, FXmlDocument.DocumentElement, [], StylesFound)
      then
      begin
@@ -1811,11 +1878,8 @@ begin
 end;
 
 function TOdfDocument.GetMimeType: TOdfMimetype;
-var
-   s: string;
 begin
-     s:=XmlDocument.DocumentElement.GetAttributeNS(GetURI(onsOffice), 'mimetype');
-     result:=OdfGetMimeTypeByName(s);
+     Result:=GetMimeType(XmlDocument);
 end;
 
 class function TOdfDocument.LoadFromFile(AFilename: string): TOdfDocument;
@@ -2236,7 +2300,7 @@ var
         if not OdfXPathSearch(vXPath, xmlDoc.DocumentElement,
                     FoundElements)
         then
-            Raise Exception.Create('No Styles Found at destiny file.');
+            Raise Exception.Create('No Styles Found at dOdfXPathSearchestiny file.');
 
         if FoundElements.Count>0
         then
@@ -2551,6 +2615,14 @@ begin
      inherited Destroy;
 end;
 
+class function TOdfDocument.GetMimeType(ADoc: TXMLDocument): TOdfMimetype;
+var
+   s: string;
+begin
+     s:=ADoc.DocumentElement.GetAttributeNS(GetURI(onsOffice), 'mimetype');
+     result:=OdfGetMimeTypeByName(s);
+end;
+
 class function TOdfDocument.ElementOdfClassByType(et: TElementType
   ): TOdfElementClass;
 begin
@@ -2608,6 +2680,15 @@ begin
      OdfSetAttributeValue(oatOfficeMimetype, XmlDocument.DocumentElement, s);
 end;
 
+class function TOdfDocument.CreateDocument(AMimeType: TOdfMimetype): TOdfDocument;
+begin
+     case AMimeType of
+          omtText: Result:=TOdfTextDocument.Create;
+          else
+              Result:=TOdfDocument.Create;
+     end;
+end;
+
 class function TOdfDocument.LoadFromZipFile(AFilename, TempDir: string): TOdfDocument;
 var
    z: TUnZipper;
@@ -2625,17 +2706,33 @@ begin
 
      mt:=OdfGetMimeTypeFromFile(TempDir + 'mimetype');
 
-     case mt of
-          omtText: result:=TOdfTextDocument.Create;
-          else
-              result:=TOdfDocument.Create;
-     end;
+     result:=TOdfDocument.CreateDocument(mt);
 
      ReadPackage(TempDir, result);
 
      result.MimeType:=mt;
 
      RemoveDirUTF8(TempDir);
+end;
+
+class function TOdfDocument.CreateFromXml(ADoc: TXMLDocument): TOdfDocument;
+var
+   mt: TOdfMimetype;
+begin
+     mt:=GetMimeType(ADoc);
+
+     Result:=CreateDocument(mt);
+
+     Result.XmlDocument:=ADoc;
+     Result.FindOdfRootElements;
+end;
+
+class function TOdfDocument.LoadFromSingleXml(AStream: TStream): TOdfDocument;
+var
+   vDoc: TXMLDocument;
+begin
+     vDoc:=ParseXmlFile(AStream);
+     Result:=TOdfDocument.CreateFromXml(vDoc);
 end;
 
 class function TOdfDocument.LoadFromSingleXml(AFilename: string
@@ -2646,9 +2743,7 @@ begin
      result:=nil;
      fs:=TFileStream.Create(AFilename, fmOpenRead);
      try
-        result:=TOdfDocument.Create;
-        result.XmlDocument:=ParseXmlFile(fs);
-        result.FindOdfRootElements;
+        result:=TOdfDocument.LoadFromSingleXml(fs);
      finally
             fs.Free;
      end;
@@ -2709,7 +2804,8 @@ begin
      result.OdfStyleParentStyleName:=AParentStyle.OdfStyleName;
 end;
 
-function TOdfDocument.CreateSpan(AText: string; FontStyles: TFontStyles): TSpan;
+function TOdfDocument.CreateSpan(AText: string; FontStyles: TOdfFontStyles
+  ): TSpan;
 begin
      result:=TSpan.CreateSpan(self.XmlDocument, AText);
      result.SetStyle(FontStyles);
@@ -2929,11 +3025,91 @@ begin
      OdfLogExitProc;
 end;
 
-function TOdfDocument.GetStyleByProperties(AFamily: TStyleFamilyValue;
-  AFontSize: integer; AFontSizeUnit: string; AFontStyle: TOdfFontStyle;
-  AFontWeigth: TOdfFontWeight; AStyleFamily: string): TStrings;
+function TOdfDocument.GetStyleByProperties(AFontSize: integer;
+  AFontSizeUnit: string; AFontStyle: TOdfFontStyle;
+  AFontWeight: TOdfFontWeight; AFontUnderlineStyle: string): TStrings;
+var
+   vConditions: string;
+   s: string;
+
+   p: pointer;
+   PropertiesFound: TOdfNodeSet;
+
+   AStyle: TDOMElement;
+
+   procedure AddCondition(Att: TAttributeType; AValue: string);
+   begin
+        if vConditions<>''
+        then
+            vConditions+=' and ';
+
+        vConditions+='@' + OdfGetAttributeQName(Att) + '=' + QuotedStr(AValue);
+   end;
+
 begin
-     { TODO : To be done..  }
+     Result:=TStringList.Create;
+
+     vConditions:='';
+
+     { TODO : Include Complex and Asian font attributes? }
+     if AFontSize>0
+     then
+         AddCondition(oatFoFontSize, IntToStr(AFontSize) + AFontSizeUnit);
+
+     if AFontStyle<>ofsNone
+     then
+         AddCondition(oatFoFontStyle, OdfGetFontStyleValue(AFontStyle));
+
+     if AFontWeight<>fwNone
+     then
+         AddCondition(oatFoFontWeight, OdfGetFontWeightValue(AFontWeight));
+
+     if AFontUnderlineStyle<>''
+     then
+         AddCondition(oatStyleTextUnderlineStyle, AFontUnderlineStyle);
+
+     if vConditions=''
+     then
+         exit;
+
+     try
+        { TODO : Automatic styles and Parent resolution }
+
+        //s:=Format('//style:text-properties[%s]', [s]);
+        s:='//style:text-properties[' + vConditions + ']';
+
+        PropertiesFound:=nil;
+        if XPathSearch(s, FStyles, [], PropertiesFound)
+        then
+            for p in PropertiesFound do
+                if TObject(p) is TDOMElement
+                then
+                begin
+                     AStyle:=TDOMElement(p).ParentNode as TDOMElement;
+                     s:=OdfGetAttributeValue(oatStyleName, AStyle);
+
+                     if (s<>'') and (Result.IndexOf(s)<0)
+                     then
+                         Result.Add(s);
+
+                end;
+     finally
+            if Assigned(PropertiesFound)
+            then
+                PropertiesFound.Free;
+     end;
+end;
+
+function TOdfDocument.Clone: TOdfDocument;
+var
+   vDoc: TXMLDocument;
+   e: TDOMElement;
+begin
+     vDoc:=TXMLDocument.Create;
+     e:=FXmlDocument.DocumentElement.CloneNode(true, vDoc) as TDOMElement;
+     vDoc.AppendChild(e);
+
+     Result:=TOdfDocument.CreateFromXml(vDoc);
 end;
 
 
