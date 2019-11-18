@@ -9,6 +9,8 @@
       </element><element name="TBookMark"><short>BookMark is a point in the text the reader can jump to. (see also Hyperlink)</short>
       </element><element name="TOdfTextDocument"><short>OdfTextDocument is the class to use to open, close &amp; modify OpenDocument-Files</short>
       </element><short>fpOdf is a library used to help users to create and to modify OpenDocument Files (ODF)</short>
+    <element name="TOdfElement.Find"><short>Find is a general method to find named items when the name of the item is in the attributes</short>
+      </element>
     </module>
   </package>
 </fpdoc-descriptions>
