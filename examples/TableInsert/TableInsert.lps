@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <Version Value="9"/>
+    <BuildModes Active="Default"/>
+    <Units Count="3">
+      <Unit0>
+        <Filename Value="TableInsert.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <CursorPos Y="66"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="../../odf_types.pas"/>
+        <UnitName Value="odf_types"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1102"/>
+        <CursorPos X="22" Y="1114"/>
+        <UsageCount Value="10"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="../../incs/styles-decl.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="81"/>
+        <CursorPos X="33" Y="39"/>
+        <UsageCount Value="10"/>
+      </Unit2>
+    </Units>
+    <JumpHistory Count="4" HistoryIndex="3">
+      <Position1>
+        <Filename Value="TableInsert.lpr"/>
+        <Caret Line="61" Column="11" TopLine="55"/>
+      </Position1>
+      <Position2>
+        <Filename Value="TableInsert.lpr"/>
+        <Caret Line="52" Column="45" TopLine="48"/>
+      </Position2>
+      <Position3>
+        <Filename Value="TableInsert.lpr"/>
+        <Caret Line="116" Column="47" TopLine="75"/>
+      </Position3>
+      <Position4>
+        <Filename Value="TableInsert.lpr"/>
+        <Caret Line="70" Column="52" TopLine="56"/>
+      </Position4>
+    </JumpHistory>
+  </ProjectSession>
+</CONFIG>
