@@ -68,13 +68,13 @@ const
         lFirstChar: string;
         lSpan: TSpan;
         lFont: string;
-        aFont: TFont;
+        aFont: TOdfFont;
         lPara: TOdfParagraph;
 
     begin
         FOdfTextDocument.AddHeadline(2).AppendText('All Fonts');
         lFirstChar := '!';
-        aFont := TFont.Create;
+        aFont := TOdfFont.Create;
           try
             for lFont in Screen.Fonts do
               begin

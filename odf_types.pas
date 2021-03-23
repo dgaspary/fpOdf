@@ -41,7 +41,7 @@ unit odf_types;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LazFileUtils, zipper, zstream, fgl, LazUTF8, FPCanvas,
+  Classes, SysUtils, FileUtil, LazFileUtils, zipper, zstream, fgl, LazUTF8, FPCanvas,Graphics,
 
   { $Define ODF_LOGGING}
 
@@ -566,7 +566,7 @@ type
           function AddNBSpace(FontStyles: TFontStyles): TOdfContent;
           function AddTab(FontStyles: TFontStyles): TOdfContent;
           function AddSpan(AText: string; FontStyles: TFontStyles): TSpan;overload;
-          function AddSpan(AText: string; aFont: TFont;const doc: TOdfDocument): TSpan;
+          function AddSpan(AText: string; aFont: TOdfFont;const doc: TOdfDocument): TSpan;
                    overload;
           function AddSpan(AText: string; aStyle: string): TSpan;overload;
           function AddLink(AText: string; FontStyles: TFontStyles;aBMName:string): THyperLink;
@@ -604,6 +604,7 @@ type
           procedure SetStyle(fs: TOdfFontStyles);overload;
           procedure SetStyle(const doc: TOdfDocument; aFont: TOdfFont); overload;
           procedure SetStyle(aStyleName: string);overload;
+          procedure SetStyle(fs: TFontStyles);overload;
     end;
 
     { TBookMark }
@@ -841,7 +842,7 @@ function OdfPrepareString(AText: UTF8String; out Segment1: UTF8String;
 var
    s: UTF8String;
    SpaceFound: boolean;
-   i, index, vTextLength: PtrInt;
+   i, vTextLength: PtrInt;
 
    function GetSegment2: string;
    begin
@@ -1012,9 +1013,9 @@ function TOdfParagraph.AddTextInput(ADescription: string): TOdfElement;
 begin
      if ADescription=''
      then
-         AppendOdfElement(oetTextTextInput)
+         result := AppendOdfElement(oetTextTextInput)
      else
-         AppendOdfElement(oetTextTextInput, oatTextDescription, ADescription);
+         result := AppendOdfElement(oetTextTextInput, oatTextDescription, ADescription);
 end;
 { TBookMark }
 
@@ -1094,7 +1095,7 @@ var
   lStyle: TOdfStyleStyle;
   lStyleprop: TOdfElement;
   lFontdcls: TDOMNode;
-  lR, lG, lB: Byte;
+//  lR, lG, lB: Byte;
 
 begin
   if  doc.InheritsFrom(TOdfTextDocument) then
@@ -1144,6 +1145,21 @@ end;
 procedure TSpan.SetStyle(aStyleName: string);
 begin
    SetAttribute(oatTextStyleName,aStyleName);
+end;
+
+procedure TSpan.SetStyle(fs: TFontStyles);
+var
+  lfs: TFontStyle;
+  lFsVal: Integer;
+  lFsName: String;
+begin
+  lFsVal:=0;
+  for lfs in fs do
+    lFsVal +=  1 shl ord(lfs) ;
+
+  lFsName:='TA'+inttostr(lFsVal);
+
+  SetAttribute(oatTextStyleName,lFsName);
 end;
 
 
@@ -1223,7 +1239,7 @@ begin
      AppendChild(result);
 end;
 
-function TOdfContent.AddSpan(AText: string; aFont: TFont;
+function TOdfContent.AddSpan(AText: string; aFont: TOdfFont;
   const doc: TOdfDocument): TSpan;
 begin
      result:=TSpan.CreateSpan(self.OwnerDocument as TXMLDocument, AText);
@@ -2926,7 +2942,7 @@ end;
 class function TOdfDocument.GetStyleName(AStartNode: TDOMNode; out StyleNode: TDOMNode): String;
 var
    n: TDOMNode;
-   vStyleName: string;
+//   vStyleName: string;
 begin
      OdfLogEnterProc('class function TOdfDocument.GetStyleName');
 
