@@ -438,6 +438,8 @@ type
            procedure FindOdfRootElements;virtual;
            procedure InitBodyContent; virtual; abstract;
 
+           procedure ResetRootElements; virtual;
+
            function GetMimeType: TOdfMimetype;
            procedure SetCreationMeta;
 
@@ -621,6 +623,8 @@ type
     private
            FText: TDOMElement;
            procedure InitXmlDocument; override;
+
+           procedure ResetRootElements; override;
 
            procedure InitBodyContent; override;
            Procedure GenerateAutoStyles;
@@ -1271,6 +1275,13 @@ begin
      FText:=TOdfElement(FBody).AppendOdfElement(oetOfficeText);
 
      MimeType:=omtText;
+end;
+
+procedure TOdfTextDocument.ResetRootElements;
+begin
+     inherited ResetRootElements;
+
+     FText:=nil;
 end;
 
 procedure TOdfTextDocument.InitBodyContent;
@@ -2079,9 +2090,15 @@ end;
 
 procedure TOdfDocument.SetXmlDocument(AValue: TXMLDocument);
 begin
-  if assigned(FXmlDocument) then
-    FreeAndNil(FXmlDocument);
-  FXmlDocument:=AValue;
+     if Assigned(FXmlDocument)
+     then
+     begin
+          FreeAndNil(FXmlDocument);
+
+          ResetRootElements;
+     end;
+
+     FXmlDocument:=AValue;
 end;
 
 function OdfCreateManifestRdfFile: TXMLDocument;
@@ -2517,6 +2534,22 @@ begin
           FBody:=OdfGetElement(oetOfficeBody,e);
      end;
 end;
+
+procedure TOdfDocument.ResetRootElements;
+begin
+     FMeta:=nil;
+     FSettings:=nil;
+     FScripts:=nil;
+     FFontFaceDecls:=nil;
+     FStyles:=nil;
+     FAutomaticStyles:=nil;
+     FMasterStyles:=nil;
+
+     FBody:=nil;
+     FManifest:=nil;
+     FManifestRdf:=nil;
+end;
+
 constructor TOdfDocument.Create;
 begin
      inherited Create;
