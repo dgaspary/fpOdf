@@ -3,7 +3,7 @@
   fpOdf is a library used to help users to create and to modify OpenDocument
   Files(ODF)
 
-  Copyright (C) 2013-2019 Daniel F. Gaspary https://github.com/dgaspary
+  Copyright (C) 2013-2021 Daniel F. Gaspary https://github.com/dgaspary
 
   This library is free software; you can redistribute it and/or modify it
   under the terms of the GNU Library General Public License as published by
@@ -249,6 +249,7 @@ type
 
     TOdfXmlFiles = ofManifestRdf .. High(TOdfFile);
 
+
     const
          OdfXmlFileRoot: array[TOdfXmlFiles] of TElementType =
                               (
@@ -414,6 +415,9 @@ type
 
     TOdfDocument = class
     private
+           FTempDir: string;
+           FRemoveTempDir: boolean;
+
            FXmlDocument: TXMLDocument;
 
            //Document Root Elements (Ref: Table 7)
@@ -428,7 +432,7 @@ type
            FMasterStyles: TDOMElement;
 
            FBody: TDOMElement;
-           FManifest: TDOMElement;
+           FManifest: TXMLDocument;
            FManifestRdf: TDOMElement;
 
            FXPathNsResolver: TOdfXPathNsResolver;
@@ -440,6 +444,8 @@ type
            procedure InitXmlDocument; virtual;
            procedure FindOdfRootElements;virtual;
            procedure InitBodyContent; virtual; abstract;
+
+           procedure ResetRootElements; virtual;
 
            function GetMimeType: TOdfMimetype;
            procedure SetCreationMeta;
@@ -545,8 +551,10 @@ type
           property AutomaticStyles: TDOMElement read FAutomaticStyles write FAutomaticStyles;
           property MasterStyles: TDOMElement read FMasterStyles write FMasterStyles;
 
-          property Manifest: TDOMElement read FManifest write FManifest;
+          property Manifest: TXMLDocument read FManifest write FManifest;
           property ManifestRdf: TDOMElement read FManifestRdf write FManifestRdf;
+
+          property RemoveTempDir: boolean read FRemoveTempDir write FRemoveTempDir;
     end;
 
     {Foreward declaration}
@@ -634,6 +642,8 @@ type
     private
            FText: TDOMElement;
            procedure InitXmlDocument; override;
+
+           procedure ResetRootElements; override;
 
            procedure InitBodyContent; override;
            Procedure GenerateAutoStyles;
@@ -1343,6 +1353,13 @@ begin
      FText:=TOdfElement(FBody).AppendOdfElement(oetOfficeText);
 
      MimeType:=omtText;
+end;
+
+procedure TOdfTextDocument.ResetRootElements;
+begin
+     inherited ResetRootElements;
+
+     FText:=nil;
 end;
 
 procedure TOdfTextDocument.InitBodyContent;
@@ -2169,18 +2186,25 @@ begin
      LoadXml('settings.xml');
      AOdf.Settings:=MoveElem(vNsURI, 'settings');
 
-     vDoc.Free;
+     LoadXml(IncludeTrailingPathDelimiter('META-INF') + 'manifest.xml');
 
-     DeleteDirectory(ADir, false);
+     AOdf.Manifest:=vDoc;
+     vDoc:=nil;
 
      AOdf.InitBodyContent;
 end;
 
 procedure TOdfDocument.SetXmlDocument(AValue: TXMLDocument);
 begin
-  if assigned(FXmlDocument) then
-    FreeAndNil(FXmlDocument);
-  FXmlDocument:=AValue;
+     if Assigned(FXmlDocument)
+     then
+     begin
+          FreeAndNil(FXmlDocument);
+
+          ResetRootElements;
+     end;
+
+     FXmlDocument:=AValue;
 end;
 
 function OdfCreateManifestRdfFile: TXMLDocument;
@@ -2264,9 +2288,9 @@ begin
      AddFileEntry('manifest.rdf', 'application/rdf+xml');
      AddFileEntry('styles.xml', 'text/xml');
      AddFileEntry('meta.xml', 'text/xml');
-     AddFileEntry('Thumbnails/thumbnail.png', 'image/png');
+{     AddFileEntry('Thumbnails/thumbnail.png', 'image/png');
      AddFileEntry('Thumbnails/');
-
+}
 
      { TODO : Configurations2 seems to be an OpenOffice specific directory. }
      AddFileEntry('Configurations2/accelerator/current.xml');
@@ -2365,7 +2389,13 @@ var
         nsSet:=[];
         case f of
              ofManifestRdf : vDoc:=OdfCreateManifestRdfFile;
-             ofManifest    : vDoc:=OdfCreateManifestFile;
+             ofManifest    : begin
+                                  if Assigned(AOdf.Manifest)
+                                  then
+                                      vDoc:=AOdf.Manifest
+                                  else
+                                      vDoc:=OdfCreateManifestFile;
+                             end
              else
              begin
                   vDoc:=TXMLDocument.Create;
@@ -2418,7 +2448,101 @@ var
 
         z.Entries.AddFileEntry(ATempDir +  vFilename, vFilename);
 
-        vDoc.Free;
+        if (f<>ofManifest) // ?? or ( (f=ofManifest) and (AOdf.Manifest=nil))
+        then
+            vDoc.Free;
+   end;
+
+   procedure UpdateManifest(ASubDir, AFileName: string);
+   var
+      vNode: TDOMNode;
+      vElement: TDOMElement;
+      vMediaType: string;
+   begin
+        if not Assigned(AOdf.Manifest)
+        then
+        begin
+             { TODO : Create manifest }
+        end;
+
+        ASubDir:=ExcludeTrailingPathDelimiter(ASubDir);
+
+        vNode:=AOdf.Manifest.DocumentElement.FirstChild;
+        while Assigned(vNode) do
+        begin
+             if (vNode is TDOMElement)
+             then
+             begin
+                  vElement:=(vNode as TDOMElement);
+
+                  if TOdfElement.SameType(vElement, oetManifestFileEntry) and
+                     (TOdfElement(vElement).GetAttributeString(oatManifestFullPath) = ASubDir + '/' + AFileName)
+                  then
+                      break;
+             end;
+
+             vElement:=nil;
+
+             vNode:=vNode.NextSibling;
+        end;
+
+        if vElement=nil
+        then
+        begin
+             vElement:=TOdfElement.CreateDomElement(oetManifestFileEntry, AOdf.Manifest,
+                          oatManifestFullPath, ASubDir + '/' + AFileName);
+
+
+             { TODO : The Discovering of media type should have a dedicated procedure/classes }
+             vMediaType:=ExtractFileExt(AFileName);
+             if vMediaType='jpg'
+             then
+                 vMediaType:='jpeg';
+
+
+             if (vMediaType='jpeg') or (vMediaType='png')
+             then
+                 vMediaType:='image/' + vMediaType;
+
+             TOdfElement(vElement).SetAttribute(oatManifestMediaType, vMediaType);
+
+             AOdf.Manifest.DocumentElement.AppendChild(vElement);
+        end;
+
+   end;
+
+   procedure AddFilesToZipper(ASubDir: string);
+   var
+      FileInfo : TSearchRec;
+      vBaseDir, vFile: string;
+   begin
+        vBaseDir:=IncludeTrailingPathDelimiter(AOdf.FTempDir);
+
+        if (AOdf.FTempDir='') or (not DirectoryExistsUTF8(vBaseDir + ASubDir))
+        then
+            exit;
+
+        ASubDir:=IncludeTrailingPathDelimiter(ASubDir);
+
+        if FindFirst (vBaseDir + ASubDir + '*',faAnyFile,FileInfo)=0
+        then
+        begin
+             repeat
+                   With FileInfo do
+                   begin
+                        if (Attr and faDirectory) = faDirectory
+                        then
+                            Continue;
+
+                        vFile:=vBaseDir + ASubDir + Name;
+                        zfe:=z.Entries.AddFileEntry(vFile, ASubDir + Name);
+                        //(zfe as TZipFileEntry).CompressionLevel:=Tcompressionlevel.clnone;
+
+                        UpdateManifest(ASubDir, Name);
+                   end;
+             until FindNext(FileInfo)<>0;
+             FindClose(FileInfo);
+        end;
    end;
 
 begin
@@ -2443,6 +2567,11 @@ begin
      ReorderElements(AOdf);
 
      vBodyStyles:=AOdf.StylesUsed(AOdf.Body);
+
+     { TODO : List and extract filenames using XPath, avoiding hardcoded directories.
+              Example Element: <draw:image xlink:href="Pictures/12345.jpg" }
+     AddFilesToZipper('Pictures');
+     AddFilesToZipper('Thumbnails');
 
      for f in TOdfXmlFiles do
      begin
@@ -2616,9 +2745,33 @@ begin
           FBody:=OdfGetElement(oetOfficeBody,e);
      end;
 end;
+
+procedure TOdfDocument.ResetRootElements;
+begin
+     FMeta:=nil;
+     FSettings:=nil;
+     FScripts:=nil;
+     FFontFaceDecls:=nil;
+     FStyles:=nil;
+     FAutomaticStyles:=nil;
+     FMasterStyles:=nil;
+
+     FBody:=nil;
+
+     if Assigned(FManifest)
+     then
+         FManifest.Free;
+
+     FManifest:=nil;
+     FManifestRdf:=nil;
+end;
+
 constructor TOdfDocument.Create;
 begin
      inherited Create;
+
+     FTempDir:='';
+     FRemoveTempDir:=true;
 
      InitXmlDocument;
 end;
@@ -2627,6 +2780,14 @@ destructor TOdfDocument.Destroy;
 begin
      FXPathNsResolver.Free;
      FXmlDocument.Free;
+
+     if Assigned(FManifest)
+     then
+         FManifest.Free;
+
+     if FRemoveTempDir and DirectoryExistsUTF8(FTempDir)
+     then
+         RemoveDirUTF8(FTempDir);
 
      inherited Destroy;
 end;
@@ -2728,7 +2889,7 @@ begin
 
      result.MimeType:=mt;
 
-     RemoveDirUTF8(TempDir);
+     Result.FTempDir:=TempDir;
 end;
 
 class function TOdfDocument.CreateFromXml(ADoc: TXMLDocument): TOdfDocument;
