@@ -10,6 +10,18 @@
       </element><element name="TOdfTextDocument"><short>OdfTextDocument is the class to use to open, close &amp; modify OpenDocument-Files</short>
       </element><short>fpOdf is a library used to help users to create and to modify OpenDocument Files (ODF)</short>
     <element name="TOdfElement.Find"><short>Find is a general method to find named items when the name of the item is in the attributes</short>
+      </element><element name="TOdfTextDocument.Clear"><short>Erase all content and create a new document</short>
+      </element><element name="TOdfTextDocument.AddHeadline"><short>Add a heading of a given level </short>
+      </element><element name="TOdfContent.AppendText"><short>Appends a text to a content-block</short>
+      </element><element name="TOdfTextDocument.AddParagraph"><short>Append a new paragraph of a given style</short>
+      </element><element name="TOdfContent.AddSpan" link="TSpan"><short>Add a span to the paragraph</short><descr>A Span is a continuous part of the text with equal style.
+</descr><seealso>TSpan
+</seealso>
+      </element><element name="TOdfContent.AddLineBreak"><short>Appends a (manual) Line-break to the text.</short><descr>a <b>Line-break</b> stops the text at the current position in the line and continues the text at the start of the next line, but all in the same paragraph.
+</descr>
+      </element><element name="TOdfParagraph.AddBookmark"><short>Adds a bookmark to the paragraph</short>
+      </element><element name="TOdfContent.AddLink"><short>appends a link (Hyperlink) to a bookmark</short>
+      </element><element name="TOdfContent.AddTab"><short>Appends a tabulator</short>
       </element>
     </module>
   </package>

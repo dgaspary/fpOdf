@@ -55,11 +55,11 @@ const
         FOdfTextDocument.AddHeadline(2).AppendText('Some Textstyles');
         lPara := FOdfTextDocument.AddParagraph(cStyleName);
         lpara.AddSpan('Here (bold)', [fsBold]);
-        lpara.AppendOdfElement(oetTextLineBreak);
+        lpara.AddLineBreak;
         lpara.AddSpan('are (italic)', [fsItalic]);
         lPara := FOdfTextDocument.AddParagraph(cStyleName);
         lpara.AddSpan('some (underline)', [fsUnderline]);
-        lpara.AppendOdfElement(oetTextLineBreak);
+        lpara.AddLineBreak;
         lpara.AddSpan('Styles (Strikeout)', [fsStrikeOut]);
     end;
 
@@ -68,13 +68,13 @@ const
         lFirstChar: string;
         lSpan: TSpan;
         lFont: string;
-        aFont: TOdfFont;
+        aFont: TFont;
         lPara: TOdfParagraph;
 
     begin
         FOdfTextDocument.AddHeadline(2).AppendText('All Fonts');
         lFirstChar := '!';
-        aFont := TOdfFont.Create;
+        aFont := TFont.Create;
           try
             for lFont in Screen.Fonts do
               begin
@@ -86,11 +86,11 @@ const
                 lPara := FOdfTextDocument.AddParagraph(cStyleName);
                 aFont.Name := lFont;
                 lpara.AddSpan('This is Font: "' + lFont + '"', []);
-                lPara.AppendOdfElement(oetTextLineBreak);
+                lPara.AddLineBreak;
                 lSpan := lpara.AddSpan('ABCDEF abcdef 12345', aFont, FOdfTextDocument);
-                lSpan.AppendOdfElement(oetTextLineBreak);
+                lSpan.AddLineBreak;
                 lSpan.AppendText('The quick, brown fox jumps over the lazy dog.');
-                lSpan.AppendOdfElement(oetTextLineBreak);
+                lSpan.AddLineBreak;
               end;
           finally
             FreeAndNil(aFont)
@@ -152,7 +152,7 @@ const
     begin
         FOdfTextDocument.AddHeadline(2).AppendText('Textcolors');
         lText :=
-            'Bring more color into your life, because it brightens your life, and touches your soul.';
+            'Bring more color into your documents, because it brightens your life, and touches your soul.';
         lPara := FOdfTextDocument.AddParagraph(cStyleName);
         aFont := TFont.Create;
         aFont.Name := 'default';

@@ -1,42 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
-  <ProjectGroup FileVersion="1">
-    <Targets Count="8">
-      <Target0 FileName="package\fpodf.lpk"/>
-      <Target1 FileName="examples\fpcTestfpOdf\fpcTestfpOdf.lpi">
-        <BuildModes Count="3"/>
-        <Mode1 Name="Default"/>
-        <Mode2 Name="Debug"/>
-        <Mode3 Name="Debug_con"/>
-      </Target1>
-      <Target2 FileName="code_generation\ODF_Processor\fpOdfProcessor.lpi">
-        <BuildModes Count="1"/>
-        <Mode1 Name="Default"/>
-      </Target2>
-      <Target3 FileName="test\fpOdfTest.lpi">
-        <BuildModes Count="1"/>
-        <Mode1 Name="Default"/>
-      </Target3>
-      <Target4 FileName="examples\HelloWorld\OdtHelloWorld.lpi">
-        <BuildModes Count="3"/>
-        <Mode1 Name="Default"/>
-        <Mode2 Name="Debug"/>
-        <Mode3 Name="Release"/>
-      </Target4>
-      <Target5 FileName="examples\BoldText\OdtBoldTextExample.lpi">
-        <BuildModes Count="1"/>
-        <Mode1 Name="Default"/>
-      </Target5>
-      <Target6 FileName="..\..\..\..\..\lazarus\components\fpvectorial\examples\fpvtextwritetest.lpi">
-        <BuildModes Count="1"/>
-        <Mode1 Name="default"/>
-      </Target6>
-      <Target7 FileName="examples\ImprovedDemo\ImprovedDemo.lpi">
-        <BuildModes Count="3"/>
-        <Mode1 Name="Default"/>
-        <Mode2 Name="Debug"/>
-        <Mode3 Name="Release"/>
-      </Target7>
+  <ProjectGroup FileVersion="2">
+    <Targets>
+      <Target FileName="package\fpodf.lpk"/>
+      <Target FileName="code_generation\ODF_Processor\fpOdfProcessor.lpi">
+        <BuildModes>
+          <Mode Name="Default"/>
+        </BuildModes>
+      </Target>
+      <Target FileName="examples\HelloWorld\OdtHelloWorld.lpi">
+        <BuildModes>
+          <Mode Name="Default"/>
+          <Mode Name="Debug"/>
+          <Mode Name="Release"/>
+        </BuildModes>
+      </Target>
+      <Target FileName="examples\BoldText\OdtBoldTextExample.lpi">
+        <BuildModes>
+          <Mode Name="Default"/>
+        </BuildModes>
+      </Target>
+      <Target FileName="examples\ImprovedDemo\ImprovedDemo.lpi">
+        <BuildModes>
+          <Mode Name="Default"/>
+          <Mode Name="Debug"/>
+          <Mode Name="Release"/>
+        </BuildModes>
+      </Target>
+      <Target FileName="examples\SearchAndReplace\OdfSearchAndReplace.lpi">
+        <BuildModes>
+          <Mode Name="Default"/>
+        </BuildModes>
+      </Target>
+      <Target FileName="test\fpOdfTest.lpi">
+        <BuildModes>
+          <Mode Name="Default"/>
+        </BuildModes>
+      </Target>
+      <Target FileName="examples\fpcTestfpOdf\fpcTestfpOdf.lpi">
+        <BuildModes>
+          <Mode Name="Default"/>
+          <Mode Name="Debug"/>
+          <Mode Name="Debug_con"/>
+        </BuildModes>
+      </Target>
+      <Target FileName="examples\ImageInsert\ImageInsert.lpi">
+        <BuildModes>
+          <Mode Name="Default"/>
+        </BuildModes>
+      </Target>
+      <Target FileName="examples\TableInsert\TableInsert.lpi">
+        <BuildModes>
+          <Mode Name="Default"/>
+        </BuildModes>
+      </Target>
     </Targets>
   </ProjectGroup>
 </CONFIG>
