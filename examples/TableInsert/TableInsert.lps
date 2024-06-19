@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectSession>
-    <Version Value="9"/>
+    <Version Value="12"/>
     <BuildModes Active="Default"/>
-    <Units Count="3">
+    <Units Count="5">
       <Unit0>
         <Filename Value="TableInsert.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
-        <CursorPos Y="66"/>
+        <CursorPos X="35" Y="27"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="../../odf_types.pas"/>
-        <UnitName Value="odf_types"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="1102"/>
         <CursorPos X="22" Y="1114"/>
@@ -27,6 +26,21 @@
         <CursorPos X="33" Y="39"/>
         <UsageCount Value="10"/>
       </Unit2>
+      <Unit3>
+        <Filename Value="../ImprovedDemo/ImprovedDemo.lpr"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="1"/>
+        <CursorPos X="38" Y="24"/>
+        <UsageCount Value="10"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="../ImageInsert/ImageInsert.lpr"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="71"/>
+        <CursorPos X="61" Y="114"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit4>
     </Units>
     <JumpHistory Count="4" HistoryIndex="3">
       <Position1>
@@ -46,5 +60,9 @@
         <Caret Line="70" Column="52" TopLine="56"/>
       </Position4>
     </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode="default"/>
+    </RunParams>
   </ProjectSession>
 </CONFIG>

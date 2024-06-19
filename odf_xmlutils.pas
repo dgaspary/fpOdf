@@ -29,6 +29,8 @@
   You should have received a copy of the GNU Library General Public License
   along with this library; if not, write to the Free Software Foundation,
   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+
+  Additional: (C) 2024 Joe Care  https://github.com/joecare99
 }
 
 unit odf_xmlutils;
@@ -51,16 +53,24 @@ uses
 
   ;
 
+type TXmlWriterProc=Procedure(ADoc: TXMLDocument; AFilename: string);
+     TXmlStrWriterProc=Procedure(ADoc: TXMLDocument; AStream: TStream);
 
 procedure OdfWriteXmlToStream(ADoc: TXMLDocument;  AStream: TStream);
 procedure OdfWriteXmlToFile(ADoc: TXMLDocument;  AFilename: string);
 
 function OdfAttributesAsStrings(e: TDOMElement; OnlyNames: boolean = true): TStrings;
 
+var XmlWriterProc : TXmlWriterProc;
+    XmlStrWriterProc : TXmlStrWriterProc;
+
 implementation
 
 procedure OdfWriteXmlToStream(ADoc: TXMLDocument;  AStream: TStream);
 begin
+     if assigned(XmlStrWriterProc) then
+         XmlStrWriterProc(ADoc,AStream)
+     else
      {$IfDef UseStaxWriter}
             XmlStreamWrite(ADoc, AStream, 'utf-8', '1.0');
      {$Else}
@@ -68,10 +78,14 @@ begin
      {$EndIf}
 end;
 
+
 procedure OdfWriteXmlToFile(ADoc: TXMLDocument;  AFilename: string);
 var
    fs: TFileStream;
 begin
+   if assigned(XmlWriterProc) then
+         XmlWriterProc(ADoc,AFilename)
+   else
      try
         fs:=TFileStream.Create(AFilename, fmCreate);
         OdfWriteXmlToStream(ADoc, fs);

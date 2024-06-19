@@ -46,7 +46,7 @@
   <CompilerOptions>
     <Version Value="11"/>
     <Target>
-      <Filename Value="../../bin/$(TargetCPU)-$(TargetOS)/OdtBoldTextExample"/>
+      <Filename Value="../../bin/$(TargetCPU)-$(TargetOS)/$NameOnly($Project(Infofile))"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>

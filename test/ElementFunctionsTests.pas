@@ -29,6 +29,8 @@
   You should have received a copy of the GNU Library General Public License
   along with this library; if not, write to the Free Software Foundation,
   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+
+  Reworked: (C) 2024 Joe Care https://github.com/joecare99
 }
 
 unit ElementFunctionsTests;
@@ -38,10 +40,11 @@ unit ElementFunctionsTests;
 interface
 
 uses
-  fpcunit, testregistry, testdecorator, Laz2_DOM, odf_types;
+  fpcunit, testregistry, testdecorator, Laz2_DOM, odf_types, SysUtils;
 
 const
-     cTestFile = '../OlaMundo.fodt';
+     cPath = 'test';
+     cTestFile = 'OlaMundo.fodt';
 
 type
 
@@ -57,11 +60,20 @@ type
 
   TElementFunctionsTests = class(TTestCase)
   private
+         FDataPath:string;
+         Fdoc: TOdfDocument;
          procedure Test_OdfGetElement_aux(Recursive: boolean);
+         class procedure Test2_OdfGetElement_aux(Recursive: boolean; aDoc: TOdfDocument);
+  protected
+         procedure SetUp; override;
+         procedure TearDown; override;
   published
            procedure Test_OdfGetElement_Default;
            procedure Test_OdfGetElement_Recursive;
            procedure Test_OdfGetElement_NonRecursive;
+           procedure Test2_OdfGetElement_Default;
+           procedure Test2_OdfGetElement_Recursive;
+           procedure Test2_OdfGetElement_NonRecursive;
   end;
 
 implementation
@@ -72,13 +84,36 @@ var
 { TElementFunctionsTestSetup }
 
 procedure TElementFunctionsTestSetup.OneTimeSetup;
+var I:integer;
+   DataPath: string;
 begin
-     doc:=TOdfDocument.LoadFromSingleXml(cTestFile);
+     DataPath := cPath;
+     for I := 0 to 2 do
+     if not DirectoryExists(DataPath) then
+       DataPath:='..' + DirectorySeparator + DataPath;
+     doc:=TOdfDocument.LoadFromSingleXml(DataPath +DirectorySeparator + cTestFile);
 end;
 
 procedure TElementFunctionsTestSetup.OneTimeTearDown;
 begin
      doc.Free;
+end;
+
+{ TElementFunctionsTests }
+
+procedure TElementFunctionsTests.SetUp;
+var I: integer;
+begin
+     FDataPath := cPath;
+     for I := 0 to 2 do
+     if not DirectoryExists(FDataPath) then
+       FDataPath:='..' + DirectorySeparator +FDataPath;
+     Fdoc:=TOdfDocument.LoadFromSingleXml(FDataPath +DirectorySeparator + cTestFile);
+end;
+
+procedure TElementFunctionsTests.TearDown;
+begin
+     Fdoc.Free;
 end;
 
 procedure TElementFunctionsTests.Test_OdfGetElement_aux(Recursive: boolean);
@@ -105,6 +140,33 @@ end;
 procedure TElementFunctionsTests.Test_OdfGetElement_NonRecursive;
 begin
      Test_OdfGetElement_aux(false);
+end;
+
+class procedure TElementFunctionsTests.Test2_OdfGetElement_aux(
+  Recursive: boolean; aDoc: TOdfDocument);
+var
+   e: TDOMElement;
+begin
+     e:=OdfGetElement(oetTextP, aDoc.XmlDocument.DocumentElement, Recursive);
+     AssertEquals(Assigned(e), Recursive);
+end;
+
+procedure TElementFunctionsTests.Test2_OdfGetElement_Default;
+var
+   e: TDOMElement;
+begin
+     e:=OdfGetElement(oetTextP, Fdoc.XmlDocument.DocumentElement);
+     AssertEquals(Assigned(e), false);
+end;
+
+procedure TElementFunctionsTests.Test2_OdfGetElement_Recursive;
+begin
+     Test2_OdfGetElement_aux(true,FDoc);
+end;
+
+procedure TElementFunctionsTests.Test2_OdfGetElement_NonRecursive;
+begin
+     Test2_OdfGetElement_aux(false,FDoc);
 end;
 
 initialization

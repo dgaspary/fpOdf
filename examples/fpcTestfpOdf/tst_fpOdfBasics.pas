@@ -29,7 +29,7 @@ implementation
 
 const CDataPath = 'output';
 
-procedure TTestfpOdf.TestHookUp;
+procedure TTestfpOdf.TestSetUp;
 begin
   CheckNotNull(OdfTextDocument,'OdfDocument is assigned');
   CheckNotNull(OdfTextDocument.Text,'OdfDocument.Text is assigned');
