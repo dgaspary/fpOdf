@@ -308,30 +308,37 @@ type
     TOdfDocument = class;
 
     { TOdfElement }
-
+    // OdfElement: Basedefinition of all Open-Document-Elements
     TOdfElement = class(TDOMElement)
     private
+           // GetElementType returns the element type based on an index.
            class function GetElementType(AIndex: TElementType): TElementType;
 
     protected
+          // GetDocument returns the TOdfDocument associated with this element.
           function GetDocument: TOdfDocument;
 
     public
+          // CreateDomElement creates a DOM element of the specified type.
           class function CreateDomElement(AType: TElementType;
                              Doc: TXMLDocument): TDOMElement; overload;
           class function CreateDomElement(AType: TElementType; Doc: TXMLDocument;
                              at: TAttributeType; AttValue: String): TDOMElement; overload;
 
+          // CreateOdfElement creates an ODF element of the specified type.
           class function CreateOdfElement(AType: TElementType;
                                           Doc: TXMLDocument): TOdfElement; overload;
           class function CreateOdfElement(AType: TElementType;
             AClass: TOdfElementClass; Doc: TXMLDocument): TOdfElement; overload;
 
+          // OdfGetElementType returns the ODF element type for a given DOM element.
           class function OdfGetElementType(e: TDOMElement): TElementType;
 
+          // SameType checks if two DOM elements have the same type.
           class function SameType(e1, e2: TDomElement): boolean;
           class function SameType(e: TDomElement; AType: TElementType): boolean;
 
+          // SetAttribute sets an attribute value for the parent element.
           class procedure SetAttribute(at: TAttributeType;
                                        AParent: TDOMElement;
                                        AValue: string);
@@ -340,28 +347,40 @@ type
                                        AParent: TDOMElement;
                                        const Values: array of string);
 
-
+          // AppendOdfElement appends a child ODF element of the specified type.
           function AppendOdfElement(AType: TElementType): TOdfElement; overload;
           function AppendOdfElement(AType: TElementType;AClass: TOdfElementClass): TOdfElement; overload;
           function AppendOdfElement(AType: TElementType; at: TAttributeType;
                                        AValue: string;AClass: TOdfElementClass): TOdfElement;
           function AppendOdfElement(AType: TElementType; at: TAttributeType;
                                        AValue: string): TOdfElement;
-          function OdfGetFirstElement: TOdfElement;
-          function HasOdfElement(AType: TElementType): boolean;
-          function FindOdfElement(AType: TElementType): TOdfElement;
 
+          // OdfGetFirstElement returns the first child ODF element of the specified type.
+          function OdfGetFirstElement: TOdfElement;
+          // Checks if the ODF element of the specified type exists.
+          function HasOdfElement(AType: TElementType): boolean;
+          // Finds and returns the first ODF element of the specified type.
+          function FindOdfElement(AType: TElementType): TOdfElement;
+          // Finds an ODF element with the given style name.
           function FindStyle(aName: String): TOdfElement;
+          // Finds an ODF element with the specified name. If 'recursive' is true, searches recursively.
           function Find(aName: String;recursive:boolean=false): TOdfElement;
+          // Retrieves the attribute of the specified type.
           function GetAttribute(AType: TAttributeType): TDOMAttr;
+          // Retrieves the attribute value as a string.
           function GetAttributeString(AType: TAttributeType): String;
+          // Checks if the element has the specified attribute.
           function HasAttribute(AType: TAttributeType): boolean;
+          // Removes the attribute of the specified type.
           function RemoveAttribute(AType: TAttributeType): TDOMAttr;
+          // Deletes multiple attributes specified in the array.
           procedure DeleteAttributes(const atts: array of TAttributeType);
+          // Sets the value of the specified attribute.
           procedure SetAttribute(AType: TAttributeType; AValue: string);
+          // Sets multiple attributes with corresponding values.
           procedure SetAttributes(const atts: array of TAttributeType;
                                   const Values: array of String);
-
+          // Sets or deletes attributes based on the specified array.
           procedure SetOrDeleteAttributes(const atts: array of TAttributeType;
                             const Value: String = '');
 
@@ -1438,7 +1457,7 @@ begin
    result := nil;
   lattr := GetAttribute(oatTextStyleName);
   if assigned(lattr) then
-    result := TOdfTextDocument(OwnerDocument).SearchStyle(lattr.Value);
+    result := TOdfTextDocument(GetDocument()).SearchStyle(lattr.Value);
 end;
 
 function TOdfContent.GetCharacterContent(Recursive: boolean): string;
