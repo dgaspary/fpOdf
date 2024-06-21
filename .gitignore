@@ -1,3 +1,5 @@
 /.svn
 /bin
 /output
+*.lps
+*.bak

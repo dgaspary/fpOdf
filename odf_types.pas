@@ -80,6 +80,7 @@ const
      cUriOdfMeta =  cUriOffice12Meta + 'odf#'; { TODO : Check why it's not on namespace enum and array }
      cUrlW3 = 'http://www.w3.org/';
 
+     cOwnerAttr = 'Owner';
 
 //Namespaces
 ////////////
@@ -311,6 +312,9 @@ type
     TOdfElement = class(TDOMElement)
     private
            class function GetElementType(AIndex: TElementType): TElementType;
+
+    protected
+          function GetDocument: TOdfDocument;
 
     public
           class function CreateDomElement(AType: TElementType;
@@ -616,8 +620,6 @@ type
     { TOdfSection }
 
     TOdfSection = class(TOdfElement)
-    private
-      function GetDocument: TOdfDocument;
     protected
       property Document:TOdfDocument read GetDocument ;
     public
@@ -1026,14 +1028,6 @@ const CSolid = 'solid';
      CStyleStandard='Standard';
 
 { TOdfSection }
-
-function TOdfSection.GetDocument: TOdfDocument;
-var
-  lValue: PtrInt;
-begin
-   TryStrToInt64(TDOMElement(TXMLDocument(OwnerDocument).FirstChild).GetAttribute('Owner'),lValue);
-   result := TOdfDocument(TObject(lValue));
-end;
 
 function TOdfSection.AddParagraph(ATextStyleName: String): TOdfParagraph;
 begin
@@ -1812,6 +1806,14 @@ begin
           TOdfElement.SetAttribute(at, AParent, v);
           Inc(i);
      end;
+end;
+
+function TOdfElement.GetDocument: TOdfDocument;
+var
+  lValue: PtrInt;
+begin
+   TryStrToInt64(TDOMElement(TXMLDocument(OwnerDocument).FirstChild).GetAttribute(cOwnerAttr),lValue);
+   result := TOdfDocument(TObject(lValue));
 end;
 
 function TOdfElement.AppendOdfElement(AType: TElementType): TOdfElement;
@@ -2965,7 +2967,7 @@ begin
 
      e:=TOdfElement.CreateOdfElement(oetOfficeDocument, FXmlDocument);
      FXmlDocument.AppendChild(e);
-     TDOMElement(e).SetAttribute('Owner',inttostr(ptrint(self)));
+     TDOMElement(e).SetAttribute(cOwnerAttr,inttostr(ptrint(self)));
      OdfXmlSetDefaultAtts(FXmlDocument);
      OdfElementSetNamespaceAtt(FXmlDocument.DocumentElement,
           [onsStyle, onsFo, onsSvg, onsText, onsGrddl, onsXlink, onsOffice]);
@@ -2996,6 +2998,8 @@ begin
      e:=OdfGetElement(oetOfficeDocument,TDomElement( FXmlDocument));
      with e do
      begin
+          TDOMElement(e).SetAttribute(cOwnerAttr,inttostr(ptrint(self)));
+
           FMeta:=OdfGetElement(oetOfficeMeta,e);
 
           FSettings:=OdfGetElement(oetOfficeSettings,e);
