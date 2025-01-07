@@ -1,0 +1,7 @@
+{
+    "app" : "examples",
+    "lib" : "package",
+    "tst" : "test/fpOdfTest.lpi",
+    "pkg" : [
+    ]
+}
