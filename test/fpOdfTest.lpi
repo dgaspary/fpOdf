@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="9"/>
+    <Version Value="11"/>
     <General>
       <Flags>
         <SaveJumpHistory Value="False"/>
@@ -15,22 +15,24 @@
     <i18n>
       <EnableI18N LFM="False"/>
     </i18n>
-    <VersionInfo>
-      <StringTable ProductVersion=""/>
-    </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="Default" Default="True"/>
     </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
-      <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
-      <ExcludeFileFilter Value="*.(bak|ppu|o|so);*~;backup"/>
     </PublishOptions>
     <RunParams>
       <local>
-        <FormatVersion Value="1"/>
         <CommandLineParams Value="-a --format=plain"/>
       </local>
+      <FormatVersion Value="2"/>
+      <Modes Count="1">
+        <Mode0 Name="default">
+          <local>
+            <CommandLineParams Value="-a --format=plain"/>
+          </local>
+        </Mode0>
+      </Modes>
     </RunParams>
     <RequiredPackages Count="3">
       <Item1>
@@ -47,47 +49,39 @@
       <Unit0>
         <Filename Value="fpOdfTest.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="fpOdfTest"/>
       </Unit0>
       <Unit1>
         <Filename Value="TestStringPrep.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="TestStringPrep"/>
       </Unit1>
       <Unit2>
         <Filename Value="ElementFunctionsTests.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="ElementFunctionsTests"/>
       </Unit2>
       <Unit3>
         <Filename Value="CharacterContentTest.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="CharacterContentTest"/>
       </Unit3>
       <Unit4>
         <Filename Value="SearchTest.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="SearchTest"/>
       </Unit4>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
+    <Target>
+      <Filename Value="../../bin/$(TargetCPU)-$(TargetOS)/$NameOnly($Project(Infofile))"/>
+    </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <UnitOutputDirectory Value="output"/>
+      <UnitOutputDirectory Value="../../bin/$(TargetCPU)-$(TargetOS)/units"/>
     </SearchPaths>
     <Linking>
       <Debugging>
         <UseExternalDbgSyms Value="True"/>
       </Debugging>
     </Linking>
-    <Other>
-      <CompilerMessages>
-        <MsgFileName Value=""/>
-      </CompilerMessages>
-      <CompilerPath Value="$(CompPath)"/>
-    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="3">

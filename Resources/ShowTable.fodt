@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:grddl="http://www.w3.org/2003/g/data-view#" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" Owner="22257824" grddl:transformation="http://docs.oasis-open.org/office/1.2/xslt/odf2rdf.xsl" office:version="1.2" office:mimetype="application/vnd.oasis.opendocument.text"><office:meta xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0"><meta:creation-date>2024-06-18T17:20:07</meta:creation-date><meta:generator>fpOdf 0.2</meta:generator>
+  </office:meta><office:settings/><office:scripts/><office:font-face-decls><style:font-face style:name="Liberation Mono" svg:font-family="&apos;Liberation Mono&apos;" style:font-family-generic="modern" style:font-pitch="fixed"/><style:font-face style:name="Liberation Sans" svg:font-family="&apos;Liberation Sans&apos;" style:font-family-generic="swiss" style:font-pitch="variable"/><style:font-face style:name="Liberation Sans Narrow" svg:font-family="&apos;Liberation Sans Narrow&apos;" style:font-family-generic="swiss" style:font-pitch="variable"/><style:font-face style:name="Liberation Serif" svg:font-family="&apos;Liberation Serif&apos;" style:font-family-generic="roman" style:font-pitch="variable"/>
+  </office:font-face-decls><office:styles><style:default-style style:family="paragraph"><style:paragraph-properties fo:hyphenation-ladder-count="no-limit" style:text-autospace="ideograph-alpha" style:punctuation-wrap="hanging" style:line-break="strict" style:tab-stop-distance="1.25095cm" style:writing-mode="page"/><style:text-properties style:use-window-font-color="true" style:font-name="Liberation Serif" fo:font-size="12pt" fo:language="en" fo:country="US" style:letter-kerning="true" fo:hyphenate="false" fo:hyphenation-remain-char-count="2" fo:hyphenation-push-char-count="2"/>
+    </style:default-style><style:style style:name="Standard" style:family="paragraph"/><style:default-style style:family="table"><style:table-properties xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" table:border-model="collapsing"/>
+    </style:default-style><style:default-style style:family="table-row"><style:table-row-properties fo:keep-together="auto"/>
+    </style:default-style><style:style style:name="CellStyle2" style:family="paragraph" style:parent-style-name="Standard"><style:text-properties fo:font-weight="bold" style:font-weight-asian="bold" style:font-weight-complex="bold"/>
+    </style:style>
+  </office:styles><office:automatic-styles><style:style style:name="TA0" style:family="text"><style:text-properties/>
+    </style:style><style:style style:name="TA1" style:family="text"><style:text-properties fo:font-weight="bold"/>
+    </style:style><style:style style:name="TA2" style:family="text"><style:text-properties fo:font-style="italic"/>
+    </style:style><style:style style:name="TA3" style:family="text"><style:text-properties fo:font-weight="bold" fo:font-style="italic"/>
+    </style:style><style:style style:name="TA4" style:family="text"><style:text-properties style:text-underline-style="solid" style:text-underline-width="auto" style:text-underline-color="font-color"/>
+    </style:style><style:style style:name="TA5" style:family="text"><style:text-properties fo:font-weight="bold" style:text-underline-style="solid" style:text-underline-width="auto" style:text-underline-color="font-color"/>
+    </style:style><style:style style:name="TA6" style:family="text"><style:text-properties fo:font-style="italic" style:text-underline-style="solid" style:text-underline-width="auto" style:text-underline-color="font-color"/>
+    </style:style><style:style style:name="TA7" style:family="text"><style:text-properties fo:font-weight="bold" fo:font-style="italic" style:text-underline-style="solid" style:text-underline-width="auto" style:text-underline-color="font-color"/>
+    </style:style><style:style style:name="TA8" style:family="text"><style:text-properties style:text-line-through-style="solid" style:text-line-through-type="single"/>
+    </style:style><style:style style:name="TA9" style:family="text"><style:text-properties fo:font-weight="bold" style:text-line-through-style="solid" style:text-line-through-type="single"/>
+    </style:style><style:style style:name="TA10" style:family="text"><style:text-properties fo:font-style="italic" style:text-line-through-style="solid" style:text-line-through-type="single"/>
+    </style:style><style:style style:name="TA11" style:family="text"><style:text-properties fo:font-weight="bold" fo:font-style="italic" style:text-line-through-style="solid" style:text-line-through-type="single"/>
+    </style:style><style:style style:name="TA12" style:family="text"><style:text-properties style:text-underline-style="solid" style:text-underline-width="auto" style:text-underline-color="font-color" style:text-line-through-style="solid" style:text-line-through-type="single"/>
+    </style:style><style:style style:name="TA13" style:family="text"><style:text-properties fo:font-weight="bold" style:text-underline-style="solid" style:text-underline-width="auto" style:text-underline-color="font-color" style:text-line-through-style="solid" style:text-line-through-type="single"/>
+    </style:style><style:style style:name="TA14" style:family="text"><style:text-properties fo:font-style="italic" style:text-underline-style="solid" style:text-underline-width="auto" style:text-underline-color="font-color" style:text-line-through-style="solid" style:text-line-through-type="single"/>
+    </style:style><style:style style:name="TA15" style:family="text"><style:text-properties fo:font-weight="bold" fo:font-style="italic" style:text-underline-style="solid" style:text-underline-width="auto" style:text-underline-color="font-color" style:text-line-through-style="solid" style:text-line-through-type="single"/>
+    </style:style><style:page-layout style:name="pm1"><style:page-layout-properties fo:page-width="21cm" fo:page-height="29.7cm" style:print-orientation="portrait" fo:margin-top="2cm" fo:margin-bottom="2cm" fo:margin-left="1.5cm" fo:margin-right="1.5cm"/>
+    </style:page-layout><style:style style:name="Table1" style:family="table"><style:table-properties xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" style:width="6.6931in" table:align="margins"/>
+    </style:style><style:style style:name="Table1.A" style:family="table-column"><style:table-column-properties style:width="3.346in" style:rel-column-width="32767*"/>
+    </style:style>
+  </office:automatic-styles><office:master-styles/><office:body><office:text><text:p text:style-name="Standard">p1</text:p><text:p text:style-name="Standard"/><table:table xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" table:name="Table1" table:style-name="Table1"><table:table-column table:style-name="Table1.A" table:number-columns-repeated="3"/><table:table-row><table:table-cell table:style-name="Table1.A" office:value-type="string"><text:p text:style-name="CellStyle2">11</text:p>
+          </table:table-cell><table:table-cell table:style-name="Table1.A" office:value-type="string"><text:p text:style-name="Standard">12</text:p>
+          </table:table-cell><table:table-cell table:style-name="Table1.A" office:value-type="string"><text:p text:style-name="Standard">13</text:p>
+          </table:table-cell>
+        </table:table-row><table:table-row><table:table-cell table:style-name="Table1.A" office:value-type="string"><text:p text:style-name="Standard">21</text:p>
+          </table:table-cell><table:table-cell table:style-name="Table1.A" office:value-type="string"><text:p text:style-name="CellStyle2">22</text:p>
+          </table:table-cell><table:table-cell table:style-name="Table1.A" office:value-type="string"><text:p text:style-name="Standard">23</text:p>
+          </table:table-cell>
+        </table:table-row><table:table-row><table:table-cell table:style-name="Table1.A" office:value-type="string"><text:p text:style-name="Standard">31</text:p>
+          </table:table-cell><table:table-cell table:style-name="Table1.A" office:value-type="string"><text:p text:style-name="Standard">32</text:p>
+          </table:table-cell><table:table-cell table:style-name="Table1.A" office:value-type="string"><text:p text:style-name="CellStyle2">33</text:p>
+          </table:table-cell>
+        </table:table-row>
+      </table:table><text:p text:style-name="Standard">p2</text:p>
+    </office:text>
+  </office:body>
+</office:document>

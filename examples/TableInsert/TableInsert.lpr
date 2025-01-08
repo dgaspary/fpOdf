@@ -24,11 +24,13 @@
 program TableInsert;
 
 uses
-    Classes, sysutils, odf_types;
+    Classes, SysUtils, odf_types;
 
 const
      cStyle = 'Standard';
-     cOutputFile = '/tmp/output.fodt';
+     cOutputFile = 'ShowTable.fodt';
+     cOutPut = 'output';
+
      cTableStyle = 'Table1';
      cTableColumnStyle = 'Table1.A';
      cTableCellStyle = 'Table1.A';
@@ -40,6 +42,9 @@ const
 
 
 var
+       FDatapath: string;
+
+var
    doc: TOdfTextDocument;
    p: TOdfParagraph;
    e, vTable, vRow, vCell: TOdfElement;
@@ -47,6 +52,25 @@ var
    s, t: string;
 
    i, j: integer;
+
+procedure Init;
+
+var
+    i: integer;
+begin
+    if (ParamStr(1) <> '') and DirectoryExists(ParamStr(1)) then
+        FDatapath := ParamStr(1)
+    else
+      begin
+        FDatapath := cOutPut;
+        for i := 0 to 3 do
+            if DirectoryExists(FDatapath) then
+                break
+            else
+                FDatapath := '..' + DirectorySeparator + FDatapath;
+      end;
+    Randomize;
+end;
 
 procedure CreateStyles;
 begin
@@ -76,6 +100,7 @@ begin
 end;
 
 begin
+     Init();
      doc:=TOdfTextDocument.Create;
 
      CreateStyles;
@@ -117,7 +142,7 @@ begin
      doc.AddParagraph(cStyle).TextContent:='p2';
 
      try
-        doc.SaveToSingleXml(cOutputFile);
+        doc.SaveToSingleXml(FDatapath + DirectorySeparator + cOutputFile);
 
      finally
             doc.Free;

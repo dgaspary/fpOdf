@@ -9,6 +9,18 @@
       </element><element name="Execute"><short>Execute the demo. First write the chapters in separate files, then write all chapters in one file.</short>
       </element><element name="Done"><short>Cleanup after the execution.</short>
       </element>
+    <element name="COutout1"><short>Name of the first output-file (some styles)</short>
+      </element><element name="COutout2"><short>Name of the second output files (styles bookmarks and links)</short>
+      </element><element name="COutout3"><short>Name of the third output-file (fonts)</short>
+      </element><element name="COutout4"><short>Name of the fourth output-file (colors)</short>
+      </element><element name="COutout5"><short>Name of the fifth output-file (tabs)</short>
+      </element><element name="COutoutAll"><short>Name of the complete document with all parts</short>
+      </element><element name="cStyleName"><short>standard paragraph style-name</short>
+      </element><element name="COutPut"><short>Name of the output-directory</short>
+      </element><element name="Init.i"><short>iteration variable </short>
+      </element><element name="TextWithTabulators"><short>Generate a chapter of the document with a table created with tabulators.</short>
+      </element><element name="TextWithTabulators.RandomText"><short>Generate a random word with a given maximum length</short>
+      </element>
     </module>
   </package>
 </fpdoc-descriptions>
