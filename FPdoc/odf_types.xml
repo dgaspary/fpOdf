@@ -9,6 +9,58 @@
       </element><element name="TBookMark"><short>BookMark is a point in the text the reader can jump to. (see also Hyperlink)</short>
       </element><element name="TOdfTextDocument"><short>OdfTextDocument is the class to use to open, close &amp; modify OpenDocument-Files</short>
       </element><short>fpOdf is a library used to help users to create and to modify OpenDocument Files (ODF)</short>
+    <element name="TOdfElement.Find"><short>Find is a general method to find named items when the name of the item is in the attributes</short>
+      </element><element name="TOdfTextDocument.Clear"><short>Erase all content and create a new document</short>
+      </element><element name="TOdfTextDocument.AddHeadline"><short>Add a heading of a given level </short>
+      </element><element name="TOdfContent.AppendText"><short>Appends a text to a content-block</short>
+      </element><element name="TOdfTextDocument.AddParagraph"><short>Append a new paragraph of a given style</short>
+      </element><element name="TOdfContent.AddSpan" link="TSpan"><short>Add a span to the paragraph</short><descr>A Span is a continuous part of the text with equal style.
+</descr><seealso>TSpan
+</seealso>
+      </element><element name="TOdfContent.AddLineBreak"><short>Appends a (manual) Line-break to the text.</short><descr>a <b>Line-break</b> stops the text at the current position in the line and continues the text at the start of the next line, but all in the same paragraph.
+</descr>
+      </element><element name="TOdfParagraph.AddBookmark"><short>Adds a bookmark to the paragraph</short>
+      </element><element name="TOdfContent.AddLink"><short>appends a link (Hyperlink) to a bookmark</short>
+      </element><element name="TOdfContent.AddTab"><short>Appends a tabulator</short>
+      </element>
+    <element name="TOdfElement.CreateDomElement"><short>creates a DOM element of the specified type</short>
+      </element><element name="TOdfElement.GetElementType"><short>GetElementType returns the element type based on an index.  </short>
+      </element><element name="TOdfElement.GetDocument"><short>the TOdfDocument associated with this element</short>
+      </element><element name="TOdfElement.CreateOdfElement"><short>creates an ODF element of the specified type</short>
+      </element><element name="TOdfElement.OdfGetElementType"><short>Returns the ODF element type for a given DOM element.</short>
+      </element><element name="TOdfElement.SameType"><short>Checks if two DOM elements have the same type.</short>
+      </element><element name="TOdfElement.SetAttribute"><short>Sets an attribute value for the parent element.</short>
+      </element><element name="TOdfElement.OdfGetFirstElement"><short>Returns the first child ODF element of the specified type.</short>
+      </element><element name="TOdfElement.SetOrDeleteAttributes"><short>Sets or deletes attributes based on the specified array. </short>
+      </element><element name="TOdfElement.SetAttributes"><short>Sets multiple attributes with corresponding values. </short>
+      </element><element name="TOdfElement.DeleteAttributes"><short>Deletes multiple attributes specified in the array.  </short>
+      </element><element name="TOdfElement.RemoveAttribute"><short>Removes the attribute of the specified type.</short>
+      </element><element name="TOdfElement.HasAttribute"><short>Checks if the element has the specified attribute.</short>
+      </element><element name="TOdfElement.GetAttributeString"><short>Retrieves the attribute value as a string.</short>
+      </element><element name="TOdfElement.GetAttribute"><short>Retrieves the attribute of the specified type.</short>
+      </element><element name="TOdfElement.FindStyle"><short>Finds an ODF element with the given style name. </short>
+      </element><element name="TOdfElement.HasOdfElement"><short>Checks if the ODF element of the specified type exists. </short>
+      </element><element name="TOdfElement.FindOdfElement"><short>Finds and returns the first ODF element of the specified type.</short>
+      </element><element name="TTextSequenceDecls"><short>Defines a Delaration for a Text-sequence</short>
+      </element><element name="TConfigConfigItemSet"><short>Defines a set of Config-Config-items</short>
+      </element><element name="TConfigConfigItemSet.ConfigName"><short>the name of the config</short>
+      </element><element name="TOdfColor"><short>A color-record with three base-colors</short>
+      </element><element name="TOdfFont"><short>Font-definition for odf-files</short>
+      </element><element name="TOdfSection"><short>Section is collection of Paragraphes of the same formatting</short>
+      </element><element name="TDefaultStyle"><short>a text-style as default</short>
+      </element><element name="cCharSpace"><short>The space/blank character</short>
+      </element><element name="cNone"><short>the None-Tag</short>
+      </element><element name="cFileContent"><short>Name of the content-file</short>
+      </element><element name="cFileStyles"><short>name of the style-file</short>
+      </element><element name="cIsoDateFormat"><short>the date-format in the file</short>
+      </element><element name="cMetaGenerator"><short>the generator-name and version</short>
+      </element><element name="cUrnOpenDocument"><short>odf-namespace-definition</short>
+      </element><element name="cUrlOasis"><short>Url: Oasis</short>
+      </element><element name="cUriOffice12Meta"><short>url: Office</short>
+      </element><element name="cUriOdfMeta"><short>Url: Odf-Meta</short>
+      </element><element name="cUrlW3"><short>Url: W3</short>
+      </element><element name="cOwnerAttr"><short>The 'Owner' attribute</short>
+      </element>
     </module>
   </package>
 </fpdoc-descriptions>

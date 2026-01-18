@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:grddl="http://www.w3.org/2003/g/data-view#" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" Owner="1145248" grddl:transformation="http://docs.oasis-open.org/office/1.2/xslt/odf2rdf.xsl" office:version="1.2" office:mimetype="application/vnd.oasis.opendocument.text"><office:meta xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0"><meta:creation-date>2024-06-18T12:25:12</meta:creation-date><meta:generator>fpOdf 0.2</meta:generator>
+  </office:meta><office:settings/><office:scripts/><office:font-face-decls><style:font-face style:name="Liberation Mono" svg:font-family="&apos;Liberation Mono&apos;" style:font-family-generic="modern" style:font-pitch="fixed"/><style:font-face style:name="Liberation Sans" svg:font-family="&apos;Liberation Sans&apos;" style:font-family-generic="swiss" style:font-pitch="variable"/><style:font-face style:name="Liberation Sans Narrow" svg:font-family="&apos;Liberation Sans Narrow&apos;" style:font-family-generic="swiss" style:font-pitch="variable"/><style:font-face style:name="Liberation Serif" svg:font-family="&apos;Liberation Serif&apos;" style:font-family-generic="roman" style:font-pitch="variable"/>
+  </office:font-face-decls><office:styles><style:default-style style:family="paragraph"><style:paragraph-properties fo:hyphenation-ladder-count="no-limit" style:text-autospace="ideograph-alpha" style:punctuation-wrap="hanging" style:line-break="strict" style:tab-stop-distance="1.25095cm" style:writing-mode="page"/><style:text-properties style:use-window-font-color="true" style:font-name="Liberation Serif" fo:font-size="12pt" fo:language="en" fo:country="US" style:letter-kerning="true" fo:hyphenate="false" fo:hyphenation-remain-char-count="2" fo:hyphenation-push-char-count="2"/>
+    </style:default-style><style:style style:name="Standard" style:family="paragraph"/><style:style style:name="Text_20_body" style:display-name="Text body" style:family="paragraph" style:parent-style-name="Standard" style:class="text"/><style:style style:name="Heading_20_1" style:display-name="Heading 1" style:family="paragraph" style:parent-style-name="Heading" style:next-style-name="Text_20_body" style:default-outline-level="1" style:class="text"><style:text-properties fo:font-size="131%" fo:font-weight="bold"/>
+    </style:style><style:style style:name="Heading_20_2" style:display-name="Heading 2" style:family="paragraph" style:parent-style-name="Heading" style:next-style-name="Text_20_body" style:default-outline-level="2" style:class="text"><style:text-properties fo:font-size="121%" fo:font-weight="bold"/>
+    </style:style>
+  </office:styles><office:automatic-styles><style:style style:name="TA0" style:family="text"><style:text-properties/>
+    </style:style><style:style style:name="TA1" style:family="text"><style:text-properties fo:font-weight="bold"/>
+    </style:style><style:style style:name="TA2" style:family="text"><style:text-properties fo:font-style="italic"/>
+    </style:style><style:style style:name="TA3" style:family="text"><style:text-properties fo:font-weight="bold" fo:font-style="italic"/>
+    </style:style><style:style style:name="TA4" style:family="text"><style:text-properties style:text-underline-style="solid" style:text-underline-width="auto" style:text-underline-color="font-color"/>
+    </style:style><style:style style:name="TA5" style:family="text"><style:text-properties fo:font-weight="bold" style:text-underline-style="solid" style:text-underline-width="auto" style:text-underline-color="font-color"/>
+    </style:style><style:style style:name="TA6" style:family="text"><style:text-properties fo:font-style="italic" style:text-underline-style="solid" style:text-underline-width="auto" style:text-underline-color="font-color"/>
+    </style:style><style:style style:name="TA7" style:family="text"><style:text-properties fo:font-weight="bold" fo:font-style="italic" style:text-underline-style="solid" style:text-underline-width="auto" style:text-underline-color="font-color"/>
+    </style:style><style:style style:name="TA8" style:family="text"><style:text-properties style:text-line-through-style="solid" style:text-line-through-type="single"/>
+    </style:style><style:style style:name="TA9" style:family="text"><style:text-properties fo:font-weight="bold" style:text-line-through-style="solid" style:text-line-through-type="single"/>
+    </style:style><style:style style:name="TA10" style:family="text"><style:text-properties fo:font-style="italic" style:text-line-through-style="solid" style:text-line-through-type="single"/>
+    </style:style><style:style style:name="TA11" style:family="text"><style:text-properties fo:font-weight="bold" fo:font-style="italic" style:text-line-through-style="solid" style:text-line-through-type="single"/>
+    </style:style><style:style style:name="TA12" style:family="text"><style:text-properties style:text-underline-style="solid" style:text-underline-width="auto" style:text-underline-color="font-color" style:text-line-through-style="solid" style:text-line-through-type="single"/>
+    </style:style><style:style style:name="TA13" style:family="text"><style:text-properties fo:font-weight="bold" style:text-underline-style="solid" style:text-underline-width="auto" style:text-underline-color="font-color" style:text-line-through-style="solid" style:text-line-through-type="single"/>
+    </style:style><style:style style:name="TA14" style:family="text"><style:text-properties fo:font-style="italic" style:text-underline-style="solid" style:text-underline-width="auto" style:text-underline-color="font-color" style:text-line-through-style="solid" style:text-line-through-type="single"/>
+    </style:style><style:style style:name="TA15" style:family="text"><style:text-properties fo:font-weight="bold" fo:font-style="italic" style:text-underline-style="solid" style:text-underline-width="auto" style:text-underline-color="font-color" style:text-line-through-style="solid" style:text-line-through-type="single"/>
+    </style:style><style:page-layout style:name="pm1"><style:page-layout-properties fo:page-width="21cm" fo:page-height="29.7cm" style:print-orientation="portrait" fo:margin-top="2cm" fo:margin-bottom="2cm" fo:margin-left="1.5cm" fo:margin-right="1.5cm"/>
+    </style:page-layout><style:style style:name="TS17" style:family="text"><style:text-properties fo:color="#BF110A"/>
+    </style:style><style:style style:name="TS18" style:family="text"><style:text-properties fo:color="#BF1507"/>
+    </style:style><style:style style:name="TS19" style:family="text"><style:text-properties fo:color="#BD1A05"/>
+    </style:style><style:style style:name="TS20" style:family="text"><style:text-properties fo:color="#BC1E03"/>
+    </style:style><style:style style:name="TS21" style:family="text"><style:text-properties fo:color="#B92402"/>
+    </style:style><style:style style:name="TS22" style:family="text"><style:text-properties fo:color="#B72901"/>
+    </style:style><style:style style:name="TS23" style:family="text"><style:text-properties fo:color="#B32F01"/>
+    </style:style><style:style style:name="TS24" style:family="text"><style:text-properties fo:color="#B03501"/>
+    </style:style><style:style style:name="TS25" style:family="text"><style:text-properties fo:color="#AC3B01"/>
+    </style:style><style:style style:name="TS26" style:family="text"><style:text-properties fo:color="#A84202"/>
+    </style:style><style:style style:name="TS27" style:family="text"><style:text-properties fo:color="#A34804"/>
+    </style:style><style:style style:name="TS28" style:family="text"><style:text-properties fo:color="#9E4F06"/>
+    </style:style><style:style style:name="TS29" style:family="text"><style:text-properties fo:color="#985609"/>
+    </style:style><style:style style:name="TS30" style:family="text"><style:text-properties fo:color="#925D0C"/>
+    </style:style><style:style style:name="TS31" style:family="text"><style:text-properties fo:color="#8C630F"/>
+    </style:style><style:style style:name="TS32" style:family="text"><style:text-properties fo:color="#866A13"/>
+    </style:style><style:style style:name="TS33" style:family="text"><style:text-properties fo:color="#807117"/>
+    </style:style><style:style style:name="TS34" style:family="text"><style:text-properties fo:color="#79781C"/>
+    </style:style><style:style style:name="TS35" style:family="text"><style:text-properties fo:color="#727E21"/>
+    </style:style><style:style style:name="TS36" style:family="text"><style:text-properties fo:color="#6C8526"/>
+    </style:style><style:style style:name="TS37" style:family="text"><style:text-properties fo:color="#658B2C"/>
+    </style:style><style:style style:name="TS38" style:family="text"><style:text-properties fo:color="#5F9132"/>
+    </style:style><style:style style:name="TS39" style:family="text"><style:text-properties fo:color="#589738"/>
+    </style:style><style:style style:name="TS40" style:family="text"><style:text-properties fo:color="#519C3F"/>
+    </style:style><style:style style:name="TS41" style:family="text"><style:text-properties fo:color="#4AA245"/>
+    </style:style><style:style style:name="TS42" style:family="text"><style:text-properties fo:color="#43A64C"/>
+    </style:style><style:style style:name="TS43" style:family="text"><style:text-properties fo:color="#3DAB53"/>
+    </style:style><style:style style:name="TS44" style:family="text"><style:text-properties fo:color="#37AF5A"/>
+    </style:style><style:style style:name="TS45" style:family="text"><style:text-properties fo:color="#31B360"/>
+    </style:style><style:style style:name="TS46" style:family="text"><style:text-properties fo:color="#2BB666"/>
+    </style:style><style:style style:name="TS47" style:family="text"><style:text-properties fo:color="#25B96D"/>
+    </style:style><style:style style:name="TS48" style:family="text"><style:text-properties fo:color="#20BB74"/>
+    </style:style><style:style style:name="TS49" style:family="text"><style:text-properties fo:color="#1BBD7B"/>
+    </style:style><style:style style:name="TS50" style:family="text"><style:text-properties fo:color="#16BE81"/>
+    </style:style><style:style style:name="TS51" style:family="text"><style:text-properties fo:color="#12BF88"/>
+    </style:style><style:style style:name="TS52" style:family="text"><style:text-properties fo:color="#0EBF8E"/>
+    </style:style><style:style style:name="TS53" style:family="text"><style:text-properties fo:color="#0BBF94"/>
+    </style:style><style:style style:name="TS54" style:family="text"><style:text-properties fo:color="#08BF9A"/>
+    </style:style><style:style style:name="TS55" style:family="text"><style:text-properties fo:color="#06BE9F"/>
+    </style:style><style:style style:name="TS56" style:family="text"><style:text-properties fo:color="#04BCA4"/>
+    </style:style><style:style style:name="TS57" style:family="text"><style:text-properties fo:color="#02BAA9"/>
+    </style:style><style:style style:name="TS58" style:family="text"><style:text-properties fo:color="#01B7AD"/>
+    </style:style><style:style style:name="TS59" style:family="text"><style:text-properties fo:color="#01B4B1"/>
+    </style:style><style:style style:name="TS60" style:family="text"><style:text-properties fo:color="#01B1B4"/>
+    </style:style><style:style style:name="TS61" style:family="text"><style:text-properties fo:color="#01ADB7"/>
+    </style:style><style:style style:name="TS62" style:family="text"><style:text-properties fo:color="#02A9BA"/>
+    </style:style><style:style style:name="TS63" style:family="text"><style:text-properties fo:color="#04A4BC"/>
+    </style:style><style:style style:name="TS64" style:family="text"><style:text-properties fo:color="#069FBE"/>
+    </style:style><style:style style:name="TS65" style:family="text"><style:text-properties fo:color="#089ABF"/>
+    </style:style><style:style style:name="TS66" style:family="text"><style:text-properties fo:color="#0B94BF"/>
+    </style:style><style:style style:name="TS67" style:family="text"><style:text-properties fo:color="#0E8EBF"/>
+    </style:style><style:style style:name="TS68" style:family="text"><style:text-properties fo:color="#1288BF"/>
+    </style:style><style:style style:name="TS69" style:family="text"><style:text-properties fo:color="#1681BE"/>
+    </style:style><style:style style:name="TS70" style:family="text"><style:text-properties fo:color="#1B7BBD"/>
+    </style:style><style:style style:name="TS71" style:family="text"><style:text-properties fo:color="#2074BB"/>
+    </style:style><style:style style:name="TS72" style:family="text"><style:text-properties fo:color="#256DB9"/>
+    </style:style><style:style style:name="TS73" style:family="text"><style:text-properties fo:color="#2B66B6"/>
+    </style:style><style:style style:name="TS74" style:family="text"><style:text-properties fo:color="#3060B3"/>
+    </style:style><style:style style:name="TS75" style:family="text"><style:text-properties fo:color="#375AAF"/>
+    </style:style><style:style style:name="TS76" style:family="text"><style:text-properties fo:color="#3D53AB"/>
+    </style:style><style:style style:name="TS77" style:family="text"><style:text-properties fo:color="#434CA6"/>
+    </style:style><style:style style:name="TS78" style:family="text"><style:text-properties fo:color="#4A45A2"/>
+    </style:style><style:style style:name="TS79" style:family="text"><style:text-properties fo:color="#513F9C"/>
+    </style:style><style:style style:name="TS80" style:family="text"><style:text-properties fo:color="#583897"/>
+    </style:style><style:style style:name="TS81" style:family="text"><style:text-properties fo:color="#5F3291"/>
+    </style:style><style:style style:name="TS82" style:family="text"><style:text-properties fo:color="#652C8B"/>
+    </style:style><style:style style:name="TS83" style:family="text"><style:text-properties fo:color="#6C2685"/>
+    </style:style><style:style style:name="TS84" style:family="text"><style:text-properties fo:color="#72217E"/>
+    </style:style><style:style style:name="TS85" style:family="text"><style:text-properties fo:color="#791C78"/>
+    </style:style><style:style style:name="TS86" style:family="text"><style:text-properties fo:color="#801771"/>
+    </style:style><style:style style:name="TS87" style:family="text"><style:text-properties fo:color="#86136A"/>
+    </style:style><style:style style:name="TS88" style:family="text"><style:text-properties fo:color="#8C0F63"/>
+    </style:style><style:style style:name="TS89" style:family="text"><style:text-properties fo:color="#920C5D"/>
+    </style:style><style:style style:name="TS90" style:family="text"><style:text-properties fo:color="#980956"/>
+    </style:style><style:style style:name="TS91" style:family="text"><style:text-properties fo:color="#9E064F"/>
+    </style:style><style:style style:name="TS92" style:family="text"><style:text-properties fo:color="#A30448"/>
+    </style:style><style:style style:name="TS93" style:family="text"><style:text-properties fo:color="#A80242"/>
+    </style:style><style:style style:name="TS94" style:family="text"><style:text-properties fo:color="#AC013B"/>
+    </style:style><style:style style:name="TS95" style:family="text"><style:text-properties fo:color="#B00135"/>
+    </style:style><style:style style:name="TS96" style:family="text"><style:text-properties fo:color="#B3012F"/>
+    </style:style><style:style style:name="TS97" style:family="text"><style:text-properties fo:color="#B70129"/>
+    </style:style><style:style style:name="TS98" style:family="text"><style:text-properties fo:color="#B90224"/>
+    </style:style><style:style style:name="TS99" style:family="text"><style:text-properties fo:color="#BC031E"/>
+    </style:style><style:style style:name="TS100" style:family="text"><style:text-properties fo:color="#BD051A"/>
+    </style:style><style:style style:name="TS101" style:family="text"><style:text-properties fo:color="#BF0715"/>
+    </style:style><style:style style:name="TS102" style:family="text"><style:text-properties fo:color="#BF0A11"/>
+    </style:style><style:style style:name="TS103" style:family="text"><style:text-properties fo:color="#C00D0D"/>
+    </style:style>
+  </office:automatic-styles><office:master-styles/><office:body><office:text><text:h text:style-name="Heading_20_1" text:outline-level="1">Demonstration of fpOdf</text:h><text:h text:style-name="Heading_20_2" text:outline-level="2">Textcolors</text:h><text:p text:style-name="Standard"><text:span text:style-name="TS17">B</text:span><text:span text:style-name="TS18">r</text:span><text:span text:style-name="TS19">i</text:span><text:span text:style-name="TS20">n</text:span><text:span text:style-name="TS21">g</text:span><text:span text:style-name="TS22"> </text:span><text:span text:style-name="TS23">m</text:span><text:span text:style-name="TS24">o</text:span><text:span text:style-name="TS25">r</text:span><text:span text:style-name="TS26">e</text:span><text:span text:style-name="TS27"> </text:span><text:span text:style-name="TS28">c</text:span><text:span text:style-name="TS29">o</text:span><text:span text:style-name="TS30">l</text:span><text:span text:style-name="TS31">o</text:span><text:span text:style-name="TS32">r</text:span><text:span text:style-name="TS33"> </text:span><text:span text:style-name="TS34">i</text:span><text:span text:style-name="TS35">n</text:span><text:span text:style-name="TS36">t</text:span><text:span text:style-name="TS37">o</text:span><text:span text:style-name="TS38"> </text:span><text:span text:style-name="TS39">y</text:span><text:span text:style-name="TS40">o</text:span><text:span text:style-name="TS41">u</text:span><text:span text:style-name="TS42">r</text:span><text:span text:style-name="TS43"> </text:span><text:span text:style-name="TS44">l</text:span><text:span text:style-name="TS45">i</text:span><text:span text:style-name="TS46">f</text:span><text:span text:style-name="TS47">e</text:span><text:span text:style-name="TS48">,</text:span><text:span text:style-name="TS49"> </text:span><text:span text:style-name="TS50">b</text:span><text:span text:style-name="TS51">e</text:span><text:span text:style-name="TS52">c</text:span><text:span text:style-name="TS53">a</text:span><text:span text:style-name="TS54">u</text:span><text:span text:style-name="TS55">s</text:span><text:span text:style-name="TS56">e</text:span><text:span text:style-name="TS57"> </text:span><text:span text:style-name="TS58">i</text:span><text:span text:style-name="TS59">t</text:span><text:span text:style-name="TS60"> </text:span><text:span text:style-name="TS61">b</text:span><text:span text:style-name="TS62">r</text:span><text:span text:style-name="TS63">i</text:span><text:span text:style-name="TS64">g</text:span><text:span text:style-name="TS65">h</text:span><text:span text:style-name="TS66">t</text:span><text:span text:style-name="TS67">e</text:span><text:span text:style-name="TS68">n</text:span><text:span text:style-name="TS69">s</text:span><text:span text:style-name="TS70"> </text:span><text:span text:style-name="TS71">y</text:span><text:span text:style-name="TS72">o</text:span><text:span text:style-name="TS73">u</text:span><text:span text:style-name="TS74">r</text:span><text:span text:style-name="TS75"> </text:span><text:span text:style-name="TS76">l</text:span><text:span text:style-name="TS77">i</text:span><text:span text:style-name="TS78">f</text:span><text:span text:style-name="TS79">e</text:span><text:span text:style-name="TS80">,</text:span><text:span text:style-name="TS81"> </text:span><text:span text:style-name="TS82">a</text:span><text:span text:style-name="TS83">n</text:span><text:span text:style-name="TS84">d</text:span><text:span text:style-name="TS85"> </text:span><text:span text:style-name="TS86">t</text:span><text:span text:style-name="TS87">o</text:span><text:span text:style-name="TS88">u</text:span><text:span text:style-name="TS89">c</text:span><text:span text:style-name="TS90">h</text:span><text:span text:style-name="TS91">e</text:span><text:span text:style-name="TS92">s</text:span><text:span text:style-name="TS93"> </text:span><text:span text:style-name="TS94">y</text:span><text:span text:style-name="TS95">o</text:span><text:span text:style-name="TS96">u</text:span><text:span text:style-name="TS97">r</text:span><text:span text:style-name="TS98"> </text:span><text:span text:style-name="TS99">s</text:span><text:span text:style-name="TS100">o</text:span><text:span text:style-name="TS101">u</text:span><text:span text:style-name="TS102">l</text:span><text:span text:style-name="TS103">.</text:span>
+      </text:p>
+    </office:text>
+  </office:body>
+</office:document>

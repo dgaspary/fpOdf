@@ -24,13 +24,37 @@
 program ImageInsert;
 
 uses
-    classes, odf_types, base64;
+    classes, odf_types, base64,SysUtils;
 
 const
      cStyle = 'Standard';
 
-     cInputFile = '/tmp/image1.png';
-     cOutputFile = '/tmp/output.fodt';
+     cInputFile = 'image1.png';
+     cOutputFile = 'ShowImage.fodt';
+     cOutPut = 'output';
+
+var
+       FDatapath: string;
+
+procedure Init;
+
+var
+    i: integer;
+begin
+    if (ParamStr(1) <> '') and DirectoryExists(ParamStr(1)) then
+        FDatapath := ParamStr(1)
+    else
+      begin
+        FDatapath := cOutPut;
+        for i := 0 to 3 do
+            if DirectoryExists(FDatapath) then
+                break
+            else
+                FDatapath := '..' + DirectorySeparator + FDatapath;
+      end;
+    Randomize;
+end;
+
 
 function EncodeStreamBase64(AInputStream: TStream):String;
 var
@@ -59,6 +83,7 @@ var
    fs: TFileStream;
    s: string;
 begin
+     Init();
      doc:=TOdfTextDocument.Create;
 
      doc.AddParagraph(cStyle).TextContent:='p1';
@@ -68,14 +93,14 @@ begin
 
      eDrawFrame.SetAttributes(
        [oatDrawStyleName, oatDrawName, oatTextAnchorType, oatSvgWidth, oatSvgHeight, oatDrawZIndex],
-       ['fr1', 'Image1', 'paragraph', '5.80in', '3.6in', '0']);
+       ['fr1', 'Image1', 'paragraph', '3.60in', '5.8in', '0']);
 
      eDrawImage:=eDrawFrame.AppendOdfElement(oetDrawImage);
 
      eBinaryData:=eDrawImage.AppendOdfElement(oetOfficeBinaryData);
 
      try
-        fs:=TFileStream.Create(cInputFile, fmOpenRead);
+        fs:=TFileStream.Create(FDatapath + DirectorySeparator + cInputFile, fmOpenRead);
         s:=EncodeStreamBase64(fs);
      finally
             fs.Free;
@@ -86,7 +111,7 @@ begin
      doc.AddParagraph(cStyle).TextContent:='p2';
 
      try
-        doc.SaveToSingleXml(cOutputFile);
+        doc.SaveToSingleXml(FDatapath + DirectorySeparator + cOutputFile);
 
      finally
             doc.Free;

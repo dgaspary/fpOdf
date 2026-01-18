@@ -3,7 +3,7 @@ program fpcTestfpOdf;
 {$mode objfpc}{$H+}
 
 uses
-  Interfaces, Forms, GuiTestRunner, tst_fpOdfBasics;
+  Interfaces, Forms, GuiTestRunner, tst_fpOdfBasics, CharacterContentTest, ElementFunctionsTests, SearchTest, TestStringPrep;
 
 {$R *.res}
 

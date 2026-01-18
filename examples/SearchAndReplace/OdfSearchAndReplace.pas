@@ -31,16 +31,16 @@ const
      cName = 'Name';
      cAge = 'Age';
 
-     { TODO : Windows Path }
+     {$ifndef Windows}
      cOutputDir = '/tmp/';
-
+     {$else}
+     cOutputDir = '..\..\output\';
+     {$endif}
      cOutputFile = cOutputDir + 'ReplaceFieldsExample.fodt';
 
 var
    doc: TOdfTextDocument;
    p: TOdfParagraph;
-
-   e: TOdfElement;
 
 procedure AddField(AFieldName, ADescription: string);
 var

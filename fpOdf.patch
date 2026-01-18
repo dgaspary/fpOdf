@@ -1,0 +1,449 @@
+Index: .
+===================================================================
+diff --git a/branches/NewFeatures_1 b/branches/NewFeatures_1
+--- a/branches/NewFeatures_1	(revision 112)
++++ b/branches/NewFeatures_1	(working copy)
+
+Property changes on: branches/NewFeatures_1
+___________________________________________________________________
+Modified: svn:ignore
+## -1,2 +1,3 ##
+ *.bak
+ bin
++output
+Index: examples/BoldText/OdtBoldTextExample.lpi
+===================================================================
+diff --git a/branches/NewFeatures_1/examples/BoldText/OdtBoldTextExample.lpi b/branches/NewFeatures_1/examples/BoldText/OdtBoldTextExample.lpi
+--- a/branches/NewFeatures_1/examples/BoldText/OdtBoldTextExample.lpi	(revision 112)
++++ b/branches/NewFeatures_1/examples/BoldText/OdtBoldTextExample.lpi	(working copy)
+@@ -46,7 +46,7 @@
+   <CompilerOptions>
+     <Version Value="11"/>
+     <Target>
+-      <Filename Value="../../bin/$(TargetCPU)-$(TargetOS)/OdtBoldTextExample"/>
++      <Filename Value="../../bin/$(TargetCPU)-$(TargetOS)/$NameOnly($Project(Infofile))"/>
+     </Target>
+     <SearchPaths>
+       <IncludeFiles Value="$(ProjOutDir)"/>
+Index: examples/fpcTestfpOdf/fpcTestfpOdf.lpi
+===================================================================
+diff --git a/branches/NewFeatures_1/examples/fpcTestfpOdf/fpcTestfpOdf.lpi b/branches/NewFeatures_1/examples/fpcTestfpOdf/fpcTestfpOdf.lpi
+--- a/branches/NewFeatures_1/examples/fpcTestfpOdf/fpcTestfpOdf.lpi	(revision 112)
++++ b/branches/NewFeatures_1/examples/fpcTestfpOdf/fpcTestfpOdf.lpi	(working copy)
+@@ -144,7 +144,7 @@
+     <Version Value="11"/>
+     <PathDelim Value="\"/>
+     <Target>
+-      <Filename Value="..\..\bin\$(TargetCPU)-$(TargetOS)\fpcTestfpOdf"/>
++      <Filename Value="..\..\bin\$(TargetCPU)-$(TargetOS)\$NameOnly($Project(Infofile))"/>
+     </Target>
+     <SearchPaths>
+       <IncludeFiles Value="$(ProjOutDir)"/>
+Index: examples/HelloWorld/OdtHelloWorld.lpi
+===================================================================
+diff --git a/branches/NewFeatures_1/examples/HelloWorld/OdtHelloWorld.lpi b/branches/NewFeatures_1/examples/HelloWorld/OdtHelloWorld.lpi
+--- a/branches/NewFeatures_1/examples/HelloWorld/OdtHelloWorld.lpi	(revision 112)
++++ b/branches/NewFeatures_1/examples/HelloWorld/OdtHelloWorld.lpi	(working copy)
+@@ -25,7 +25,7 @@
+         <CompilerOptions>
+           <Version Value="11"/>
+           <Target>
+-            <Filename Value="../../bin/$(TargetCPU)-$(TargetOS)/OdtHelloWorld"/>
++            <Filename Value="../../bin/$(TargetCPU)-$(TargetOS)/$NameOnly($Project(Infofile))"/>
+           </Target>
+           <SearchPaths>
+             <IncludeFiles Value="$(ProjOutDir)"/>
+Index: examples/ImprovedDemo/ImprovedDemo.lpi
+===================================================================
+diff --git a/branches/NewFeatures_1/examples/ImprovedDemo/ImprovedDemo.lpi b/branches/NewFeatures_1/examples/ImprovedDemo/ImprovedDemo.lpi
+--- a/branches/NewFeatures_1/examples/ImprovedDemo/ImprovedDemo.lpi	(revision 112)
++++ b/branches/NewFeatures_1/examples/ImprovedDemo/ImprovedDemo.lpi	(working copy)
+@@ -119,7 +119,7 @@
+     <Version Value="11"/>
+     <PathDelim Value="\"/>
+     <Target>
+-      <Filename Value="..\..\bin\$(TargetCPU)-$(TargetOS)\ImprovedDemo"/>
++      <Filename Value="..\..\bin\$(TargetCPU)-$(TargetOS)\$NameOnly($Project(Infofile))"/>
+     </Target>
+     <SearchPaths>
+       <IncludeFiles Value="$(ProjOutDir)"/>
+Index: examples/SearchAndReplace/OdfSearchAndReplace.lpi
+===================================================================
+diff --git a/branches/NewFeatures_1/examples/SearchAndReplace/OdfSearchAndReplace.lpi b/branches/NewFeatures_1/examples/SearchAndReplace/OdfSearchAndReplace.lpi
+--- a/branches/NewFeatures_1/examples/SearchAndReplace/OdfSearchAndReplace.lpi	(revision 112)
++++ b/branches/NewFeatures_1/examples/SearchAndReplace/OdfSearchAndReplace.lpi	(working copy)
+@@ -1,7 +1,7 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <CONFIG>
+   <ProjectOptions>
+-    <Version Value="10"/>
++    <Version Value="11"/>
+     <General>
+       <Flags>
+         <MainUnitHasCreateFormStatements Value="False"/>
+@@ -21,9 +21,10 @@
+       <Version Value="2"/>
+     </PublishOptions>
+     <RunParams>
+-      <local>
+-        <FormatVersion Value="1"/>
+-      </local>
++      <FormatVersion Value="2"/>
++      <Modes Count="1">
++        <Mode0 Name="default"/>
++      </Modes>
+     </RunParams>
+     <RequiredPackages Count="1">
+       <Item1>
+@@ -40,11 +41,11 @@
+   <CompilerOptions>
+     <Version Value="11"/>
+     <Target>
+-      <Filename Value="OdfSearchAndReplace"/>
++      <Filename Value="../../bin/$(TargetCPU)-$(TargetOS)/$NameOnly($Project(Infofile))"/>
+     </Target>
+     <SearchPaths>
+       <IncludeFiles Value="$(ProjOutDir)"/>
+-      <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
++      <UnitOutputDirectory Value="../../bin/$(TargetCPU)-$(TargetOS)/units"/>
+     </SearchPaths>
+   </CompilerOptions>
+   <Debugging>
+Index: examples/SearchAndReplace/OdfSearchAndReplace.pas
+===================================================================
+diff --git a/branches/NewFeatures_1/examples/SearchAndReplace/OdfSearchAndReplace.pas b/branches/NewFeatures_1/examples/SearchAndReplace/OdfSearchAndReplace.pas
+--- a/branches/NewFeatures_1/examples/SearchAndReplace/OdfSearchAndReplace.pas	(revision 112)
++++ b/branches/NewFeatures_1/examples/SearchAndReplace/OdfSearchAndReplace.pas	(working copy)
+@@ -42,8 +42,6 @@
+    doc: TOdfTextDocument;
+    p: TOdfParagraph;
+ 
+-   e: TOdfElement;
+-
+ procedure AddField(AFieldName, ADescription: string);
+ var
+    e: TOdfElement;
+Index: fpOdf.lpg
+===================================================================
+diff --git a/branches/NewFeatures_1/fpOdf.lpg b/branches/NewFeatures_1/fpOdf.lpg
+--- a/branches/NewFeatures_1/fpOdf.lpg	(revision 112)
++++ b/branches/NewFeatures_1/fpOdf.lpg	(working copy)
+@@ -3,15 +3,15 @@
+   <ProjectGroup FileVersion="1">
+     <Targets Count="9">
+       <Target0 FileName="package\fpodf.lpk"/>
+-      <Target1 FileName="examples\fpcTestfpOdf\fpcTestfpOdf.lpi">
++      <Target1 FileName="code_generation\ODF_Processor\fpOdfProcessor.lpi">
++        <BuildModes Count="1"/>
++        <Mode1 Name="Default"/>
++      </Target1>
++      <Target2 FileName="examples\fpcTestfpOdf\fpcTestfpOdf.lpi">
+         <BuildModes Count="3"/>
+         <Mode1 Name="Default"/>
+         <Mode2 Name="Debug"/>
+         <Mode3 Name="Debug_con"/>
+-      </Target1>
+-      <Target2 FileName="code_generation\ODF_Processor\fpOdfProcessor.lpi">
+-        <BuildModes Count="1"/>
+-        <Mode1 Name="Default"/>
+       </Target2>
+       <Target3 FileName="test\fpOdfTest.lpi">
+         <BuildModes Count="1"/>
+@@ -27,7 +27,7 @@
+         <BuildModes Count="1"/>
+         <Mode1 Name="Default"/>
+       </Target5>
+-      <Target6 FileName="..\..\..\..\..\lazarus\components\fpvectorial\examples\fpvtextwritetest.lpi">
++      <Target6 FileName="..\..\..\lazarus\components\fpvectorial\examples\fpvtextwritetest.lpi">
+         <BuildModes Count="1"/>
+         <Mode1 Name="default"/>
+       </Target6>
+Index: incs/ElementEnum.inc
+===================================================================
+diff --git a/branches/NewFeatures_1/incs/ElementEnum.inc b/branches/NewFeatures_1/incs/ElementEnum.inc
+--- a/branches/NewFeatures_1/incs/ElementEnum.inc	(revision 112)
++++ b/branches/NewFeatures_1/incs/ElementEnum.inc	(working copy)
+@@ -35,261 +35,611 @@
+  Any modification will be overridden.}  type-    TElementType = (oetNone,oetManifestManifest,oetManifestFileEntry,-                oetManifestEncryptionData,oetManifestAlgorithm,-                oetManifestStartKeyGeneration,oetManifestKeyDerivation,-                oetOfficeDocument,oetOfficeMeta,oetMetaGenerator,-                oetDcTitle,oetDcDescription,oetDcSubject,oetMetaKeyword,-                oetMetaInitialCreator,oetDcCreator,oetMetaPrintedBy,-                oetMetaCreationDate,oetDcDate,oetMetaPrintDate,-                oetMetaTemplate,oetMetaAutoReload,-                oetMetaHyperlinkBehaviour,oetDcLanguage,-                oetMetaEditingCycles,oetMetaEditingDuration,-                oetMetaDocumentStatistic,oetMetaUserDefined,-                oetOfficeSettings,oetConfigConfigItemSet,-                oetConfigConfigItem,oetConfigConfigItemMapNamed,-                oetConfigConfigItemMapEntry,-                oetConfigConfigItemMapIndexed,oetOfficeScripts,-                oetOfficeScript,oetOfficeEventListeners,-                oetScriptEventListener,oetPresentationEventListener,-                oetPresentationSound,oetOfficeFontFaceDecls,-                oetStyleFontFace,oetSvgFontFaceSrc,oetSvgFontFaceUri,-                oetSvgFontFaceFormat,oetSvgFontFaceName,-                oetSvgDefinitionSrc,oetOfficeStyles,oetStyleStyle,-                oetStyleTextProperties,oetStyleParagraphProperties,-                oetStyleTabStops,oetStyleTabStop,oetStyleDropCap,-                oetStyleBackgroundImage,oetOfficeBinaryData,-                oetStyleSectionProperties,oetStyleColumns,-                oetStyleColumnSep,oetStyleColumn,-                oetTextNotesConfiguration,-                oetTextNoteContinuationNoticeForward,-                oetTextNoteContinuationNoticeBackward,-                oetStyleRubyProperties,oetStyleTableProperties,-                oetStyleTableColumnProperties,-                oetStyleTableRowProperties,oetStyleTableCellProperties,-                oetStyleGraphicProperties,oetTextListStyle,-                oetTextListLevelStyleNumber,oetStyleListLevelProperties,-                oetStyleListLevelLabelAlignment,-                oetTextListLevelStyleBullet,oetTextListLevelStyleImage,-                oetStyleDrawingPageProperties,oetStyleChartProperties,-                oetChartSymbolImage,oetChartLabelSeparator,oetTextP,-                oetTextS,oetTextTab,oetTextLineBreak,-                oetTextSoftPageBreak,oetTextSpan,oetTextMeta,-                oetTextBookmark,oetTextBookmarkStart,oetTextBookmarkEnd,-                oetTextReferenceMark,oetTextReferenceMarkStart,-                oetTextReferenceMarkEnd,oetTextNote,oetTextNoteCitation,-                oetTextNoteBody,oetTextH,oetTextNumber,oetTextList,-                oetTextListHeader,oetTextListItem,-                oetTextNumberedParagraph,oetTableTable,oetTableTitle,-                oetTableDesc,oetTableTableSource,oetOfficeDdeSource,-                oetTableScenario,oetOfficeForms,oetFormForm,-                oetFormProperties,oetFormProperty,oetFormListProperty,-                oetFormListValue,oetFormText,oetFormTextarea,-                oetFormFormattedText,oetFormNumber,oetFormDate,-                oetFormTime,oetFormCombobox,oetFormItem,oetFormListbox,-                oetFormOption,oetFormCheckbox,oetFormPassword,-                oetFormFile,oetFormFixedText,oetFormButton,oetFormImage,-                oetFormRadio,oetFormFrame,oetFormImageFrame,-                oetFormHidden,oetFormGrid,oetFormColumn,-                oetFormValueRange,oetFormGenericControl,-                oetFormConnectionResource,oetXformsModel,oetTableShapes,-                oetDrawRect,oetSvgTitle,oetSvgDesc,oetDrawGluePoint,-                oetDrawLine,oetDrawPolyline,oetDrawPolygon,-                oetDrawRegularPolygon,oetDrawPath,oetDrawCircle,-                oetDrawEllipse,oetDrawG,oetDrawPageThumbnail,-                oetDrawFrame,oetDrawTextBox,oetDrawImage,oetDrawObject,-                oetMathMath,oetDrawObjectOle,oetDrawApplet,oetDrawParam,-                oetDrawFloatingFrame,oetDrawPlugin,oetDrawImageMap,-                oetDrawAreaRectangle,oetDrawAreaCircle,-                oetDrawAreaPolygon,oetDrawContourPolygon,-                oetDrawContourPath,oetDrawMeasure,oetDrawCaption,-                oetDrawConnector,oetDrawControl,oetDr3dScene,-                oetDr3dLight,oetDr3dExtrude,oetDr3dSphere,oetDr3dRotate,-                oetDr3dCube,oetDrawCustomShape,oetDrawEnhancedGeometry,-                oetDrawEquation,oetDrawHandle,oetDrawA,-                oetTableTableColumnGroup,oetTableTableColumns,-                oetTableTableColumn,oetTableTableHeaderColumns,-                oetTableTableRowGroup,oetTableTableRows,-                oetTableTableRow,oetTableTableCell,-                oetTableCellRangeSource,oetOfficeAnnotation,-                oetMetaDateString,oetTableDetective,-                oetTableHighlightedRange,oetTableOperation,-                oetTableCoveredTableCell,oetTableTableHeaderRows,-                oetTableNamedExpressions,oetTableNamedRange,-                oetTableNamedExpression,oetTextSection,-                oetTextSectionSource,oetTextTableOfContent,-                oetTextTableOfContentSource,oetTextIndexTitleTemplate,-                oetTextTableOfContentEntryTemplate,-                oetTextIndexEntryChapter,oetTextIndexEntryPageNumber,-                oetTextIndexEntryText,oetTextIndexEntrySpan,-                oetTextIndexEntryTabStop,oetTextIndexEntryLinkStart,-                oetTextIndexEntryLinkEnd,oetTextIndexSourceStyles,-                oetTextIndexSourceStyle,oetTextIndexBody,-                oetTextIndexTitle,oetTextIllustrationIndex,-                oetTextIllustrationIndexSource,-                oetTextIllustrationIndexEntryTemplate,oetTextTableIndex,-                oetTextTableIndexSource,oetTextTableIndexEntryTemplate,-                oetTextObjectIndex,oetTextObjectIndexSource,-                oetTextObjectIndexEntryTemplate,oetTextUserIndex,-                oetTextUserIndexSource,oetTextUserIndexEntryTemplate,-                oetTextAlphabeticalIndex,oetTextAlphabeticalIndexSource,-                oetTextAlphabeticalIndexEntryTemplate,-                oetTextBibliography,oetTextBibliographySource,-                oetTextBibliographyEntryTemplate,-                oetTextIndexEntryBibliography,oetTextChange,-                oetTextChangeStart,oetTextChangeEnd,oetTextRuby,-                oetTextRubyBase,oetTextRubyText,oetOfficeAnnotationEnd,-                oetTextDate,oetTextTime,oetTextPageNumber,-                oetTextPageContinuation,oetTextSenderFirstname,-                oetTextSenderLastname,oetTextSenderInitials,-                oetTextSenderTitle,oetTextSenderPosition,-                oetTextSenderEmail,oetTextSenderPhonePrivate,-                oetTextSenderFax,oetTextSenderCompany,-                oetTextSenderPhoneWork,oetTextSenderStreet,-                oetTextSenderCity,oetTextSenderPostalCode,-                oetTextSenderCountry,oetTextSenderStateOrProvince,-                oetTextAuthorName,oetTextAuthorInitials,oetTextChapter,-                oetTextFileName,oetTextTemplateName,oetTextSheetName,-                oetTextVariableSet,oetTextVariableGet,-                oetTextVariableInput,oetTextUserFieldGet,-                oetTextUserFieldInput,oetTextSequence,oetTextExpression,-                oetTextTextInput,oetTextInitialCreator,-                oetTextCreationDate,oetTextCreationTime,-                oetTextDescription,oetTextUserDefined,oetTextPrintTime,-                oetTextPrintDate,oetTextPrintedBy,oetTextTitle,-                oetTextSubject,oetTextKeywords,oetTextEditingCycles,-                oetTextEditingDuration,oetTextModificationTime,-                oetTextModificationDate,oetTextCreator,-                oetTextDatabaseDisplay,oetTextDatabaseNext,-                oetTextDatabaseRowSelect,oetTextDatabaseRowNumber,-                oetTextDatabaseName,oetTextPageVariableSet,-                oetTextPageVariableGet,oetTextPlaceholder,-                oetTextConditionalText,oetTextHiddenText,oetTextNoteRef,-                oetTextSequenceRef,oetTextScript,oetTextExecuteMacro,-                oetTextHiddenParagraph,oetTextDdeConnection,-                oetTextMeasure,oetTextTableFormula,oetTextMetaField,-                oetTextTocMarkStart,oetTextTocMarkEnd,oetTextTocMark,-                oetTextUserIndexMarkStart,oetTextUserIndexMarkEnd,-                oetTextUserIndexMark,oetTextAlphabeticalIndexMarkStart,-                oetTextAlphabeticalIndexMarkEnd,-                oetTextAlphabeticalIndexMark,oetTextBibliographyMark,-                oetPresentationHeader,oetPresentationFooter,-                oetPresentationDateTime,oetTextA,oetStyleMap,-                oetNumberNumberStyle,oetNumberText,oetNumberNumber,-                oetNumberEmbeddedText,oetNumberScientificNumber,-                oetNumberFraction,oetNumberCurrencyStyle,-                oetNumberCurrencySymbol,oetNumberPercentageStyle,-                oetNumberDateStyle,oetNumberDay,oetNumberMonth,-                oetNumberYear,oetNumberEra,oetNumberDayOfWeek,-                oetNumberWeekOfYear,oetNumberQuarter,oetNumberHours,-                oetNumberAmPm,oetNumberMinutes,oetNumberSeconds,-                oetNumberTimeStyle,oetNumberBooleanStyle,-                oetNumberBoolean,oetNumberTextStyle,-                oetNumberTextContent,oetStyleDefaultStyle,-                oetStyleDefaultPageLayout,oetStylePageLayoutProperties,-                oetStyleFootnoteSep,oetStyleHeaderStyle,-                oetStyleHeaderFooterProperties,oetStyleFooterStyle,-                oetTextOutlineStyle,oetTextOutlineLevelStyle,-                oetTextBibliographyConfiguration,oetTextSortKey,-                oetTextLinenumberingConfiguration,-                oetTextLinenumberingSeparator,oetDrawGradient,-                oetSvgLineargradient,oetSvgStop,oetSvgRadialgradient,-                oetDrawHatch,oetDrawFillImage,oetDrawMarker,-                oetDrawStrokeDash,oetDrawOpacity,-                oetStylePresentationPageLayout,-                oetPresentationPlaceholder,oetTableTableTemplate,-                oetTableFirstRow,oetTableLastRow,oetTableFirstColumn,-                oetTableLastColumn,oetTableBody,oetTableEvenRows,-                oetTableOddRows,oetTableEvenColumns,oetTableOddColumns,-                oetTableBackground,oetOfficeAutomaticStyles,-                oetStylePageLayout,oetOfficeMasterStyles,-                oetStyleMasterPage,oetStyleHeader,oetTextTrackedChanges,-                oetTextChangedRegion,oetTextInsertion,-                oetOfficeChangeInfo,oetTextDeletion,oetTextFormatChange,-                oetTextVariableDecls,oetTextVariableDecl,-                oetTextSequenceDecls,oetTextSequenceDecl,-                oetTextUserFieldDecls,oetTextUserFieldDecl,-                oetTextDdeConnectionDecls,oetTextDdeConnectionDecl,-                oetTextAlphabeticalIndexAutoMarkFile,oetStyleRegionLeft,-                oetStyleRegionCenter,oetStyleRegionRight,-                oetStyleHeaderLeft,oetStyleFooter,oetStyleFooterLeft,-                oetDrawLayerSet,oetDrawLayer,oetAnimAnimate,oetAnimSet,-                oetAnimAnimatemotion,oetAnimAnimatecolor,-                oetAnimAnimatetransform,oetAnimTransitionfilter,-                oetAnimPar,oetAnimSeq,oetAnimIterate,oetAnimAudio,-                oetAnimCommand,oetAnimParam,oetPresentationNotes,-                oetStyleHandoutMaster,oetOfficeBody,oetOfficeText,-                oetTableCalculationSettings,oetTableNullDate,-                oetTableIteration,oetTableContentValidations,-                oetTableContentValidation,oetTableHelpMessage,-                oetTableErrorMessage,oetTableErrorMacro,-                oetTableLabelRanges,oetTableLabelRange,-                oetTextPageSequence,oetTextPage,oetTableDatabaseRanges,-                oetTableDatabaseRange,oetTableDatabaseSourceSql,-                oetTableDatabaseSourceQuery,oetTableDatabaseSourceTable,-                oetTableFilter,oetTableFilterCondition,-                oetTableFilterSetItem,oetTableFilterAnd,-                oetTableFilterOr,oetTableSort,oetTableSortBy,-                oetTableSubtotalRules,oetTableSortGroups,-                oetTableSubtotalRule,oetTableSubtotalField,-                oetTableDataPilotTables,oetTableDataPilotTable,-                oetTableSourceService,oetTableSourceCellRange,-                oetTableDataPilotField,oetTableDataPilotLevel,-                oetTableDataPilotSubtotals,oetTableDataPilotSubtotal,-                oetTableDataPilotMembers,oetTableDataPilotMember,-                oetTableDataPilotDisplayInfo,oetTableDataPilotSortInfo,-                oetTableDataPilotLayoutInfo,-                oetTableDataPilotFieldReference,oetTableDataPilotGroups,-                oetTableDataPilotGroup,oetTableDataPilotGroupMember,-                oetTableConsolidation,oetTableDdeLinks,oetTableDdeLink,-                oetOfficeDrawing,oetDrawPage,oetPresentationAnimations,-                oetPresentationShowShape,oetPresentationShowText,-                oetPresentationHideShape,oetPresentationHideText,-                oetPresentationDim,oetPresentationPlay,-                oetPresentationAnimationGroup,oetOfficePresentation,-                oetPresentationHeaderDecl,oetPresentationFooterDecl,-                oetPresentationDateTimeDecl,oetPresentationSettings,-                oetPresentationShow,oetOfficeSpreadsheet,-                oetTableTrackedChanges,oetTableCellContentChange,-                oetTableCellAddress,oetTableDependencies,-                oetTableDependency,oetTableDeletions,-                oetTableCellContentDeletion,-                oetTableChangeTrackTableCell,oetTableChangeDeletion,-                oetTablePrevious,oetTableInsertion,oetTableDeletion,-                oetTableCutOffs,oetTableMovementCutOff,-                oetTableInsertionCutOff,oetTableMovement,-                oetTableSourceRangeAddress,oetTableTargetRangeAddress,-                oetOfficeChart,oetChartChart,oetChartTitle,-                oetChartSubtitle,oetChartFooter,oetChartLegend,-                oetChartPlotArea,oetChartAxis,oetChartCategories,-                oetChartGrid,oetChartSeries,oetChartDomain,-                oetChartMeanValue,oetChartRegressionCurve,-                oetChartEquation,oetChartErrorIndicator,-                oetChartDataPoint,oetChartDataLabel,-                oetChartStockGainMarker,oetChartStockLossMarker,-                oetChartStockRangeLine,oetChartWall,oetChartFloor,-                oetOfficeImage,oetOfficeDatabase,oetDbDataSource,-                oetDbConnectionData,oetDbDatabaseDescription,-                oetDbFileBasedDatabase,oetDbServerDatabase,-                oetDbConnectionResource,oetDbLogin,oetDbDriverSettings,-                oetDbAutoIncrement,oetDbDelimiter,oetDbCharacterSet,-                oetDbTableSettings,oetDbTableSetting,-                oetDbApplicationConnectionSettings,oetDbTableFilter,-                oetDbTableIncludeFilter,oetDbTableFilterPattern,-                oetDbTableExcludeFilter,oetDbTableTypeFilter,-                oetDbTableType,oetDbDataSourceSettings,-                oetDbDataSourceSetting,oetDbDataSourceSettingValue,-                oetDbForms,oetDbComponent,oetDbComponentCollection,-                oetDbReports,oetDbQueries,oetDbQuery,-                oetDbOrderStatement,oetDbFilterStatement,oetDbColumns,-                oetDbColumn,oetDbUpdateTable,oetDbQueryCollection,-                oetDbTableRepresentations,oetDbTableRepresentation,-                oetDbSchemaDefinition,oetDbTableDefinitions,-                oetDbTableDefinition,oetDbColumnDefinitions,-                oetDbColumnDefinition,oetDbKeys,oetDbKey,-                oetDbKeyColumns,oetDbKeyColumn,oetDbIndices,oetDbIndex,-                oetDbIndexColumns,oetDbIndexColumn,-                oetOfficeDocumentContent,oetOfficeDocumentStyles,-                oetOfficeDocumentMeta,oetOfficeDocumentSettings-                );+    TElementType = (oetNone,+oetAnimAnimate,+oetAnimAnimatecolor,+oetAnimAnimatemotion,+oetAnimAnimatetransform,+oetAnimAudio,+oetAnimCommand,+oetAnimIterate,+oetAnimPar,+oetAnimParam,+oetAnimSeq,+oetAnimSet,+oetAnimTransitionfilter,+//Chart+oetChartAxis,+oetChartCategories,+oetChartChart,+oetChartDataLabel,+oetChartDataPoint,+oetChartDomain,+oetChartEquation,+oetChartErrorIndicator,+oetChartFloor,+oetChartFooter,+oetChartGrid,+oetChartLabelSeparator,+oetChartLegend,+oetChartMeanValue,+oetChartPlotArea,+oetChartRegressionCurve,+oetChartSeries,+oetChartStockGainMarker,+oetChartStockLossMarker,+oetChartStockRangeLine,+oetChartSubtitle,+oetChartSymbolImage,+oetChartTitle,+oetChartWall,+//Config+oetConfigConfigItem,+oetConfigConfigItemMapEntry,+oetConfigConfigItemMapIndexed,+oetConfigConfigItemMapNamed,+oetConfigConfigItemSet,+//Db+oetDbApplicationConnectionSettings,+oetDbAutoIncrement,+oetDbCharacterSet,+oetDbColumn,+oetDbColumnDefinition,+oetDbColumnDefinitions,+oetDbColumns,+oetDbComponent,+oetDbComponentCollection,+oetDbConnectionData,+oetDbConnectionResource,+oetDbDatabaseDescription,+oetDbDataSource,+oetDbDataSourceSetting,+oetDbDataSourceSettings,+oetDbDataSourceSettingValue,+oetDbDelimiter,+oetDbDriverSettings,+oetDbFileBasedDatabase,+oetDbFilterStatement,+oetDbForms,+oetDbIndex,+oetDbIndexColumn,+oetDbIndexColumns,+oetDbIndices,+oetDbKey,+oetDbKeyColumn,+oetDbKeyColumns,+oetDbKeys,+oetDbLogin,+oetDbOrderStatement,+oetDbQueries,+oetDbQuery,+oetDbQueryCollection,+oetDbReports,+oetDbSchemaDefinition,+oetDbServerDatabase,+oetDbTableDefinition,+oetDbTableDefinitions,+oetDbTableExcludeFilter,+oetDbTableFilter,+oetDbTableFilterPattern,+oetDbTableIncludeFilter,+oetDbTableRepresentation,+oetDbTableRepresentations,+oetDbTableSetting,+oetDbTableSettings,+oetDbTableType,+oetDbTableTypeFilter,+oetDbUpdateTable,+oetDcCreator,+oetDcDate,+oetDcDescription,+oetDcLanguage,+oetDcSubject,+oetDcTitle,+oetDr3dCube,+oetDr3dExtrude,+oetDr3dLight,+oetDr3dRotate,+oetDr3dScene,+oetDr3dSphere,+oetDrawA,+oetDrawApplet,+oetDrawAreaCircle,+oetDrawAreaPolygon,+oetDrawAreaRectangle,+oetDrawCaption,+oetDrawCircle,+oetDrawConnector,+oetDrawContourPath,+oetDrawContourPolygon,+oetDrawControl,+oetDrawCustomShape,+oetDrawEllipse,+oetDrawEnhancedGeometry,+oetDrawEquation,+oetDrawFillImage,+oetDrawFloatingFrame,+oetDrawFrame,+oetDrawG,+oetDrawGluePoint,+oetDrawGradient,+oetDrawHandle,+oetDrawHatch,+oetDrawImage,+oetDrawImageMap,+oetDrawLayer,+oetDrawLayerSet,+oetDrawLine,+oetDrawMarker,+oetDrawMeasure,+oetDrawObject,+oetDrawObjectOle,+oetDrawOpacity,+oetDrawPage,+oetDrawPageThumbnail,+oetDrawParam,+oetDrawPath,+oetDrawPlugin,+oetDrawPolygon,+oetDrawPolyline,+oetDrawRect,+oetDrawRegularPolygon,+oetDrawStrokeDash,+oetDrawTextBox,+oetFormButton,+oetFormCheckbox,+oetFormColumn,+oetFormCombobox,+oetFormConnectionResource,+oetFormDate,+oetFormFile,+oetFormFixedText,+oetFormForm,+oetFormFormattedText,+oetFormFrame,+oetFormGenericControl,+oetFormGrid,+oetFormHidden,+oetFormImage,+oetFormImageFrame,+oetFormItem,+oetFormListbox,+oetFormListProperty,+oetFormListValue,+oetFormNumber,+oetFormOption,+oetFormPassword,+oetFormProperties,+oetFormProperty,+oetFormRadio,+oetFormText,+oetFormTextarea,+oetFormTime,+oetFormValueRange,+oetLoExtFooterFirst,+oetLoExtHeaderFirst,+oetManifestAlgorithm,+oetManifestEncryptionData,+oetManifestFileEntry,+oetManifestKeyDerivation,+oetManifestManifest,+oetManifestStartKeyGeneration,+oetMathMath,+oetMetaAutoReload,+oetMetaCreationDate,+oetMetaDateString,+oetMetaDocumentStatistic,+oetMetaEditingCycles,+oetMetaEditingDuration,+oetMetaGenerator,+oetMetaHyperlinkBehaviour,+oetMetaInitialCreator,+oetMetaKeyword,+oetMetaPrintDate,+oetMetaPrintedBy,+oetMetaTemplate,+oetMetaUserDefined,+oetNumberAmPm,+oetNumberBoolean,+oetNumberBooleanStyle,+oetNumberCurrencyStyle,+oetNumberCurrencySymbol,+oetNumberDateStyle,+oetNumberDay,+oetNumberDayOfWeek,+oetNumberEmbeddedText,+oetNumberEra,+oetNumberFraction,+oetNumberHours,+oetNumberMinutes,+oetNumberMonth,+oetNumberNumber,+oetNumberNumberStyle,+oetNumberPercentageStyle,+oetNumberQuarter,+oetNumberScientificNumber,+oetNumberSeconds,+oetNumberText,+oetNumberTextContent,+oetNumberTextStyle,+oetNumberTimeStyle,+oetNumberWeekOfYear,+oetNumberYear,+oetOfficeAnnotation,+oetOfficeAnnotationEnd,+oetOfficeAutomaticStyles,+oetOfficeBinaryData,+oetOfficeBody,+oetOfficeChangeInfo,+oetOfficeChart,+oetOfficeDatabase,+oetOfficeDdeSource,+oetOfficeDocument,+oetOfficeDocumentContent,+oetOfficeDocumentMeta,+oetOfficeDocumentSettings,+oetOfficeDocumentStyles,+oetOfficeDrawing,+oetOfficeEventListeners,+oetOfficeFontFaceDecls,+oetOfficeForms,+oetOfficeImage,+oetOfficeMasterStyles,+oetOfficeMeta,+oetOfficePresentation,+oetOfficeScript,+oetOfficeScripts,+oetOfficeSettings,+oetOfficeSpreadsheet,+oetOfficeStyles,+oetOfficeText,+oetPresentationAnimationGroup,+oetPresentationAnimations,+oetPresentationDateTime,+oetPresentationDateTimeDecl,+oetPresentationDim,+oetPresentationEventListener,+oetPresentationFooter,+oetPresentationFooterDecl,+oetPresentationHeader,+oetPresentationHeaderDecl,+oetPresentationHideShape,+oetPresentationHideText,+oetPresentationNotes,+oetPresentationPlaceholder,+oetPresentationPlay,+oetPresentationSettings,+oetPresentationShow,+oetPresentationShowShape,+oetPresentationShowText,+oetPresentationSound,+oetScriptEventListener,+// Style+oetStyleBackgroundImage,+oetStyleChartProperties,+oetStyleColumn,+oetStyleColumns,+oetStyleColumnSep,+oetStyleDefaultPageLayout,+oetStyleDefaultStyle,+oetStyleDrawingPageProperties,+oetStyleDropCap,+oetStyleFontFace,+oetStyleFooter,+oetStyleFooterFirst,+oetStyleFooterLeft,+oetStyleFooterStyle,+oetStyleFootnoteSep,+oetStyleGraphicProperties,+oetStyleHandoutMaster,+oetStyleHeader,+oetStyleHeaderFirst,+oetStyleHeaderFooterProperties,+oetStyleHeaderLeft,+oetStyleHeaderStyle,+oetStyleListLevelLabelAlignment,+oetStyleListLevelProperties,+oetStyleMap,+oetStyleMasterPage,+oetStylePageLayout,+oetStylePageLayoutProperties,+oetStyleParagraphProperties,+oetStylePresentationPageLayout,+oetStyleRegionCenter,+oetStyleRegionLeft,+oetStyleRegionRight,+oetStyleRubyProperties,+oetStyleSectionProperties,+oetStyleStyle,+oetStyleTableCellProperties,+oetStyleTableColumnProperties,+oetStyleTableProperties,+oetStyleTableRowProperties,+oetStyleTabStop,+oetStyleTabStops,+oetStyleTextProperties,+// Svg+oetSvgDefinitionSrc,+oetSvgDesc,+oetSvgFontFaceFormat,+oetSvgFontFaceName,+oetSvgFontFaceSrc,+oetSvgFontFaceUri,+oetSvgLineargradient,+oetSvgRadialgradient,+oetSvgStop,+oetSvgTitle,+// Table+oetTableBackground,+oetTableBody,+oetTableCalculationSettings,+oetTableCellAddress,+oetTableCellContentChange,+oetTableCellContentDeletion,+oetTableCellRangeSource,+oetTableChangeDeletion,+oetTableChangeTrackTableCell,+oetTableConsolidation,+oetTableContentValidation,+oetTableContentValidations,+oetTableCoveredTableCell,+oetTableCutOffs,+oetTableDatabaseRange,+oetTableDatabaseRanges,+oetTableDatabaseSourceQuery,+oetTableDatabaseSourceSql,+oetTableDatabaseSourceTable,+oetTableDataPilotDisplayInfo,+oetTableDataPilotField,+oetTableDataPilotFieldReference,+oetTableDataPilotGroup,+oetTableDataPilotGroupMember,+oetTableDataPilotGroups,+oetTableDataPilotLayoutInfo,+oetTableDataPilotLevel,+oetTableDataPilotMember,+oetTableDataPilotMembers,+oetTableDataPilotSortInfo,+oetTableDataPilotSubtotal,+oetTableDataPilotSubtotals,+oetTableDataPilotTable,+oetTableDataPilotTables,+oetTableDdeLink,+oetTableDdeLinks,+oetTableDeletion,+oetTableDeletions,+oetTableDependencies,+oetTableDependency,+oetTableDesc,+oetTableDetective,+oetTableErrorMacro,+oetTableErrorMessage,+oetTableEvenColumns,+oetTableEvenRows,+oetTableFilter,+oetTableFilterAnd,+oetTableFilterCondition,+oetTableFilterOr,+oetTableFilterSetItem,+oetTableFirstColumn,+oetTableFirstRow,+oetTableHelpMessage,+oetTableHighlightedRange,+oetTableInsertion,+oetTableInsertionCutOff,+oetTableIteration,+oetTableLabelRange,+oetTableLabelRanges,+oetTableLastColumn,+oetTableLastRow,+oetTableMovement,+oetTableMovementCutOff,+oetTableNamedExpression,+oetTableNamedExpressions,+oetTableNamedRange,+oetTableNullDate,+oetTableOddColumns,+oetTableOddRows,+oetTableOperation,+oetTablePrevious,+oetTableScenario,+oetTableShapes,+oetTableSort,+oetTableSortBy,+oetTableSortGroups,+oetTableSourceCellRange,+oetTableSourceRangeAddress,+oetTableSourceService,+oetTableSubtotalField,+oetTableSubtotalRule,+oetTableSubtotalRules,+oetTableTable,+oetTableTableCell,+oetTableTableColumn,+oetTableTableColumnGroup,+oetTableTableColumns,+oetTableTableHeaderColumns,+oetTableTableHeaderRows,+oetTableTableRow,+oetTableTableRowGroup,+oetTableTableRows,+oetTableTableSource,+oetTableTableTemplate,+oetTableTargetRangeAddress,+oetTableTitle,+oetTableTrackedChanges,+// Text+oetTextA,+oetTextAlphabeticalIndex,+oetTextAlphabeticalIndexAutoMarkFile,+oetTextAlphabeticalIndexEntryTemplate,+oetTextAlphabeticalIndexMark,+oetTextAlphabeticalIndexMarkEnd,+oetTextAlphabeticalIndexMarkStart,+oetTextAlphabeticalIndexSource,+oetTextAuthorInitials,+oetTextAuthorName,+oetTextBibliography,+oetTextBibliographyConfiguration,+oetTextBibliographyEntryTemplate,+oetTextBibliographyMark,+oetTextBibliographySource,+oetTextBookmark,+oetTextBookmarkEnd,+oetTextBookmarkStart,+oetTextChange,+oetTextChangedRegion,+oetTextChangeEnd,+oetTextChangeStart,+oetTextChapter,+oetTextConditionalText,+oetTextCreationDate,+oetTextCreationTime,+oetTextCreator,+oetTextDatabaseDisplay,+oetTextDatabaseName,+oetTextDatabaseNext,+oetTextDatabaseRowNumber,+oetTextDatabaseRowSelect,+oetTextDate,+oetTextDdeConnection,+oetTextDdeConnectionDecl,+oetTextDdeConnectionDecls,+oetTextDeletion,+oetTextDescription,+oetTextEditingCycles,+oetTextEditingDuration,+oetTextExecuteMacro,+oetTextExpression,+oetTextFileName,+oetTextFormatChange,+oetTextH,+oetTextHiddenParagraph,+oetTextHiddenText,+oetTextIllustrationIndex,+oetTextIllustrationIndexEntryTemplate,+oetTextIllustrationIndexSource,+oetTextIndexBody,+oetTextIndexEntryBibliography,+oetTextIndexEntryChapter,+oetTextIndexEntryLinkEnd,+oetTextIndexEntryLinkStart,+oetTextIndexEntryPageNumber,+oetTextIndexEntrySpan,+oetTextIndexEntryTabStop,+oetTextIndexEntryText,+oetTextIndexSourceStyle,+oetTextIndexSourceStyles,+oetTextIndexTitle,+oetTextIndexTitleTemplate,+oetTextInitialCreator,+oetTextInsertion,+oetTextKeywords,+oetTextLineBreak,+oetTextLinenumberingConfiguration,+oetTextLinenumberingSeparator,+oetTextList,+oetTextListHeader,+oetTextListItem,+oetTextListLevelStyleBullet,+oetTextListLevelStyleImage,+oetTextListLevelStyleNumber,+oetTextListStyle,+oetTextMeasure,+oetTextMeta,+oetTextMetaField,+oetTextModificationDate,+oetTextModificationTime,+oetTextNote,+oetTextNoteBody,+oetTextNoteCitation,+oetTextNoteContinuationNoticeBackward,+oetTextNoteContinuationNoticeForward,+oetTextNoteRef,+oetTextNotesConfiguration,+oetTextNumber,+oetTextNumberedParagraph,+oetTextObjectIndex,+oetTextObjectIndexEntryTemplate,+oetTextObjectIndexSource,+oetTextOutlineLevelStyle,+oetTextOutlineStyle,+oetTextP,+oetTextPage,+oetTextPageContinuation,+oetTextPageNumber,+oetTextPageSequence,+oetTextPageVariableGet,+oetTextPageVariableSet,+oetTextPlaceholder,+oetTextPrintDate,+oetTextPrintedBy,+oetTextPrintTime,+oetTextReferenceMark,+oetTextReferenceMarkEnd,+oetTextReferenceMarkStart,+oetTextRuby,+oetTextRubyBase,+oetTextRubyText,+oetTextS,+oetTextScript,+oetTextSection,+oetTextSectionSource,+oetTextSenderCity,+oetTextSenderCompany,+oetTextSenderCountry,+oetTextSenderEmail,+oetTextSenderFax,+oetTextSenderFirstname,+oetTextSenderInitials,+oetTextSenderLastname,+oetTextSenderPhonePrivate,+oetTextSenderPhoneWork,+oetTextSenderPosition,+oetTextSenderPostalCode,+oetTextSenderStateOrProvince,+oetTextSenderStreet,+oetTextSenderTitle,+oetTextSequence,+oetTextSequenceDecl,+oetTextSequenceDecls,+oetTextSequenceRef,+oetTextSheetName,+oetTextSoftPageBreak,+oetTextSortKey,+oetTextSpan,+oetTextSubject,+oetTextTab,+oetTextTableFormula,+oetTextTableIndex,+oetTextTableIndexEntryTemplate,+oetTextTableIndexSource,+oetTextTableOfContent,+oetTextTableOfContentEntryTemplate,+oetTextTableOfContentSource,+oetTextTemplateName,+oetTextTextInput,+oetTextTime,+oetTextTitle,+oetTextTocMark,+oetTextTocMarkEnd,+oetTextTocMarkStart,+oetTextTrackedChanges,+oetTextUserDefined,+oetTextUserFieldDecl,+oetTextUserFieldDecls,+oetTextUserFieldGet,+oetTextUserFieldInput,+oetTextUserIndex,+oetTextUserIndexEntryTemplate,+oetTextUserIndexMark,+oetTextUserIndexMarkEnd,+oetTextUserIndexMarkStart,+oetTextUserIndexSource,+oetTextVariableDecl,+oetTextVariableDecls,+oetTextVariableGet,+oetTextVariableInput,+oetTextVariableSet,+oetXformsModel); Index: incs/proc.inc
+===================================================================
+diff --git a/branches/NewFeatures_1/incs/proc.inc b/branches/NewFeatures_1/incs/proc.inc
+--- a/branches/NewFeatures_1/incs/proc.inc	(revision 112)
++++ b/branches/NewFeatures_1/incs/proc.inc	(working copy)
+@@ -5353,25 +5353,27 @@
+           oetStyleMasterPage : begin                                     Namespace:=onsStyle;                                     LocalName:='master-page';-                                    SetLength(ChildrenArray, 18);+                                    SetLength(ChildrenArray, 20);                                     ChildrenArray[0]:=oetStyleHeader;                                     ChildrenArray[1]:=oetStyleHeaderLeft;-                                    ChildrenArray[2]:=oetStyleFooter;-                                    ChildrenArray[3]:=oetStyleFooterLeft;-                                    ChildrenArray[4]:=oetDrawLayerSet;-                                    ChildrenArray[5]:=oetOfficeForms;-                                    ChildrenArray[6]:=oetAnimAnimate;-                                    ChildrenArray[7]:=oetAnimSet;-                                    ChildrenArray[8]:=oetAnimAnimatemotion;-                                    ChildrenArray[9]:=oetAnimAnimatecolor;-                                    ChildrenArray[10]:=oetAnimAnimatetransform;-                                    ChildrenArray[11]:=oetAnimTransitionfilter;-                                    ChildrenArray[12]:=oetAnimPar;-                                    ChildrenArray[13]:=oetAnimSeq;-                                    ChildrenArray[14]:=oetAnimIterate;-                                    ChildrenArray[15]:=oetAnimAudio;-                                    ChildrenArray[16]:=oetAnimCommand;-                                    ChildrenArray[17]:=oetPresentationNotes;+                                    ChildrenArray[2]:=oetStyleHeaderFirst;+                                    ChildrenArray[3]:=oetStyleFooter;+                                    ChildrenArray[4]:=oetStyleFooterLeft;+                                    ChildrenArray[5]:=oetStyleFooterFirst;+                                    ChildrenArray[6]:=oetDrawLayerSet;+                                    ChildrenArray[7]:=oetOfficeForms;+                                    ChildrenArray[8]:=oetAnimAnimate;+                                    ChildrenArray[9]:=oetAnimSet;+                                    ChildrenArray[10]:=oetAnimAnimatemotion;+                                    ChildrenArray[11]:=oetAnimAnimatecolor;+                                    ChildrenArray[12]:=oetAnimAnimatetransform;+                                    ChildrenArray[13]:=oetAnimTransitionfilter;+                                    ChildrenArray[14]:=oetAnimPar;+                                    ChildrenArray[15]:=oetAnimSeq;+                                    ChildrenArray[16]:=oetAnimIterate;+                                    ChildrenArray[17]:=oetAnimAudio;+                                    ChildrenArray[18]:=oetAnimCommand;+                                    ChildrenArray[19]:=oetPresentationNotes;                                     SetLength(AttsArray, 5);                                     AttsArray[0]:=oatStyleName;                                     AttsArray[1]:=oatStyleDisplayName;@@ -5411,6 +5413,38 @@
+                                 SetLength(AttsArray, 1);                                 AttsArray[0]:=oatStyleDisplay;                            end;+          oetStyleHeaderFirst : begin+                                Namespace:=onsStyle;+                                LocalName:='header-first';+                                SetLength(ChildrenArray, 25);+                                ChildrenArray[0]:=oetTextTrackedChanges;+                                ChildrenArray[1]:=oetTextAlphabeticalIndexAutoMarkFile;+                                ChildrenArray[2]:=oetTextVariableDecls;+                                ChildrenArray[3]:=oetTextSequenceDecls;+                                ChildrenArray[4]:=oetTextUserFieldDecls;+                                ChildrenArray[5]:=oetTextDdeConnectionDecls;+                                ChildrenArray[6]:=oetTextH;+                                ChildrenArray[7]:=oetTextP;+                                ChildrenArray[8]:=oetTextList;+                                ChildrenArray[9]:=oetTableTable;+                                ChildrenArray[10]:=oetTextSection;+                                ChildrenArray[11]:=oetTextTableOfContent;+                                ChildrenArray[12]:=oetTextIllustrationIndex;+                                ChildrenArray[13]:=oetTextTableIndex;+                                ChildrenArray[14]:=oetTextObjectIndex;+                                ChildrenArray[15]:=oetTextUserIndex;+                                ChildrenArray[16]:=oetTextAlphabeticalIndex;+                                ChildrenArray[17]:=oetTextBibliography;+                                ChildrenArray[18]:=oetTextIndexTitle;+                                ChildrenArray[19]:=oetTextChange;+                                ChildrenArray[20]:=oetTextChangeStart;+                                ChildrenArray[21]:=oetTextChangeEnd;+                                ChildrenArray[22]:=oetStyleRegionLeft;+                                ChildrenArray[23]:=oetStyleRegionCenter;+                                ChildrenArray[24]:=oetStyleRegionRight;+                                SetLength(AttsArray, 1);+                                AttsArray[0]:=oatStyleDisplay;+                           end;           oetTextTrackedChanges : begin                                        Namespace:=onsText;                                        LocalName:='tracked-changes';@@ -5580,6 +5614,13 @@
+                                 SetLength(AttsArray, 1);                                 AttsArray[0]:=oatStyleDisplay;                            end;+          oetStyleFooterFirst : begin+                                Namespace:=onsStyle;+                                LocalName:='footer-first';+                                SetLength(ChildrenArray, 0);+                                SetLength(AttsArray, 1);+                                AttsArray[0]:=oatStyleDisplay;+                           end;           oetStyleFooterLeft : begin                                     Namespace:=onsStyle;                                     LocalName:='footer-left';@@ -5587,6 +5628,20 @@
+                                     SetLength(AttsArray, 1);                                     AttsArray[0]:=oatStyleDisplay;                                end;+          oetLoExtFooterFirst : begin+                                Namespace:=onsLoExt;+                                LocalName:='footer-first';+                                SetLength(ChildrenArray, 0);+                                SetLength(AttsArray, 1);+                                AttsArray[0]:=oatStyleDisplay;+                           end;+          oetLoExtHeaderFirst : begin+                                Namespace:=onsLoExt;+                                LocalName:='header-first';+                                SetLength(ChildrenArray, 0);+                                SetLength(AttsArray, 1);+                                AttsArray[0]:=oatStyleDisplay;+                           end;           oetDrawLayerSet : begin                                  Namespace:=onsDraw;                                  LocalName:='layer-set';Index: odf_types.pas
+===================================================================
+diff --git a/branches/NewFeatures_1/odf_types.pas b/branches/NewFeatures_1/odf_types.pas
+--- a/branches/NewFeatures_1/odf_types.pas	(revision 112)
++++ b/branches/NewFeatures_1/odf_types.pas	(working copy)
+@@ -63,12 +63,15 @@
+      cNone = '<NONE>';
+      cFileContent = 'content.xml';
+      cFileStyles = 'styles.xml';
++     cFileMeta = 'meta.xml';
++     cFileSettings = 'settings.xml';
+      cFileMimetype = 'mimetype';
+      cIsoDateFormat = 'yyyy-mm-dd"T"hh:nn:ss'; //Is defined somewhere at fcl?
+-     cMetaGenerator = 'fpOdf 0.1'; { TODO : Need to change to a proper format,
++     cMetaGenerator = 'fpOdf 0.2'; { TODO : Need to change to a proper format,
+                                             as specified at p1-4.3.2.1 }
+ 
+      cUrnOpenDocument = 'urn:oasis:names:tc:opendocument:xmlns:';
++     cUrnDocumentFoundationExperimental = 'urn:org:documentfoundation:names:experimental:office:xmlns:';
+ 
+      cUrlOasis = 'http://docs.oasis-open.org/';
+      cUriOffice12Meta = cUrlOasis + 'ns/office/1.2/meta/';
+@@ -85,7 +88,7 @@
+                      onsPresentation, onsSvg, onsText, onsChart, onsTable,
+                      onsForm, onsXforms, onsDraw, onsMath, onsDr3d, onsNumber,
+                      onsAnim, onsDb, onsXlink, onsXml, onsFo, onsSmil,
+-                     onsXhtml, onsPkg, onsOf);
++                     onsXhtml, onsPkg, onsOf,onsLoExt);
+ 
+     TOdfNamespaces = set of TOdfNamespace;
+ 
+@@ -119,7 +122,8 @@
+                     'smil',
+                     'xhtml',
+                     'pkg',
+-                    'of');
++                    'of',
++                    'LoExt');
+ 
+          OdfNamespaceURIs: array[TOdfNamespace] of String = (cNone,
+                     cUrnOpenDocument + 'office:1.0',
+@@ -150,7 +154,8 @@
+                     cUrnOpenDocument + 'smil-compatible:1.0',
+                     cUrlW3 + '1999/xhtml',
+                     cUriOffice12Meta + 'pkg#',
+-                    cUrnOpenDocument + 'of:1.2');
++                    cUrnOpenDocument + 'of:1.2',
++                    cUrnDocumentFoundationExperimental+'loext:1.0');
+ 
+          function GetURI(ns: TOdfNamespace): string;
+          function OdfGetNsUri(APrefix: string): string;
+@@ -618,6 +623,7 @@
+           Procedure Clear; override;
+           { TODO : Replace AddParagraph, param ATextSytleName, with A Style Object or interface}
+           function AddSection(aSectionName,ATextStyleName: String): TOdfSection;
++          function AddMasterStyle: TOdfStyleStyle;
+           function AddParagraph(ATextStyleName: String): TOdfParagraph;
+           function AddHeadline(aLevel: integer): TOdfContent;
+           function AddAutomaticStyle:TOdfStyleStyle;overload;
+@@ -1350,8 +1356,12 @@
+ begin
+      if Assigned(FText)
+      then
+-         FreeAndNil(FText);
++        try
++           // Prüfen warum Ftext sich ändert
++           FreeAndNil(FText);
++        except
+ 
++        end;
+      FText:=OdfGetElement(oetOfficeText, FBody);
+ end;
+ 
+@@ -1412,6 +1422,21 @@
+   FText.AppendChild(result);
+ end;
+ 
++function TOdfTextDocument.AddMasterStyle: TOdfStyleStyle;
++begin
++  Result := TOdfStyleStyle(TOdfElement(FMasterStyles).Find('Standard'));
++  if not assigned(result) then
++    begin
++      result:=TOdfStyleStyle(CreateOdfElement(oetStyleMasterPage));
++      with result do
++         begin
++              OdfStyleName:='Standard';
++              OdfStyleFamily:='';
++         end;
++     FMasterStyles.AppendChild(result);
++    end;
++end;
++
+ function TOdfTextDocument.AddParagraph(ATextStyleName: String): TOdfParagraph;
+ begin
+   TOdfSection(FText).AddParagraph(ATextStyleName);
+@@ -1517,6 +1542,7 @@
+                                             Doc: TXMLDocument): TOdfElement;
+ var
+    vQname, vUri: string;
++   ll: TDomElement;
+ begin
+      vQname:=OdfGetElementQName(AType, vUri);
+ 
+@@ -1524,7 +1550,13 @@
+      result:=(doc.CreateElementNS(vUri, vQname, AClass) as aclass);
+      {$IFDEF fpodf_debug}WriteLn(result.ClassName);{$ENDIF}
+      {$else}
+-     result:=TOdfElement(doc.CreateElementNS(vUri, vQname));
++     result := AClass.Create(doc);
++     ll := doc.CreateElementNS(vUri, vQname);
++     result.FNSI := ll.NSI;
++     result.NamespaceURI;
++     FreeAndNil(ll);
++     Include(Result.FFlags, nfLevel2);
++     Result.AttachDefaultAttrs;
+      {$endif}
+ end;
+ 
+@@ -2678,7 +2710,7 @@
+ 
+      TempDir:=IncludeTrailingPathDelimiter(TempDir);
+ 
+-     mt:=OdfGetMimeTypeFromFile(TempDir + 'mimetype');
++     mt:=OdfGetMimeTypeFromFile(TempDir + cFileMimetype);
+ 
+      case mt of
+           omtText: result:=TOdfTextDocument.Create;
+@@ -2715,7 +2747,7 @@
+      ReorderElements(AOdf);
+      OdfXmlSetDefaultAtts(AOdf.XmlDocument);
+      OdfElementSetNamespaceAtt(AOdf.XmlDocument.DocumentElement,
+-          [onsStyle, onsFo, onsSvg]);
++          [onsStyle, onsFo, onsSvg, onsText]);
+      OdfWriteXmlToFile(AOdf.XmlDocument, AFilename);
+ end;
+ 
+@@ -3323,11 +3355,11 @@
+                          RootElement:=oetOfficeDocumentStyles;
+                     end;
+           ofMeta: begin
+-                       Filename:='meta.xml';
++                       Filename:=cFileMeta;
+                        RootElement:=oetOfficeDocumentMeta;
+                   end;
+           ofSettings: begin
+-                           Filename:='settings.xml';
++                           Filename:=cFileSettings;
+                            RootElement:=oetOfficeDocumentSettings;
+                       end;
+ 
+Index: odf_xmlutils.pas
+===================================================================
+diff --git a/branches/NewFeatures_1/odf_xmlutils.pas b/branches/NewFeatures_1/odf_xmlutils.pas
+--- a/branches/NewFeatures_1/odf_xmlutils.pas	(revision 112)
++++ b/branches/NewFeatures_1/odf_xmlutils.pas	(working copy)
+@@ -51,15 +51,20 @@
+ 
+   ;
+ 
++type TXmlWriterProc=Procedure(ADoc: TXMLDocument; AFilename: string);
+ 
+ procedure OdfWriteXmlToFile(ADoc: TXMLDocument;  AFilename: string);
+ 
+ function OdfAttributesAsStrings(e: TDOMElement; OnlyNames: boolean = true): TStrings;
+ 
++var XmlWriterProc : TXmlWriterProc;
+ implementation
+ 
+ procedure OdfWriteXmlToFile(ADoc: TXMLDocument;  AFilename: string);
+ begin
++     if assigned(XmlWriterProc) then
++         XmlWriterProc(ADoc,AFilename)
++     else
+      {$IfDef UseStaxWriter}
+             XmlStreamWrite(ADoc, AFilename, 'utf-8', '1.0');
+      {$Else}
+Index: test/fpOdfTest.lpi
+===================================================================
+diff --git a/branches/NewFeatures_1/test/fpOdfTest.lpi b/branches/NewFeatures_1/test/fpOdfTest.lpi
+--- a/branches/NewFeatures_1/test/fpOdfTest.lpi	(revision 112)
++++ b/branches/NewFeatures_1/test/fpOdfTest.lpi	(working copy)
+@@ -1,7 +1,7 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <CONFIG>
+   <ProjectOptions>
+-    <Version Value="9"/>
++    <Version Value="11"/>
+     <General>
+       <Flags>
+         <SaveJumpHistory Value="False"/>
+@@ -15,22 +15,24 @@
+     <i18n>
+       <EnableI18N LFM="False"/>
+     </i18n>
+-    <VersionInfo>
+-      <StringTable ProductVersion=""/>
+-    </VersionInfo>
+     <BuildModes Count="1">
+       <Item1 Name="Default" Default="True"/>
+     </BuildModes>
+     <PublishOptions>
+       <Version Value="2"/>
+-      <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
+-      <ExcludeFileFilter Value="*.(bak|ppu|o|so);*~;backup"/>
+     </PublishOptions>
+     <RunParams>
+       <local>
+-        <FormatVersion Value="1"/>
+         <CommandLineParams Value="-a --format=plain"/>
+       </local>
++      <FormatVersion Value="2"/>
++      <Modes Count="1">
++        <Mode0 Name="default">
++          <local>
++            <CommandLineParams Value="-a --format=plain"/>
++          </local>
++        </Mode0>
++      </Modes>
+     </RunParams>
+     <RequiredPackages Count="3">
+       <Item1>
+@@ -47,35 +49,33 @@
+       <Unit0>
+         <Filename Value="fpOdfTest.lpr"/>
+         <IsPartOfProject Value="True"/>
+-        <UnitName Value="fpOdfTest"/>
+       </Unit0>
+       <Unit1>
+         <Filename Value="TestStringPrep.pas"/>
+         <IsPartOfProject Value="True"/>
+-        <UnitName Value="TestStringPrep"/>
+       </Unit1>
+       <Unit2>
+         <Filename Value="ElementFunctionsTests.pas"/>
+         <IsPartOfProject Value="True"/>
+-        <UnitName Value="ElementFunctionsTests"/>
+       </Unit2>
+       <Unit3>
+         <Filename Value="CharacterContentTest.pas"/>
+         <IsPartOfProject Value="True"/>
+-        <UnitName Value="CharacterContentTest"/>
+       </Unit3>
+       <Unit4>
+         <Filename Value="SearchTest.pas"/>
+         <IsPartOfProject Value="True"/>
+-        <UnitName Value="SearchTest"/>
+       </Unit4>
+     </Units>
+   </ProjectOptions>
+   <CompilerOptions>
+     <Version Value="11"/>
++    <Target>
++      <Filename Value="../../bin/$(TargetCPU)-$(TargetOS)/$NameOnly($Project(Infofile))"/>
++    </Target>
+     <SearchPaths>
+       <IncludeFiles Value="$(ProjOutDir)"/>
+-      <UnitOutputDirectory Value="output"/>
++      <UnitOutputDirectory Value="../../bin/$(TargetCPU)-$(TargetOS)/units"/>
+     </SearchPaths>
+     <Linking>
+       <Debugging>
+@@ -82,12 +82,6 @@
+         <UseExternalDbgSyms Value="True"/>
+       </Debugging>
+     </Linking>
+-    <Other>
+-      <CompilerMessages>
+-        <MsgFileName Value=""/>
+-      </CompilerMessages>
+-      <CompilerPath Value="$(CompPath)"/>
+-    </Other>
+   </CompilerOptions>
+   <Debugging>
+     <Exceptions Count="3">
